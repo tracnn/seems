@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  bm_patient_hub-1:
+    image: bm_patient_hub:latest
+    container_name: bm_patient_hub-1
+    working_dir: /app
+    volumes:
+      - ./dist:/app/dist
+      - ./configs/.env:/app/.env
+      - ./configs/zalo_api_token.json:/app/configs/zalo_api_token.json
+      - ./configs/organization_config.json:/app/configs/organization_config.json
+      - ./configs/firebase_service_account.json:/app/configs/firebase_service_account.json
+      - ./configs/news_feed.json:/app/configs/news_feed.json
+      - ./xml3176-folder:/app/xml3176-folder
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=Production
+      - ENABLE_SCHEDULED_TASK=true
+      - ENABLE_SCHEDULED_TASK_NOTIFICATION=true
+      - ENABLE_IMPORT_DATA_QD3176=true
+      - APP_PORT=3000
+    networks:
+      - bm_patient_hub-net
+
+  bm_patient_hub-2:
+    image: bm_patient_hub:latest
+    container_name: bm_patient_hub-2
+    working_dir: /app
+    volumes:
+      - ./dist:/app/dist
+      - ./configs/.env:/app/.env
+      - ./configs/zalo_api_token.json:/app/configs/zalo_api_token.json
+      - ./configs/organization_config.json:/app/configs/organization_config.json
+      - ./configs/firebase_service_account.json:/app/configs/firebase_service_account.json
+      - ./configs/news_feed.json:/app/configs/news_feed.json
+      - ./xml3176-folder:/app/xml3176-folder
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=Production
+      - ENABLE_SCHEDULED_TASK=false
+      - ENABLE_SCHEDULED_TASK_NOTIFICATION=false
+      - ENABLE_IMPORT_DATA_QD3176=false
+      - APP_PORT=3000
+    networks:
+      - bm_patient_hub-net
+
+  bm_patient_hub-3:
+    image: bm_patient_hub:latest
+    container_name: bm_patient_hub-3
+    working_dir: /app
+    volumes:
+      - ./dist:/app/dist
+      - ./configs/.env:/app/.env
+      - ./configs/zalo_api_token.json:/app/configs/zalo_api_token.json
+      - ./configs/organization_config.json:/app/configs/organization_config.json
+      - ./configs/firebase_service_account.json:/app/configs/firebase_service_account.json
+      - ./configs/news_feed.json:/app/configs/news_feed.json
+      - ./xml3176-folder:/app/xml3176-folder
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=Production
+      - ENABLE_SCHEDULED_TASK=false
+      - ENABLE_SCHEDULED_TASK_NOTIFICATION=false
+      - ENABLE_IMPORT_DATA_QD3176=false
+      - APP_PORT=3000
+    networks:
+      - bm_patient_hub-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: bm_patient_hub-gateway
+    ports:
+      - "3808:3808"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - bm_patient_hub-1
+      - bm_patient_hub-2
+      - bm_patient_hub-3
+    networks:
+      - bm_patient_hub-net
+
+networks:
+  bm_patient_hub-net:
+    driver: bridge

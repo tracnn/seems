@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  bm_patient_hub:
+    image: bm_patient_hub:latest
+    container_name: bm_patient_hub
+    working_dir: /app
+    volumes:
+      - ./dist:/app/dist
+      - ./configs/.env:/app/.env
+      - ./configs/zalo_api_token.json:/app/configs/zalo_api_token.json
+      - ./configs/organization_config.json:/app/configs/organization_config.json
+      - ./configs/firebase_service_account.json:/app/configs/firebase_service_account.json
+      - ./configs/news_feed.json:/app/configs/news_feed.json
+      - ./xml3176-folder:/app/xml3176-folder
+    ports:
+      - "3808:3000"
+    environment:
+      - NODE_ENV=Production
+      - APP_PORT=3000

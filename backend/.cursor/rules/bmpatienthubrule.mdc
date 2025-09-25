@@ -1,0 +1,142 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Quy tắc chung cho dự án NestJS
+- Khi tạo file mới trong thư mục `src`, luôn sử dụng TypeScript (.ts).
+- Luôn tuân thủ chuẩn code của NestJS: sử dụng PascalCase cho class, camelCase cho biến và hàm.
+- Sử dụng single quotes ('') thay vì double quotes ("") trong code TypeScript.
+- Tất cả các file code phải được đặt trong thư mục `src` với cấu trúc mô-đun (e.g., `src/patient`, `src/auth`).
+
+# Quy tắc cho cấu hình môi trường
+- Sử dụng `@nestjs/config` để quản lý biến môi trường từ file `.env`.
+- File `.env` phải chứa các biến:
+  - DB_HOST, DB_PORT, DB_SERVICE_NAME, DB_USERNAME, DB_PASSWORD (kết nối Oracle).
+  - JWT_SECRET, JWT_EXPIRES_IN, REFRESH_TOKEN_SECRET, REFRESH_TOKEN_EXPIRES_IN (JWT).
+  - APP_PORT, API_VERSION (cấu hình ứng dụng).
+- Sử dụng `ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' })` trong `AppModule`.
+- Truy cập biến môi trường bằng `ConfigService` (e.g., `configService.get<string>('JWT_SECRET')`).
+
+# Quy tắc cho Entity
+- Khi tạo entity, luôn kế thừa từ `BaseEntity` (src/common/base.entity.ts).
+- BaseEntity phải có các trường:
+  - `createTime` (@CreateDateColumn, name: 'create_time')
+  - `updateTime` (@UpdateDateColumn, name: 'update_time')
+  - `createBy` (@Column, nullable: true, name: 'create_by')
+  - `updateBy` (@Column, nullable: true, name: 'update_by')
+  - `isDeleted` (@Column, default: false, name: 'is_deleted')
+- Mọi entity phải có `@Entity` decorator và tên bảng trong database tương ứng.
+- Patient entity phải có các trường: `id` (@PrimaryGeneratedColumn), `fullName`, `dateOfBirth`, `gender`, `address`, `phoneNumber`.
+- User entity phải có các trường: `id` (@PrimaryGeneratedColumn), `username` (unique), `password`, `refreshToken` (nullable).
+
+# Quy tắc cho CQRS
+- Khi tạo Command, đặt trong thư mục `commands/impl` và sử dụng hậu tố `.command.ts`.
+- Command phải là một class với constructor nhận các tham số cần thiết.
+- Command Handler phải được đặt trong `commands/handlers`, implement `ICommandHandler`, và sử dụng `@CommandHandler`.
+- Khi tạo Query, đặt trong thư mục `queries/impl` và sử dụng hậu tố `.query.ts`.
+- Query Handler phải được đặt trong `queries/handlers`, implement `IQueryHandler`, và sử dụng `@QueryHandler`.
+- Query trả về danh sách phải hỗ trợ phân trang và trả về { data, pagination }.
+
+# Quy tắc cho phân trang
+- Query Handler phải hỗ trợ `page` và `limit`, trả về { data, pagination }.
+- Trường `pagination` phải chứa: `currentPage`, `limit`, `totalItems`, `totalPages`, `hasNext`, `hasPrev`.
+- Sử dụng `skip = (page - 1) * limit` và `take = limit` trong TypeORM query.
+- Tính toán `totalPages = Math.ceil(totalItems / limit)`, `hasNext = page < totalPages`, `hasPrev = page > 1`.
+
+# Quy tắc cho Soft Delete
+- Khi viết repository method cho xóa, sử dụng soft delete bằng cách cập nhật `isDeleted = true`.
+- Các query method phải tự động lọc bỏ các bản ghi có `isDeleted = true` (sử dụng `where: { isDeleted: false }`).
+- Có thể sử dụng custom repository để triển khai soft delete (e.g., `PatientRepository.softDelete`).
+
+# Quy tắc cho Response Format
+- Tất cả API response phải có cấu trúc: { data, pagination, status, statusCode, message, now }.
+- Trường `status` phải là 'success' hoặc 'error'.
+- Trường `statusCode` phải là mã trạng thái HTTP (e.g., 200, 201, 400, 404, 500).
+- Trường `pagination` (nếu có) phải chứa: currentPage, limit, totalItems, totalPages, hasNext, hasPrev.
+- Trường `now` phải là thời gian hiện tại của server ở định dạng ISO 8601 (e.g., '2025-05-14T11:34:00+07:00').
+- Response lỗi phải có: status: 'error', statusCode, data: null, pagination: null, message, now.
+- Sử dụng `ResponseInterceptor` để chuẩn hóa response, lấy `statusCode` từ HTTP response context.
+- Sử dụng `ApiExceptionFilter` để xử lý lỗi và trả về định dạng lỗi chuẩn.
+
+# Quy tắc cho xử lý lỗi
+- Lỗi phải được ném bằng `ApiException` (src/common/api.exception.ts) và tham chiếu mã lỗi trong `src/common/errors.config.ts`.
+- File `errors.config.ts` phải định nghĩa các mã lỗi với: `code`, `message`, `status`.
+- Ví dụ mã lỗi:
+  - INVALID_CREDENTIALS (code: 'INVALID_CREDENTIALS', message: 'Tên đăng nhập hoặc mật khẩu không đúng', status: 401).
+  - INVALID_REFRESH_TOKEN (code: 'INVALID_REFRESH_TOKEN', message: 'Refresh token không hợp lệ', status: 401).
+  - PATIENT_NOT_FOUND (code: 'PATIENT_NOT_FOUND', message: 'Bệnh nhân không tồn tại hoặc đã bị xóa', status: 404).
+- Exception Filter phải trả về response lỗi theo định dạng: { data: null, pagination: null, status: 'error', statusCode, message, now }.
+
+# Quy tắc cho Authentication (JWT)
+- Sử dụng `@nestjs/jwt` và `passport-jwt` để triển khai JWT authentication.
+- Tạo `AuthModule` với `AuthService`, `AuthController`, `JwtStrategy`, và `JwtAuthGuard`.
+- Endpoint đăng nhập: POST /api/v1/auth/login, trả về { accessToken, refreshToken }.
+- Endpoint refresh token: POST /api/v1/auth/refresh, yêu cầu Bearer token và refreshToken trong body.
+- Mật khẩu người dùng phải được mã hóa bằng `bcrypt`.
+- Lưu `refreshToken` trong `User` entity.
+- Bảo vệ các endpoint nhạy cảm (e.g., /api/v1/patients) bằng `@UseGuards(JwtAuthGuard)`.
+
+# Quy tắc cho API Versioning
+- Sử dụng URI versioning với prefix `/api/v1` (e.g., `/api/v1/patients`).
+- Cấu hình versioning trong `main.ts` bằng `app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' })`.
+- Tất cả Controller phải sử dụng `@Controller('api/v1/<resource>')`.
+- Biến `API_VERSION` phải được lưu trong `.env`.
+
+# Quy tắc cho Swagger
+- Sử dụng `@nestjs/swagger` để tạo tài liệu API.
+- Cấu hình Swagger trong `main.ts` với endpoint `/api/v1/docs`.
+- Thêm `@ApiTags`, `@ApiOperation`, `@ApiResponse`, `@ApiBearerAuth` vào Controller.
+- Thêm `@ApiProperty` vào DTO để mô tả các trường.
+- Tài liệu phải bao gồm thông tin xác thực (Bearer token).
+
+# Quy tắc cho Oracle/TypeORM
+- Khi cấu hình TypeORM, sử dụng `type: 'oracle'` trong `TypeOrmModule.forRootAsync`.
+- Sử dụng `serviceName` thay vì `sid` trong cấu hình kết nối Oracle (e.g., `serviceName: configService.get<string>('DB_SERVICE_NAME')`).
+- Sử dụng `ConfigService` để lấy thông tin kết nối từ `.env` (DB_HOST, DB_PORT, DB_SERVICE_NAME, DB_USERNAME, DB_PASSWORD).
+- Repository method phải sử dụng `InjectRepository` từ `@nestjs/typeorm`.
+- Đảm bảo cài đặt Oracle Instant Client và cấu hình biến môi trường (e.g., LD_LIBRARY_PATH).
+- Sử dụng `synchronize: false` trong production để tránh tự động thay đổi schema.
+- Tạo index cho các trường thường xuyên truy vấn như `isDeleted`, `createTime`, `username`.
+
+# Quy tắc cho Patient Module
+- Patient entity phải có các trường: `id` (@PrimaryGeneratedColumn), `fullName`, `dateOfBirth`, `gender`, `address`, `phoneNumber`.
+- Controller phải hỗ trợ các endpoint REST API:
+  - POST /api/v1/patients: Tạo bệnh nhân (Command: CreatePatientCommand).
+  - GET /api/v1/patients/:id: Lấy chi tiết bệnh nhân (Query: GetPatientQuery).
+  - GET /api/v1/patients: Lấy danh sách bệnh nhân với phân trang (Query: GetPatientsQuery).
+  - PATCH /api/v1/patients/:id: Cập nhật bệnh nhân (Command: UpdatePatientCommand).
+  - DELETE /api/v1/patients/:id: Soft delete bệnh nhân (Command: DeletePatientCommand).
+- Tất cả endpoint phải được bảo vệ bằng `@UseGuards(JwtAuthGuard)`.
+- Sử dụng DTO (e.g., GetPatientsDto) để validate query params (`page`, `limit`) và body.
+
+# Quy tắc cho Validation
+- Sử dụng `class-validator` và `class-transformer` để validate DTO.
+- Áp dụng `ValidationPipe` toàn cục trong `main.ts`.
+- Query params như `page` và `limit` phải là số nguyên dương (`@IsInt`, `@Min(1)`).
+
+# Quy tắc cho Linting và Formatting
+- Sử dụng ESLint với cấu hình `@nestjs/eslint-config-typescript`.
+- Sử dụng Prettier với cấu hình: singleQuote: true, trailingComma: es5, tabWidth: 2, semi: true.
+- Sắp xếp import theo thứ tự alphabet (`import/order`).
+- Không để lại biến không sử dụng (`@typescript-eslint/no-unused-vars`).
+- Luôn chạy `npm run lint`, `npm run typecheck`, và `npm run format` trước khi commit.
+- Đảm bảo không có console.log trong code production.
+
+# Quy tắc cho Commit Message
+- Commit message phải tuân theo Conventional Commits: feat, fix, chore, docs, etc.
+- Ví dụ: `feat(auth): add JWT login and refresh token`.
+
+# Quy tắc cho Testing
+- Viết unit test cho Command Handler, Query Handler, Interceptor, và AuthService bằng `@nestjs/testing`.
+- Đảm bảo test kiểm tra định dạng response (bao gồm statusCode, pagination, now).
+- Test AuthService phải kiểm tra login, refresh token, và validateUser.
+
+# Quy tắc cho Performance
+- Tạo index trên Oracle cho các trường thường xuyên truy vấn (e.g., `isDeleted`, `id`, `createTime`, `username`).
+- Sử dụng `findAndCount` của TypeORM để tối ưu query phân trang.
+- Tránh query nặng trong vòng lặp; sử dụng batch processing nếu cần.
+
+# Quy tắc cho Logging
+- Sử dụng `nestjs-pino` hoặc Winston để ghi log request và lỗi.
+- Log phải bao gồm `statusCode`, `method`, `url`, `responseTime`, và user (nếu có).

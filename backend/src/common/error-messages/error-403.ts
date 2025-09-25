@@ -1,0 +1,21 @@
+// ForbiddenException
+export const ERROR_403 = {
+    FORBIDDEN: { message: 'Bạn không có quyền truy cập vào tài nguyên này' },
+    FORBIDDEN_OTP_RESEND: { message: 'Vui lòng chờ trước khi gửi lại OTP' },
+    TREATMENT_ACCESS_DENIED: { message: 'Bạn không có quyền truy cập hồ sơ này' },
+    IDENTITY_ACCESS_DENIED: { message: 'Bạn không có quyền truy cập thông tin này' },
+    FORBIDDEN_OTP_WRONG_OTP: { message: 'Bạn nhập sai OTP, vui lòng kiểm tra lại' },
+    FORBIDDEN_OTP_MAX_PER_DAY: { message: 'Bạn đã gửi quá số lần OTP trong ngày' },
+    FORBIDDEN_OTP_BLACKLISTED: { message: 'Bạn đã bị chặn gửi OTP' },
+    FORBIDDEN_OTP_LOCKED: { message: 'Tài khoản của bạn đã bị khoá' },
+    FORBIDDEN_OTP_WRONG_OTP_COUNT_TODAY: { message: 'Bạn đã nhập sai quá số lần OTP trong ngày. Liên hệ CSKH để được hỗ trợ' },
+    FORBIDDEN_OTP_UNVERIFIED_EXISTED: { message: 'Bạn đã gửi OTP trước đó, vui lòng chờ để gửi lại' },
+    DATA_IS_BEING_PROCESSED: { message: 'Dữ liệu đang được xử lý. Vui lòng chờ hoàn thành trước khi truy cập!' },
+    TREATMENT_NOT_FOUND: { message: 'Không tìm thấy hồ sơ điều trị' },
+    TREATMENT_NOT_FINISHED: { message: 'Hồ sơ điều trị chưa hoàn thiện. Vui lòng quay lại sau!' },
+    DOCUMENT_NOT_FOUND: { message: 'Không tìm thấy tài liệu' },
+    FORBIDDEN_UPDATE_SUPPORT_REQUEST: { message: 'Bạn không có quyền cập nhật thông tin yêu cầu hỗ trợ này' },
+    FORBIDDEN_DELETE_SUPPORT_REQUEST: { message: 'Bạn không có quyền xóa yêu cầu hỗ trợ này' },
+    FORBIDDEN_OTP_SEND_FAILED: { message: 'Gửi OTP tới Zalo và SMS thất bại' },
+    FCM_TOKEN_NOT_FOUND: { message: 'FCM token không tồn tại hoặc đã được hủy' },
+}
