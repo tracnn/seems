@@ -19,15 +19,15 @@ import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
   user: {
-    name: 'Admin User',
-    email: 'admin@example.com',
-    avatar: '/avatars/shadcn.jpg',
+    name: 'SEEMS Admin',
+    email: 'admin@seems.com',
+    avatar: '/avatars/seems-admin.jpg',
   },
   teams: [
     {
-      name: 'My App',
+      name: 'SEEMS System',
       logo: Command,
-      plan: 'Starter Template',
+      plan: 'Healthcare Management',
     },
   ],
   navGroups: [

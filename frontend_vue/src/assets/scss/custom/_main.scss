@@ -1,0 +1,54 @@
+//
+// Custom Main
+//
+// Add your own styles or override existing ones
+//
+// This file is included last, so you have access
+// to all Bootstrap and OneUI functions/mixins/styles etc
+// --------------------------------------------------
+
+// If you have many custom styles, you can create and import additional files
+// For example you can create _component1.scss and include it as follows:
+// @import 'component1';
+
+/* PrimeVue Theme Integration with OneUI */
+/* Điều chỉnh font và khoảng cách dòng cho DataTable của PrimeVue */
+.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-tbody > tr > td {
+  font-size: 14px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+  line-height: 1.4;
+  white-space: normal !important;
+}
+
+/* Thu nhỏ checkbox hoặc nút nếu muốn */
+.p-checkbox .p-checkbox-box {
+  width: 16px;
+  height: 16px;
+}
+
+/* Ensure PrimeVue components inherit OneUI theme colors */
+.p-component {
+  color: inherit;
+}
+
+/* Fix button conflicts between PrimeVue and Bootstrap */
+.p-button:not(.btn) {
+  // Only apply PrimeVue styles when not using Bootstrap btn class
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure proper spacing in forms */
+.p-inputtext {
+  margin-bottom: 0;
+}
+
+/* Fix modal backdrop */
+.p-dialog-mask {
+  background-color: rgba(0, 0, 0, 0.4);
+}

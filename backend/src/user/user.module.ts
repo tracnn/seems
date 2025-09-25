@@ -9,13 +9,11 @@ import { BASE_SCHEMA } from '../constants/common.constant';
 import { CreateUserHandler } from './commands/create-user.handler';
 import { AuthModule } from '../auth/auth.module';
 import { UpdateUserActiveStatusHandler } from './commands/update-user-active-status.handler';
-import { ChangePasswordHandler } from './commands/change-password.handler';
 import { SyncUsersToMeilisearchHandler } from './commands/sync-users-to-meilisearch.handler';
 import { MeilisearchModule } from '../meilisearch/meilisearch.module';
 import { RolePermissionModule } from '../role-permission/role-permission.module';
 
 const CommandHandlers = [
-  ChangePasswordHandler,
   SyncUsersToMeilisearchHandler,
 ];
 

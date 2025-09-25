@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Role-User Filter isActive</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .test-case {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .expected {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .actual {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .code-block {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .status.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .api-test {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .filter-demo {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .filter-item label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .filter-item select, .filter-item input {
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.secondary {
+            background: #6c757d;
+        }
+        .button.secondary:hover {
+            background: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Role-User Filter isActive</h1>
+        <p><strong>Mục đích:</strong> Kiểm tra filter isActive trong RoleUserFilter component hoạt động đúng</p>
+        <p><strong>Ngày test:</strong> <span id="testDate"></span></p>
+    </div>
+
+    <div class="container">
+        <div class="test-section">
+            <h2 class="test-title">📋 Test Cases</h2>
+            
+            <div class="test-case">
+                <h3>Test Case 1: Filter isActive = 1 (Hoạt động)</h3>
+                <p><strong>Mô tả:</strong> Kiểm tra filter chỉ hiển thị role-user có isActive = 1</p>
+                <p><strong>Bước thực hiện:</strong></p>
+                <ol>
+                    <li>Mở trang Role-User Management</li>
+                    <li>Chọn "Hoạt động" trong dropdown Trạng thái</li>
+                    <li>Click "Tìm kiếm"</li>
+                </ol>
+                <p><strong>Kết quả mong đợi:</strong> <span class="expected">Chỉ hiển thị role-user có isActive = 1</span></p>
+                <p><strong>Trạng thái:</strong> <span class="status pending">Chưa test</span></p>
+            </div>
+
+            <div class="test-case">
+                <h3>Test Case 2: Filter isActive = 0 (Không hoạt động)</h3>
+                <p><strong>Mô tả:</strong> Kiểm tra filter chỉ hiển thị role-user có isActive = 0</p>
+                <p><strong>Bước thực hiện:</strong></p>
+                <ol>
+                    <li>Mở trang Role-User Management</li>
+                    <li>Chọn "Không hoạt động" trong dropdown Trạng thái</li>
+                    <li>Click "Tìm kiếm"</li>
+                </ol>
+                <p><strong>Kết quả mong đợi:</strong> <span class="expected">Chỉ hiển thị role-user có isActive = 0</span></p>
+                <p><strong>Trạng thái:</strong> <span class="status pending">Chưa test</span></p>
+            </div>
+
+            <div class="test-case">
+                <h3>Test Case 3: Filter isActive = undefined (Tất cả)</h3>
+                <p><strong>Mô tả:</strong> Kiểm tra filter hiển thị tất cả role-user</p>
+                <p><strong>Bước thực hiện:</strong></p>
+                <ol>
+                    <li>Mở trang Role-User Management</li>
+                    <li>Chọn "Tất cả" trong dropdown Trạng thái</li>
+                    <li>Click "Tìm kiếm"</li>
+                </ol>
+                <p><strong>Kết quả mong đợi:</strong> <span class="expected">Hiển thị tất cả role-user</span></p>
+                <p><strong>Trạng thái:</strong> <span class="status pending">Chưa test</span></p>
+            </div>
+
+            <div class="test-case">
+                <h3>Test Case 4: Clear Filter</h3>
+                <p><strong>Mô tả:</strong> Kiểm tra nút "Làm mới" reset filter isActive</p>
+                <p><strong>Bước thực hiện:</strong></p>
+                <ol>
+                    <li>Chọn filter isActive = 1</li>
+                    <li>Click "Làm mới"</li>
+                </ol>
+                <p><strong>Kết quả mong đợi:</strong> <span class="expected">Filter isActive được reset về "Tất cả"</span></p>
+                <p><strong>Trạng thái:</strong> <span class="status pending">Chưa test</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="test-section">
+            <h2 class="test-title">🔧 Technical Implementation</h2>
+            
+            <div class="test-case">
+                <h3>Frontend Changes</h3>
+                <p><strong>1. RoleUserParams Interface:</strong></p>
+                <div class="code-block">
+export interface RoleUserParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  userId?: number;
+  roleId?: string;
+  isActive?: number;        // ✅ Added
+  sortField?: string;       // ✅ Added
+  sortOrder?: number;       // ✅ Added
+}
+                </div>
+
+                <p><strong>2. fetchData Method:</strong></p>
+                <div class="code-block">
+const fetchData = (page: number, limit: number, search: string) => {
+  const params: RoleUserParams = {
+    page,
+    limit,
+    search: search || undefined,
+    roleId: filterRoleId.value || undefined,
+    userId: filterUserId.value || undefined,
+    isActive: filterIsActive.value  // ✅ Added
+  };
+  
+  roleUserStore.fetchRoleUsers(params);
+};
+                </div>
+
+                <p><strong>3. RoleUserFilter Component:</strong></p>
+                <div class="code-block">
+// Status options
+const statusOptions = [
+  { label: 'Tất cả', value: undefined },
+  { label: 'Hoạt động', value: 1 },
+  { label: 'Không hoạt động', value: 0 }
+];
+
+// Computed property for v-model
+const filterIsActive = computed({
+  get: () => props.filterIsActive,
+  set: (value: number | undefined) => emit('update:filterIsActive', value)
+});
+                </div>
+            </div>
+
+            <div class="test-case">
+                <h3>Backend Support</h3>
+                <p><strong>GetRoleUsersDto:</strong></p>
+                <div class="code-block">
+@ApiProperty({
+    description: 'The status of the role-user',
+    required: false,
+})
+@IsOptional()
+@Transform(({ value }) => parseInt(value))
+@IsNumber()
+@IsNotEmpty()
+isActive: number;  // ✅ Already supported
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="test-section">
+            <h2 class="test-title">🌐 API Testing</h2>
+            
+            <div class="api-test">
+                <h3>Test API Endpoints</h3>
+                <p><strong>Base URL:</strong> <code>http://localhost:7111/admin/role-assignments/user</code></p>
+                
+                <div class="filter-demo">
+                    <div class="filter-item">
+                        <label>isActive Filter:</label>
+                        <select id="isActiveFilter">
+                            <option value="">Tất cả</option>
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Không hoạt động</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Page:</label>
+                        <input type="number" id="pageInput" value="1" min="1">
+                    </div>
+                    <div class="filter-item">
+                        <label>Limit:</label>
+                        <input type="number" id="limitInput" value="10" min="1" max="100">
+                    </div>
+                    <button class="button" onclick="testAPI()">Test API</button>
+                </div>
+                
+                <div id="apiResult" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px; display: none;">
+                    <h4>API Response:</h4>
+                    <pre id="apiResponse"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="test-section">
+            <h2 class="test-title">📊 Test Results</h2>
+            
+            <div class="test-case">
+                <h3>Filter isActive = 1</h3>
+                <p><strong>API Call:</strong> <code>GET /admin/role-assignments/user?isActive=1</code></p>
+                <p><strong>Expected Response:</strong> Role-users with isActive = 1 only</p>
+                <p><strong>Status:</strong> <span class="status pending">Chưa test</span></p>
+            </div>
+
+            <div class="test-case">
+                <h3>Filter isActive = 0</h3>
+                <p><strong>API Call:</strong> <code>GET /admin/role-assignments/user?isActive=0</code></p>
+                <p><strong>Expected Response:</strong> Role-users with isActive = 0 only</p>
+                <p><strong>Status:</strong> <span class="status pending">Chưa test</span></p>
+            </div>
+
+            <div class="test-case">
+                <h3>No Filter (All)</h3>
+                <p><strong>API Call:</strong> <code>GET /admin/role-assignments/user</code></p>
+                <p><strong>Expected Response:</strong> All role-users</p>
+                <p><strong>Status:</strong> <span class="status pending">Chưa test</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="test-section">
+            <h2 class="test-title">🐛 Known Issues & Fixes</h2>
+            
+            <div class="test-case">
+                <h3>Issue: Filter isActive không hoạt động</h3>
+                <p><strong>Nguyên nhân:</strong></p>
+                <ul>
+                    <li>RoleUserParams interface thiếu field isActive</li>
+                    <li>fetchData method không truyền filterIsActive vào params</li>
+                </ul>
+                
+                <p><strong>Giải pháp:</strong></p>
+                <ul>
+                    <li>✅ Thêm isActive?: number vào RoleUserParams</li>
+                    <li>✅ Thêm sortField?: string và sortOrder?: number</li>
+                    <li>✅ Cập nhật fetchData method để sử dụng filterIsActive.value</li>
+                </ul>
+                
+                <p><strong>Trạng thái:</strong> <span class="status pass">Đã fix</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="test-section">
+            <h2 class="test-title">✅ Verification Steps</h2>
+            
+            <div class="test-case">
+                <h3>Manual Testing</h3>
+                <ol>
+                    <li>Mở ứng dụng và đăng nhập</li>
+                    <li>Navigate đến "Vai trò - người dùng"</li>
+                    <li>Kiểm tra dropdown "Trạng thái" có 3 options:
+                        <ul>
+                            <li>Tất cả</li>
+                            <li>Hoạt động</li>
+                            <li>Không hoạt động</li>
+                        </ul>
+                    </li>
+                    <li>Test từng filter option</li>
+                    <li>Kiểm tra nút "Làm mới" reset filter</li>
+                </ol>
+            </div>
+
+            <div class="test-case">
+                <h3>API Testing</h3>
+                <ol>
+                    <li>Mở Developer Tools (F12)</li>
+                    <li>Go to Network tab</li>
+                    <li>Test filter isActive = 1</li>
+                    <li>Kiểm tra API call có parameter isActive=1</li>
+                    <li>Kiểm tra response chỉ chứa role-user có isActive = 1</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set current date
+        document.getElementById('testDate').textContent = new Date().toLocaleDateString('vi-VN');
+
+        // API Testing function
+        async function testAPI() {
+            const isActive = document.getElementById('isActiveFilter').value;
+            const page = document.getElementById('pageInput').value;
+            const limit = document.getElementById('limitInput').value;
+            
+            let url = 'http://localhost:7111/admin/role-assignments/user';
+            const params = new URLSearchParams();
+            
+            if (isActive) params.append('isActive', isActive);
+            if (page) params.append('page', page);
+            if (limit) params.append('limit', limit);
+            
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + (new URLSearchParams(window.location.search).get('token') || 'YOUR_TOKEN_HERE')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('apiResult').style.display = 'block';
+                document.getElementById('apiResponse').textContent = JSON.stringify(data, null, 2);
+                
+                // Check if filter is working
+                if (isActive && data.data) {
+                    const allMatch = data.data.every(item => item.isActive == isActive);
+                    if (allMatch) {
+                        console.log('✅ Filter isActive working correctly');
+                    } else {
+                        console.log('❌ Filter isActive not working correctly');
+                    }
+                }
+                
+            } catch (error) {
+                document.getElementById('apiResult').style.display = 'block';
+                document.getElementById('apiResponse').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Auto-test on page load if token is provided
+        window.addEventListener('load', () => {
+            const token = new URLSearchParams(window.location.search).get('token');
+            if (token) {
+                console.log('Token found, ready for API testing');
+            } else {
+                console.log('No token provided. Add ?token=YOUR_TOKEN to URL for API testing');
+            }
+        });
+    </script>
+</body>
+</html>

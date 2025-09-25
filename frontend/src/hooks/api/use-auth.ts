@@ -13,7 +13,8 @@ export const authKeys = {
  * Hook để lấy thông tin người dùng hiện tại
  */
 export function useCurrentUser() {
-  const { user, isAuthenticated } = useAuthStore()
+  const { auth } = useAuthStore()
+  const { user, isAuthenticated } = auth
   
   return useQuery({
     queryKey: authKeys.currentUser(),
@@ -29,11 +30,11 @@ export function useCurrentUser() {
  */
 export function useLogin() {
   const queryClient = useQueryClient()
-  const { login } = useAuthStore()
+  const { auth } = useAuthStore()
   
   return useMutation({
     mutationFn: async (credentials: LoginRequest): Promise<LoginResponse> => {
-      return await login(credentials)
+      return await auth.login(credentials)
     },
     onSuccess: (data) => {
       // Invalidate và refetch current user
@@ -53,10 +54,10 @@ export function useLogin() {
  */
 export function useLogout() {
   const queryClient = useQueryClient()
-  const { logout } = useAuthStore()
+  const { auth } = useAuthStore()
   
   return useMutation({
-    mutationFn: logout,
+    mutationFn: auth.logout,
     onSuccess: () => {
       // Clear all queries
       queryClient.clear()
@@ -71,10 +72,10 @@ export function useLogout() {
  * Hook để làm mới token
  */
 export function useRefreshToken() {
-  const { refreshAccessToken } = useAuthStore()
+  const { auth } = useAuthStore()
   
   return useMutation({
-    mutationFn: refreshAccessToken,
+    mutationFn: auth.refreshAccessToken,
     onError: (error) => {
       console.error('Token refresh failed:', error)
     },
@@ -130,13 +131,13 @@ export function useResendOtp() {
  */
 export function useGoogleLogin() {
   const queryClient = useQueryClient()
-  const { setTokens, setUser } = useAuthStore()
+  const { auth } = useAuthStore()
   
   return useMutation({
     mutationFn: authService.loginWithGoogle,
     onSuccess: (data) => {
-      setTokens(data.accessToken, data.refreshToken)
-      setUser(data.user)
+      auth.setTokens(data.accessToken, data.refreshToken)
+      auth.setUser(data.user)
       queryClient.setQueryData(authKeys.currentUser(), data.user)
     },
   })
@@ -147,13 +148,13 @@ export function useGoogleLogin() {
  */
 export function useFacebookLogin() {
   const queryClient = useQueryClient()
-  const { setTokens, setUser } = useAuthStore()
+  const { auth } = useAuthStore()
   
   return useMutation({
     mutationFn: authService.loginWithFacebook,
     onSuccess: (data) => {
-      setTokens(data.accessToken, data.refreshToken)
-      setUser(data.user)
+      auth.setTokens(data.accessToken, data.refreshToken)
+      auth.setUser(data.user)
       queryClient.setQueryData(authKeys.currentUser(), data.user)
     },
   })
@@ -164,13 +165,13 @@ export function useFacebookLogin() {
  */
 export function useGitHubLogin() {
   const queryClient = useQueryClient()
-  const { setTokens, setUser } = useAuthStore()
+  const { auth } = useAuthStore()
   
   return useMutation({
     mutationFn: authService.loginWithGitHub,
     onSuccess: (data) => {
-      setTokens(data.accessToken, data.refreshToken)
-      setUser(data.user)
+      auth.setTokens(data.accessToken, data.refreshToken)
+      auth.setUser(data.user)
       queryClient.setQueryData(authKeys.currentUser(), data.user)
     },
   })

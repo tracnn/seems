@@ -7,7 +7,6 @@ import { GetUsersDto } from './dto/get-users.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
-import { ChangePasswordDto } from './dto/change-password.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -20,7 +19,7 @@ export class UserController {
     @ApiOperation({ summary: 'Create new user' })
     @ApiResponse({ status: 201, description: 'User created successfully', type: UserResponseDto })
     @ApiResponse({ status: 400, description: 'Bad request' })
-    @Post('create')
+    @Post()
     async create(@Body() createUserDto: CreateUserDto): Promise<User> {
         return await this.service.create(createUserDto);
     }
@@ -52,15 +51,5 @@ export class UserController {
         // TODO: Implement delete user
         //return await this.service.deleteUser(id);
         return [];
-    }
-
-    @ApiBearerAuth('access-token')
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({ summary: 'Change password' })
-    @ApiResponse({ status: 201, description: 'Password changed successfully' })
-    @ApiResponse({ status: 400, description: 'Bad request' })
-    @Post('change-password')
-    async changePassword(@Req() req: any, @Body() body: ChangePasswordDto) {
-        return await this.service.changePassword(req.user.userId, body);
     }
 }

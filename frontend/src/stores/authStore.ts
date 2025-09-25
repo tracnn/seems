@@ -141,7 +141,6 @@ export const useAuthStore = create<AuthState>()((set, get) => {
           await authService.logout()
         } catch (error) {
           // Continue with logout even if API call fails
-          console.error('Logout API call failed:', error)
         } finally {
           // Clear state and cookies
           set((state) => ({

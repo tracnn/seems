@@ -1,0 +1,8 @@
+slot_date,clinic_code,doctor_code,service_code,morning,afternoon,evening
+2024-01-15,PKTL,ttmp,KTL,x,x,x
+2024-01-15,PKTL,pnd,KTL,x,,x
+2024-01-15,PKTL1,pvc4,KTL,,x,x
+2024-01-15,PKTL2,tts1,KTL,x,x,
+2024-01-16,PKTL,nttm2,KTL,x,x,x
+2024-01-16,PKTL1,ntmm4,KTL,,x,
+2024-01-16,PKTL2,nn0,KTL,x,,x

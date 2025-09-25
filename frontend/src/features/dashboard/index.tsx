@@ -69,7 +69,7 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle>UI Components</CardTitle>
               <CardDescription>
-                Beautiful shadcn/ui components with dark mode support
+                Beautiful UI components with dark mode support for healthcare management
               </CardDescription>
             </CardHeader>
             <CardContent>

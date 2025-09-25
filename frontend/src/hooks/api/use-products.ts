@@ -2,10 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { productService } from '@/api/services'
 import type { 
   Product, 
-  CreateProductRequest, 
   UpdateProductRequest,
-  QueryParams,
-  PaginatedResponse 
+  QueryParams
 } from '@/api/types'
 
 // Query keys

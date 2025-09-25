@@ -16,11 +16,16 @@ import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
+import { Route as authTestUserInfoRouteImport } from './routes/(auth)/test-user-info'
+import { Route as authTestLoginRouteImport } from './routes/(auth)/test-login'
+import { Route as authTestFullnameRouteImport } from './routes/(auth)/test-fullname'
 import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
 import { Route as authSignIn2RouteImport } from './routes/(auth)/sign-in-2'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authOtpRouteImport } from './routes/(auth)/otp'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as authDebugLoginRouteImport } from './routes/(auth)/debug-login'
+import { Route as authDebugFullnameRouteImport } from './routes/(auth)/debug-fullname'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings/notifications'
@@ -62,6 +67,21 @@ const errors401Route = errors401RouteImport.update({
   path: '/401',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authTestUserInfoRoute = authTestUserInfoRouteImport.update({
+  id: '/(auth)/test-user-info',
+  path: '/test-user-info',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authTestLoginRoute = authTestLoginRouteImport.update({
+  id: '/(auth)/test-login',
+  path: '/test-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authTestFullnameRoute = authTestFullnameRouteImport.update({
+  id: '/(auth)/test-fullname',
+  path: '/test-fullname',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authSignUpRoute = authSignUpRouteImport.update({
   id: '/(auth)/sign-up',
   path: '/sign-up',
@@ -85,6 +105,16 @@ const authOtpRoute = authOtpRouteImport.update({
 const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   id: '/(auth)/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authDebugLoginRoute = authDebugLoginRouteImport.update({
+  id: '/(auth)/debug-login',
+  path: '/debug-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authDebugFullnameRoute = authDebugFullnameRouteImport.update({
+  id: '/(auth)/debug-fullname',
+  path: '/debug-fullname',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSettingsRouteRoute =
@@ -126,11 +156,16 @@ const AuthenticatedSettingsAccountRoute =
 
 export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
+  '/debug-fullname': typeof authDebugFullnameRoute
+  '/debug-login': typeof authDebugLoginRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
   '/sign-in-2': typeof authSignIn2Route
   '/sign-up': typeof authSignUpRoute
+  '/test-fullname': typeof authTestFullnameRoute
+  '/test-login': typeof authTestLoginRoute
+  '/test-user-info': typeof authTestUserInfoRoute
   '/401': typeof errors401Route
   '/403': typeof errors403Route
   '/404': typeof errors404Route
@@ -144,11 +179,16 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/debug-fullname': typeof authDebugFullnameRoute
+  '/debug-login': typeof authDebugLoginRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/otp': typeof authOtpRoute
   '/sign-in': typeof authSignInRoute
   '/sign-in-2': typeof authSignIn2Route
   '/sign-up': typeof authSignUpRoute
+  '/test-fullname': typeof authTestFullnameRoute
+  '/test-login': typeof authTestLoginRoute
+  '/test-user-info': typeof authTestUserInfoRoute
   '/401': typeof errors401Route
   '/403': typeof errors403Route
   '/404': typeof errors404Route
@@ -165,11 +205,16 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
+  '/(auth)/debug-fullname': typeof authDebugFullnameRoute
+  '/(auth)/debug-login': typeof authDebugLoginRoute
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/otp': typeof authOtpRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-in-2': typeof authSignIn2Route
   '/(auth)/sign-up': typeof authSignUpRoute
+  '/(auth)/test-fullname': typeof authTestFullnameRoute
+  '/(auth)/test-login': typeof authTestLoginRoute
+  '/(auth)/test-user-info': typeof authTestUserInfoRoute
   '/(errors)/401': typeof errors401Route
   '/(errors)/403': typeof errors403Route
   '/(errors)/404': typeof errors404Route
@@ -186,11 +231,16 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/settings'
+    | '/debug-fullname'
+    | '/debug-login'
     | '/forgot-password'
     | '/otp'
     | '/sign-in'
     | '/sign-in-2'
     | '/sign-up'
+    | '/test-fullname'
+    | '/test-login'
+    | '/test-user-info'
     | '/401'
     | '/403'
     | '/404'
@@ -204,11 +254,16 @@ export interface FileRouteTypes {
     | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/debug-fullname'
+    | '/debug-login'
     | '/forgot-password'
     | '/otp'
     | '/sign-in'
     | '/sign-in-2'
     | '/sign-up'
+    | '/test-fullname'
+    | '/test-login'
+    | '/test-user-info'
     | '/401'
     | '/403'
     | '/404'
@@ -224,11 +279,16 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/_authenticated/settings'
+    | '/(auth)/debug-fullname'
+    | '/(auth)/debug-login'
     | '/(auth)/forgot-password'
     | '/(auth)/otp'
     | '/(auth)/sign-in'
     | '/(auth)/sign-in-2'
     | '/(auth)/sign-up'
+    | '/(auth)/test-fullname'
+    | '/(auth)/test-login'
+    | '/(auth)/test-user-info'
     | '/(errors)/401'
     | '/(errors)/403'
     | '/(errors)/404'
@@ -244,11 +304,16 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  authDebugFullnameRoute: typeof authDebugFullnameRoute
+  authDebugLoginRoute: typeof authDebugLoginRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authOtpRoute: typeof authOtpRoute
   authSignInRoute: typeof authSignInRoute
   authSignIn2Route: typeof authSignIn2Route
   authSignUpRoute: typeof authSignUpRoute
+  authTestFullnameRoute: typeof authTestFullnameRoute
+  authTestLoginRoute: typeof authTestLoginRoute
+  authTestUserInfoRoute: typeof authTestUserInfoRoute
   errors401Route: typeof errors401Route
   errors403Route: typeof errors403Route
   errors404Route: typeof errors404Route
@@ -307,6 +372,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof errors401RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/test-user-info': {
+      id: '/(auth)/test-user-info'
+      path: '/test-user-info'
+      fullPath: '/test-user-info'
+      preLoaderRoute: typeof authTestUserInfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/test-login': {
+      id: '/(auth)/test-login'
+      path: '/test-login'
+      fullPath: '/test-login'
+      preLoaderRoute: typeof authTestLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/test-fullname': {
+      id: '/(auth)/test-fullname'
+      path: '/test-fullname'
+      fullPath: '/test-fullname'
+      preLoaderRoute: typeof authTestFullnameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth)/sign-up': {
       id: '/(auth)/sign-up'
       path: '/sign-up'
@@ -340,6 +426,20 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof authForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/debug-login': {
+      id: '/(auth)/debug-login'
+      path: '/debug-login'
+      fullPath: '/debug-login'
+      preLoaderRoute: typeof authDebugLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/debug-fullname': {
+      id: '/(auth)/debug-fullname'
+      path: '/debug-fullname'
+      fullPath: '/debug-fullname'
+      preLoaderRoute: typeof authDebugFullnameRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/settings': {
@@ -425,11 +525,16 @@ const AuthenticatedRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  authDebugFullnameRoute: authDebugFullnameRoute,
+  authDebugLoginRoute: authDebugLoginRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authOtpRoute: authOtpRoute,
   authSignInRoute: authSignInRoute,
   authSignIn2Route: authSignIn2Route,
   authSignUpRoute: authSignUpRoute,
+  authTestFullnameRoute: authTestFullnameRoute,
+  authTestLoginRoute: authTestLoginRoute,
+  authTestUserInfoRoute: authTestUserInfoRoute,
   errors401Route: errors401Route,
   errors403Route: errors403Route,
   errors404Route: errors404Route,

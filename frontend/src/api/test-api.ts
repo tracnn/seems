@@ -11,7 +11,7 @@ export const testApiStructure = {
   // Test Auth API
   async testAuth() {
     const loginData: LoginRequest = {
-      email: 'test@example.com',
+      username: 'test',
       password: 'password123'
     }
     

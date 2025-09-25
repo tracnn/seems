@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Import Component</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Import Component</h1>
+        
+        <div class="test-section">
+            <h3>1. Test File Selection</h3>
+            <input type="file" id="fileInput" accept=".xlsx,.xls">
+            <button onclick="testFileSelection()">Test File Selection</button>
+            <div id="fileResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. Test FormData Creation</h3>
+            <button onclick="testFormData()">Test FormData Creation</button>
+            <div id="formDataResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. Test API Call</h3>
+            <input type="text" id="authToken" placeholder="Bearer your-token-here" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+            <button onclick="testApiCall()">Test API Call</button>
+            <div id="apiResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. Test Complete Flow</h3>
+            <button onclick="testCompleteFlow()">Test Complete Flow</button>
+            <div id="completeResult" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function testFileSelection() {
+            const fileInput = document.getElementById('fileInput');
+            const result = document.getElementById('fileResult');
+            
+            const file = fileInput.files[0];
+            if (!file) {
+                showResult('fileResult', 'Vui lòng chọn file Excel!', 'error');
+                return;
+            }
+            
+            console.log('File selected:', file);
+            console.log('File name:', file.name);
+            console.log('File type:', file.type);
+            console.log('File size:', file.size);
+            
+            // Validate file type
+            const allowedTypes = [
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-excel'
+            ];
+            
+            if (!allowedTypes.includes(file.type)) {
+                showResult('fileResult', `File type không hợp lệ: ${file.type}`, 'error');
+                return;
+            }
+            
+            // Validate file size
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.size > maxSize) {
+                showResult('fileResult', `File quá lớn: ${file.size} bytes`, 'error');
+                return;
+            }
+            
+            showResult('fileResult', `File hợp lệ: ${file.name} (${file.type}, ${file.size} bytes)`, 'success');
+        }
+        
+        function testFormData() {
+            const fileInput = document.getElementById('fileInput');
+            const result = document.getElementById('formDataResult');
+            
+            const file = fileInput.files[0];
+            if (!file) {
+                showResult('formDataResult', 'Vui lòng chọn file trước!', 'error');
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                console.log('FormData created');
+                console.log('FormData entries:');
+                for (let [key, value] of formData.entries()) {
+                    console.log(key, value);
+                }
+                
+                showResult('formDataResult', 'FormData tạo thành công!', 'success');
+            } catch (error) {
+                console.error('FormData error:', error);
+                showResult('formDataResult', `Lỗi tạo FormData: ${error.message}`, 'error');
+            }
+        }
+        
+        function testApiCall() {
+            const fileInput = document.getElementById('fileInput');
+            const authToken = document.getElementById('authToken');
+            const result = document.getElementById('apiResult');
+            
+            const file = fileInput.files[0];
+            const token = authToken.value.trim();
+            
+            if (!file) {
+                showResult('apiResult', 'Vui lòng chọn file trước!', 'error');
+                return;
+            }
+            
+            if (!token) {
+                showResult('apiResult', 'Vui lòng nhập Authorization Token!', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            showResult('apiResult', 'Đang gọi API...', 'info');
+            
+            fetch('https://patienthub.bachmai.gov.vn/admin/appointment-slots/import', {
+                method: 'POST',
+                headers: {
+                    'Authorization': token
+                },
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                showResult('apiResult', `API Response: ${JSON.stringify(data, null, 2)}`, 'success');
+            })
+            .catch(error => {
+                console.error('API Error:', error);
+                showResult('apiResult', `API Error: ${error.message}`, 'error');
+            });
+        }
+        
+        function testCompleteFlow() {
+            const fileInput = document.getElementById('fileInput');
+            const authToken = document.getElementById('authToken');
+            const result = document.getElementById('completeResult');
+            
+            const file = fileInput.files[0];
+            const token = authToken.value.trim();
+            
+            if (!file) {
+                showResult('completeResult', 'Vui lòng chọn file trước!', 'error');
+                return;
+            }
+            
+            if (!token) {
+                showResult('completeResult', 'Vui lòng nhập Authorization Token!', 'error');
+                return;
+            }
+            
+            console.log('Starting complete flow test...');
+            showResult('completeResult', 'Bắt đầu test complete flow...', 'info');
+            
+            // Step 1: File validation
+            const allowedTypes = [
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-excel'
+            ];
+            
+            if (!allowedTypes.includes(file.type)) {
+                showResult('completeResult', `File type không hợp lệ: ${file.type}`, 'error');
+                return;
+            }
+            
+            const maxSize = 10 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showResult('completeResult', `File quá lớn: ${file.size} bytes`, 'error');
+                return;
+            }
+            
+            console.log('File validation passed');
+            
+            // Step 2: Create FormData
+            const formData = new FormData();
+            formData.append('file', file);
+            console.log('FormData created');
+            
+            // Step 3: API call
+            fetch('https://patienthub.bachmai.gov.vn/admin/appointment-slots/import', {
+                method: 'POST',
+                headers: {
+                    'Authorization': token
+                },
+                body: formData
+            })
+            .then(response => {
+                console.log('API Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('API Response data:', data);
+                showResult('completeResult', `Complete flow thành công! Response: ${JSON.stringify(data, null, 2)}`, 'success');
+            })
+            .catch(error => {
+                console.error('Complete flow error:', error);
+                showResult('completeResult', `Complete flow lỗi: ${error.message}`, 'error');
+            });
+        }
+        
+        function showResult(elementId, message, type) {
+            const result = document.getElementById(elementId);
+            result.textContent = message;
+            result.className = `result ${type}`;
+            result.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

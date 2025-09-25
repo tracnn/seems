@@ -42,7 +42,8 @@ export class AuthController {
         const payload = { 
             sub: user.id, 
             type: USER_TYPE.USER,
-            username: user.username, 
+            username: user.username,
+            fullName: user.fullName,
             userAgent,
         };
         const accessToken = await this.authService['jwtService'].signAsync(payload, {

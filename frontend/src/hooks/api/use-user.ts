@@ -2,11 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { userService } from '@/api/services'
 import type { 
   User, 
-  CreateUserRequest, 
   UpdateUserRequest, 
-  ChangePasswordRequest,
-  QueryParams,
-  PaginatedResponse 
+  QueryParams
 } from '@/api/types'
 
 // Query keys

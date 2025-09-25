@@ -3,7 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { QueryBus } from '@nestjs/cqrs';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetUsersDto } from './dto/get-users.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class UserService {
@@ -20,11 +19,6 @@ export class UserService {
     }
 
     async findOne(id: string) {
-        return [];
-    }
-
-
-    async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
         return [];
     }
 

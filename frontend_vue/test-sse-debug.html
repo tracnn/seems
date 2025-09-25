@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .log {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .error {
+            background-color: #ffe6e6;
+            border-color: #ff9999;
+        }
+        .success {
+            background-color: #e6ffe6;
+            border-color: #99ff99;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .connect {
+            background-color: #007bff;
+            color: white;
+        }
+        .disconnect {
+            background-color: #dc3545;
+            color: white;
+        }
+        .test {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>SSE Debug Test</h1>
+    
+    <div>
+        <label for="token">Access Token:</label><br>
+        <input type="text" id="token" style="width: 100%; padding: 8px; margin: 5px 0;" placeholder="Enter your JWT token">
+    </div>
+    
+    <div>
+        <button class="connect" onclick="connectSSE()">Connect SSE</button>
+        <button class="disconnect" onclick="disconnectSSE()">Disconnect SSE</button>
+        <button class="test" onclick="testSSE()">Test SSE</button>
+    </div>
+    
+    <div id="status" class="log">Ready to connect...</div>
+    
+    <div id="logs"></div>
+
+    <script>
+        let abortController = null;
+        let isConnected = false;
+
+        function log(message, type = 'info') {
+            const logsEl = document.getElementById('logs');
+            const logEl = document.createElement('div');
+            logEl.className = `log ${type}`;
+            logEl.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            logsEl.insertBefore(logEl, logsEl.firstChild);
+            console.log(message);
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.className = `log ${type}`;
+            statusEl.textContent = message;
+        }
+
+        function connectSSE() {
+            const token = document.getElementById('token').value.trim();
+            if (!token) {
+                log('Please enter a token', 'error');
+                return;
+            }
+
+            if (abortController) {
+                disconnectSSE();
+            }
+
+            const url = 'http://localhost:7111/sse/me';
+            log(`Connecting to SSE: ${url}`);
+            log(`Using token: ${token.substring(0, 20)}...`);
+            
+            try {
+                abortController = new AbortController();
+                
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'text/event-stream',
+                        'Cache-Control': 'no-cache'
+                    },
+                    signal: abortController.signal
+                }).then(response => {
+                    log(`SSE fetch response: ${response.status} ${response.statusText}`);
+                    log(`Response headers: ${JSON.stringify([...response.headers.entries()])}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    isConnected = true;
+                    updateStatus('SSE connection opened successfully', 'success');
+                    log('SSE connection opened successfully', 'success');
+                    
+                    const reader = response.body?.getReader();
+                    if (!reader) {
+                        throw new Error('No response body reader available');
+                    }
+                    
+                    const decoder = new TextDecoder();
+                    
+                    function readStream() {
+                        return reader.read().then(({ done, value }) => {
+                            if (done) {
+                                log('SSE stream ended');
+                                isConnected = false;
+                                updateStatus('SSE stream ended', 'error');
+                                return;
+                            }
+                            
+                            const chunk = decoder.decode(value, { stream: true });
+                            log(`SSE chunk received: ${chunk}`);
+                            const lines = chunk.split('\n');
+                            log(`SSE lines: ${JSON.stringify(lines)}`);
+                            
+                            for (const line of lines) {
+                                log(`Processing SSE line: ${line}`);
+                                if (line.startsWith('data: ')) {
+                                    const data = line.slice(6);
+                                    log(`SSE data extracted: ${data}`);
+                                    if (data.trim()) {
+                                        try {
+                                            const parsedData = JSON.parse(data);
+                                            log(`SSE data parsed: ${JSON.stringify(parsedData)}`, 'success');
+                                            
+                                            // Check if it's import progress data
+                                            if (parsedData.data?.event === 'IMPORT_APPOINTMENT_SLOT') {
+                                                const progressData = parsedData.data.data;
+                                                log(`Import progress: ${progressData.phase} - ${progressData.message}`, 'success');
+                                                if (progressData.inserted && progressData.total) {
+                                                    log(`Progress: ${progressData.inserted}/${progressData.total} (${Math.round(progressData.inserted/progressData.total*100)}%)`, 'success');
+                                                }
+                                            }
+                                        } catch (parseError) {
+                                            log(`Error parsing SSE data: ${parseError.message}`, 'error');
+                                            log(`Raw data that failed to parse: ${data}`, 'error');
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            return readStream();
+                        }).catch(err => {
+                            if (err.name !== 'AbortError') {
+                                log(`SSE stream error: ${err.message}`, 'error');
+                                isConnected = false;
+                                updateStatus(`SSE stream error: ${err.message}`, 'error');
+                            }
+                        });
+                    }
+                    
+                    readStream();
+                    
+                }).catch(err => {
+                    log(`SSE fetch error: ${err.message}`, 'error');
+                    if (err.name !== 'AbortError') {
+                        isConnected = false;
+                        updateStatus(`SSE connection error: ${err.message}`, 'error');
+                    }
+                });
+
+            } catch (err) {
+                log(`Failed to create SSE connection: ${err.message}`, 'error');
+                updateStatus(`Failed to create SSE connection: ${err.message}`, 'error');
+            }
+        }
+
+        function disconnectSSE() {
+            if (abortController) {
+                abortController.abort();
+                abortController = null;
+            }
+            
+            isConnected = false;
+            updateStatus('SSE connection closed', 'info');
+            log('SSE connection closed');
+        }
+
+        function testSSE() {
+            const token = document.getElementById('token').value.trim();
+            if (!token) {
+                log('Please enter a token', 'error');
+                return;
+            }
+
+            // Test the SSE test endpoint
+            fetch('http://localhost:7111/sse/test', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    log('SSE test message sent successfully', 'success');
+                } else {
+                    log(`Test failed: ${response.status} ${response.statusText}`, 'error');
+                }
+            }).catch(err => {
+                log(`Test error: ${err.message}`, 'error');
+            });
+        }
+    </script>
+</body>
+</html>

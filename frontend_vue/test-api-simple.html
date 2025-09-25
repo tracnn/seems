@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Satisfaction Survey API</title>
+</head>
+<body>
+    <h1>Test Satisfaction Survey API</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('http://localhost:7111/admin/satisfaction-survey?page=1&limit=5', {
+                    method: 'GET',
+                    headers: {
+                        'accept': '*/*',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE0ODc0LCJ1c2VybmFtZSI6InRyYWNubiIsImZ1bGxuYW1lIjoiTmd1eeG7hW4gTmfhu41jIFRyw6FjIiwiZW1haWwiOiJ0cmFjbm4yMDAyMTk3OUBnbWFpbC5jb20iLCJ0eXBlIjoiU1RBRkYiLCJ0b2tlbkNvZGUiOiIxOGVjY2I1YjZkODljYzE0YzgxNjVhZTI2YzQ4MDgwZjU2OGYxYTljOWU3MThjMjE2ZjZjMzc2NWU3NGJhZmE5IiwiaWF0IjoxNzU3NTUyMjE1LCJleHAiOjE3NTc1NTU4MTV9.mYuEDhGdcc-2h_V-DKkrBqVrV-fCzWpspQnlRM5xKj0'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <h2>✅ API Working!</h2>
+                        <p>Found ${data.data.length} surveys</p>
+                        <p>Total: ${data.pagination.total}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h2>❌ API Error</h2>
+                        <p>Status: ${response.status}</p>
+                        <p>Status Text: ${response.statusText}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <h2>❌ Connection Error</h2>
+                    <p>Error: ${error.message}</p>
+                    <p>Make sure backend is running on port 7111</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

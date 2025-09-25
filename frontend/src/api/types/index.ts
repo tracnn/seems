@@ -14,6 +14,7 @@ export interface User extends BaseEntity {
   email: string
   firstName?: string
   lastName?: string
+  fullName?: string
   phone?: string
   avatar?: string
   role: string[]
@@ -45,7 +46,7 @@ export interface ChangePasswordRequest {
 
 // Auth Types
 export interface LoginRequest {
-  email: string
+  username: string
   password: string
   rememberMe?: boolean
 }

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Permission Management API</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .api-result {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .success {
+            color: #198754;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Test Permission Management API</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>API Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="baseUrl" class="form-label">Base URL:</label>
+                            <input type="text" class="form-control" id="baseUrl" value="http://localhost:7111">
+                        </div>
+                        <div class="mb-3">
+                            <label for="token" class="form-label">Bearer Token:</label>
+                            <textarea class="form-control" id="token" rows="3" placeholder="Nhập Bearer token..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>API Tests</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary mb-2" onclick="testPermissionRoleAPI()">
+                            Test Permission-Role API
+                        </button>
+                        <br>
+                        <button class="btn btn-secondary mb-2" onclick="testPermissionsAPI()">
+                            Test Permissions API
+                        </button>
+                        <br>
+                        <button class="btn btn-info mb-2" onclick="testRolesAPI()">
+                            Test Roles API
+                        </button>
+                        <br>
+                        <button class="btn btn-warning" onclick="clearResults()">
+                            Clear Results
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>API Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="results" class="api-result" style="display: none;"></div>
+                        <div id="loading" class="text-center" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getBaseUrl() {
+            return document.getElementById('baseUrl').value;
+        }
+        
+        function getToken() {
+            return document.getElementById('token').value.trim();
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        function showResults(data, isError = false) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            resultsDiv.className = `api-result ${isError ? 'error' : 'success'}`;
+            resultsDiv.textContent = JSON.stringify(data, null, 2);
+        }
+        
+        async function testPermissionRoleAPI() {
+            const token = getToken();
+            if (!token) {
+                alert('Vui lòng nhập Bearer token');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`${getBaseUrl()}/permission-assignments/role?page=1&limit=10`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': '*/*',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data);
+                } else {
+                    showResults(data, true);
+                }
+            } catch (error) {
+                showResults({ error: error.message }, true);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        async function testPermissionsAPI() {
+            const token = getToken();
+            if (!token) {
+                alert('Vui lòng nhập Bearer token');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`${getBaseUrl()}/permissions?page=1&limit=10`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': '*/*',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data);
+                } else {
+                    showResults(data, true);
+                }
+            } catch (error) {
+                showResults({ error: error.message }, true);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        async function testRolesAPI() {
+            const token = getToken();
+            if (!token) {
+                alert('Vui lòng nhập Bearer token');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`${getBaseUrl()}/roles?page=1&limit=10`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': '*/*',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data);
+                } else {
+                    showResults(data, true);
+                }
+            } catch (error) {
+                showResults({ error: error.message }, true);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        // Auto-fill token from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenParam = urlParams.get('token');
+        if (tokenParam) {
+            document.getElementById('token').value = tokenParam;
+        }
+    </script>
+</body>
+</html>

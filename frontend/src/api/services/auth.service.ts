@@ -5,17 +5,34 @@ import type {
   RefreshTokenResponse,
   ApiResponse,
 } from '../types'
+import { extractUserFromToken } from '@/utils/jwt'
 
 export const authService = {
   /**
    * Đăng nhập người dùng
    */
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post<ApiResponse<LoginResponse>>(
+    const response = await apiClient.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
       '/auth/login',
       credentials
     )
-    return response.data.data
+    
+    // API trả về format: { data: { accessToken, refreshToken }, pagination: null, status: 201, message: "Success", now: "..." }
+    const { accessToken, refreshToken } = response.data.data
+    
+    // Extract user information from JWT token
+    const user = extractUserFromToken(accessToken)
+    
+    if (!user) {
+      throw new Error('Invalid token received from server')
+    }
+    
+    return {
+      user,
+      accessToken,
+      refreshToken,
+      expiresIn: 900, // 15 minutes
+    }
   },
 
   /**

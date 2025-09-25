@@ -7,6 +7,6 @@ export class RoleUser extends BaseEntity {
     @Column({ name: 'ROLE_ID', length: 36 })
     roleId: string;
 
-    @Column({ name: 'USER_ID' })
-    userId: number;
+    @Column({ name: 'USER_ID', length: 36 })
+    userId: string;
 }

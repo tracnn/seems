@@ -8,8 +8,8 @@ export class PermissionUser extends BaseEntity {
     @Column({ name: 'PERMISSION_ID', length: 36 })
     permissionId: string;
 
-    @Column({ name: 'USER_ID' })
-    userId: number;
+    @Column({ name: 'USER_ID', length: 36 })
+    userId: string;
 
     @ManyToOne(() => Permission)
     @JoinColumn({ name: 'PERMISSION_ID' })

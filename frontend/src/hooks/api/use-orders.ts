@@ -1,11 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { orderService } from '@/api/services'
 import type { 
-  Order, 
-  CreateOrderRequest, 
   UpdateOrderRequest,
-  QueryParams,
-  PaginatedResponse 
+  QueryParams
 } from '@/api/types'
 
 // Query keys

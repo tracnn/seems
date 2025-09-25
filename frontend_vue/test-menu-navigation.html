@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Menu Navigation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .menu-structure {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .menu-item {
+            margin: 5px 0;
+            padding: 5px 10px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .menu-item.sub {
+            margin-left: 20px;
+            border-left-color: #28a745;
+        }
+        .menu-item.sub-sub {
+            margin-left: 40px;
+            border-left-color: #ffc107;
+        }
+        .icon {
+            color: #6c757d;
+            margin-right: 8px;
+        }
+        .permission {
+            color: #dc3545;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .route {
+            color: #007bff;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧭 Test Menu Navigation</h1>
+        <p>Kiểm tra cấu trúc menu và navigation cho Role-User Management</p>
+    </div>
+
+    <div class="container">
+        <h2>📋 Cấu trúc Menu Đã Cập Nhật</h2>
+        
+        <div class="success">
+            ✅ <strong>Menu đã được cập nhật thành công!</strong><br>
+            Menu "Vai trò - người dùng" đã được thêm vào sub-menu "Quản trị hệ thống"
+        </div>
+
+        <div class="menu-structure">
+            <h3>🏗️ Cấu trúc Menu Hiện Tại</h3>
+            
+            <div class="menu-item">
+                <span class="icon">🏠</span>
+                <strong>Dashboard</strong>
+                <span class="route">→ backend-dashboard</span>
+            </div>
+            
+            <div class="menu-item">
+                <span class="icon">📅</span>
+                <strong>Quản lý App bệnh nhân</strong>
+                <span class="permission">(access_menu_appointment)</span>
+                <div class="menu-item sub">
+                    <strong>Danh mục</strong>
+                    <div class="menu-item sub-sub">
+                        <span class="icon">🏥</span>
+                        <strong>Chuyên khoa</strong>
+                        <span class="route">→ backend-specialties</span>
+                    </div>
+                    <div class="menu-item sub-sub">
+                        <span class="icon">👨‍⚕️</span>
+                        <strong>Chức danh</strong>
+                        <span class="route">→ backend-title</span>
+                    </div>
+                    <div class="menu-item sub-sub">
+                        <span class="icon">👨‍⚕️</span>
+                        <strong>Chức danh - Bác sĩ</strong>
+                        <span class="route">→ backend-doctor-title</span>
+                    </div>
+                    <div class="menu-item sub-sub">
+                        <span class="icon">🏥</span>
+                        <strong>PK - Chuyên khoa</strong>
+                        <span class="route">→ backend-clinic-specialty</span>
+                    </div>
+                    <div class="menu-item sub-sub">
+                        <span class="icon">👥</span>
+                        <strong>Người dùng</strong>
+                        <span class="route">→ backend-users</span>
+                        <span class="permission">(access_menu_user)</span>
+                    </div>
+                </div>
+                <div class="menu-item sub">
+                    <strong>Quản lý lịch khám</strong>
+                    <span class="route">→ backend-appointment-slots</span>
+                </div>
+                <div class="menu-item sub">
+                    <strong>Quản lý BN đặt lịch</strong>
+                    <span class="route">→ backend-appointment-management</span>
+                </div>
+                <div class="menu-item sub">
+                    <strong>Import lịch khám (Excel)</strong>
+                    <span class="route">→ backend-import-appointment-slots</span>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <span class="icon">📅</span>
+                <strong>Quản lý xếp hàng</strong>
+                <span class="permission">(access_menu_queue)</span>
+                <div class="menu-item sub">
+                    <strong>Danh mục</strong>
+                    <div class="menu-item sub-sub">
+                        <strong>Phòng xếp số</strong>
+                        <span class="route">→ backend-queue-room</span>
+                    </div>
+                    <div class="menu-item sub-sub">
+                        <strong>Phòng xếp số - Thực hiện</strong>
+                        <span class="route">→ backend-queue-clinic-room</span>
+                    </div>
+                </div>
+                <div class="menu-item sub">
+                    <strong>Quản lý xếp hàng</strong>
+                    <span class="route">→ backend-queue-ticket</span>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <span class="icon">⭐</span>
+                <strong>Khảo sát hài lòng</strong>
+                <span class="route">→ backend-satisfaction-survey</span>
+                <span class="permission">(access_menu_survey)</span>
+            </div>
+            
+            <div class="menu-item">
+                <span class="icon">⚙️</span>
+                <strong>Quản trị hệ thống</strong>
+                <span class="permission">(access_menu_super_admin)</span>
+                <div class="menu-item sub">
+                    <span class="icon">🛡️</span>
+                    <strong>Phân quyền - vai trò</strong>
+                    <span class="route">→ backend-permission-role</span>
+                    <span class="permission">(access_menu_super_admin)</span>
+                </div>
+                <div class="menu-item sub">
+                    <span class="icon">👥</span>
+                    <strong>Vai trò - người dùng</strong>
+                    <span class="route">→ backend-role-user</span>
+                    <span class="permission">(access_menu_super_admin)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔧 Thay đổi Đã Thực Hiện</h2>
+        
+        <div class="info">
+            <h3>📝 File đã cập nhật:</h3>
+            <ul>
+                <li><strong>frontend/src/data/menu.ts</strong> - Thêm menu item "Vai trò - người dùng"</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <h3>🎯 Chi tiết thay đổi:</h3>
+            <ul>
+                <li>✅ Thêm menu item "Vai trò - người dùng" vào sub-menu "Quản trị hệ thống"</li>
+                <li>✅ Route: <code>backend-role-user</code></li>
+                <li>✅ Icon: <code>si si-users</code></li>
+                <li>✅ Permission: <code>access_menu_super_admin</code></li>
+                <li>✅ Thêm icon cho menu "Phân quyền - vai trò" để đồng nhất</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🧪 Cách Test Menu</h2>
+        
+        <div class="info">
+            <h3>1. Kiểm tra Menu hiển thị:</h3>
+            <ol>
+                <li>Đăng nhập với user có quyền <code>access_menu_super_admin</code></li>
+                <li>Kiểm tra sidebar menu</li>
+                <li>Mở rộng menu "Quản trị hệ thống"</li>
+                <li>Xác nhận có 2 sub-menu items:
+                    <ul>
+                        <li>🛡️ Phân quyền - vai trò</li>
+                        <li>👥 Vai trò - người dùng</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="info">
+            <h3>2. Kiểm tra Navigation:</h3>
+            <ol>
+                <li>Click vào menu "Vai trò - người dùng"</li>
+                <li>Xác nhận chuyển đến route <code>/backend/role-user</code></li>
+                <li>Xác nhận component <code>RoleUserManagement.vue</code> được load</li>
+                <li>Kiểm tra page title và breadcrumb</li>
+            </ol>
+        </div>
+
+        <div class="info">
+            <h3>3. Kiểm tra Permission:</h3>
+            <ol>
+                <li>Đăng nhập với user KHÔNG có quyền <code>access_menu_super_admin</code></li>
+                <li>Xác nhận menu "Quản trị hệ thống" không hiển thị</li>
+                <li>Thử truy cập trực tiếp <code>/backend/role-user</code></li>
+                <li>Xác nhận bị redirect đến 403 page</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📱 Responsive Design</h2>
+        
+        <div class="info">
+            <h3>Kiểm tra trên các thiết bị:</h3>
+            <ul>
+                <li>🖥️ <strong>Desktop</strong> (> 1024px): Menu hiển thị đầy đủ</li>
+                <li>📱 <strong>Tablet</strong> (768px - 1024px): Menu có thể collapse</li>
+                <li>📱 <strong>Mobile</strong> (< 768px): Menu hamburger</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🎉 Kết quả Mong đợi</h2>
+        
+        <div class="success">
+            <h3>✅ Menu hoạt động đúng khi:</h3>
+            <ul>
+                <li>Menu "Vai trò - người dùng" hiển thị dưới "Phân quyền - vai trò"</li>
+                <li>Icon users (👥) hiển thị bên cạnh tên menu</li>
+                <li>Click menu chuyển đến trang Role-User Management</li>
+                <li>Permission control hoạt động đúng</li>
+                <li>Responsive design hoạt động tốt</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh để kiểm tra thay đổi
+        console.log('🧭 Menu Navigation Test Page Loaded');
+        console.log('📋 Menu structure has been updated with Role-User Management');
+        console.log('🔧 Changes made to frontend/src/data/menu.ts');
+        
+        // Hiển thị thông tin về menu structure
+        const menuInfo = {
+            parentMenu: "Quản trị hệ thống",
+            newMenuItem: {
+                name: "Vai trò - người dùng",
+                route: "backend-role-user",
+                icon: "si si-users",
+                permission: "access_menu_super_admin"
+            },
+            existingMenuItem: {
+                name: "Phân quyền - vai trò",
+                route: "backend-permission-role",
+                icon: "si si-shield",
+                permission: "access_menu_super_admin"
+            }
+        };
+        
+        console.log('📊 Menu Info:', menuInfo);
+    </script>
+</body>
+</html>

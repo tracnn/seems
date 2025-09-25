@@ -1,0 +1,6 @@
+slotDate,slotTime,clinicId,clinicCode,clinicName,doctorId,doctorCode,doctorName,serviceId,serviceCode,serviceName,isActive
+2024-01-15,08:00,1,PK001,Phòng khám Nội tổng hợp,1,BS001,Bác sĩ Nguyễn Văn A,1,DV001,Khám bệnh nội khoa,true
+2024-01-15,08:30,1,PK001,Phòng khám Nội tổng hợp,1,BS001,Bác sĩ Nguyễn Văn A,1,DV001,Khám bệnh nội khoa,true
+2024-01-15,09:00,1,PK001,Phòng khám Nội tổng hợp,1,BS001,Bác sĩ Nguyễn Văn A,1,DV001,Khám bệnh nội khoa,true
+2024-01-15,14:00,2,PK002,Phòng khám Ngoại tổng hợp,2,BS002,Bác sĩ Trần Thị B,2,DV002,Khám bệnh ngoại khoa,true
+2024-01-15,14:30,2,PK002,Phòng khám Ngoại tổng hợp,2,BS002,Bác sĩ Trần Thị B,2,DV002,Khám bệnh ngoại khoa,true

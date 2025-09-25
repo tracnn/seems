@@ -1,10 +1,10 @@
-# Shadcn Auth Starter
+# SEEMS System
 
-A clean, minimal starter template with authentication and layout components built with Shadcn UI and Vite. Perfect for building admin dashboards or authenticated applications.
+A comprehensive healthcare management platform with authentication and layout components built with Shadcn UI and Vite. Perfect for managing healthcare operations and patient data.
 
-![alt text](public/images/shadcn-admin.png)
+![alt text](public/images/seems-system.png)
 
-This is a streamlined version of the original Shadcn Admin Dashboard, focusing on providing a clean foundation with authentication flows and responsive layout components.
+This is a streamlined version of the original Shadcn Admin Dashboard, focusing on providing a clean foundation with authentication flows and responsive layout components for healthcare management.
 
 ## Features
 
@@ -132,4 +132,5 @@ Licensed under the [MIT License](https://choosealicense.com/licenses/mit/)
 
 - Based on the original [Shadcn Admin Dashboard](https://github.com/satnaing/shadcn-admin)
 - Built with [Shadcn UI](https://ui.shadcn.com) components
+- Customized for SEEMS Healthcare Management System
 - Icons from [Tabler Icons](https://tabler.io/icons) and [Lucide](https://lucide.dev/)

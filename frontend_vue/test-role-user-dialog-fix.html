@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Role-User Dialog Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header {
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .fix {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .code {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .before {
+            border-left: 4px solid #dc3545;
+        }
+        .after {
+            border-left: 4px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 Test Role-User Dialog Fix</h1>
+        <p>Kiểm tra lỗi "Cannot access 'resetForm' before initialization" đã được sửa</p>
+    </div>
+
+    <div class="container">
+        <h2>🐛 Lỗi Đã Phát Hiện</h2>
+        
+        <div class="error">
+            <h3>❌ Lỗi: Cannot access 'resetForm' before initialization</h3>
+            <p><strong>Nguyên nhân:</strong> Hàm <code>resetForm</code> được gọi trong <code>watch</code> nhưng được định nghĩa sau đó.</p>
+            <p><strong>Vị trí:</strong> <code>frontend/src/views/backend/permission-management/RoleUserDialog.vue</code></p>
+        </div>
+
+        <div class="info">
+            <h3>🔍 Chi tiết lỗi:</h3>
+            <ul>
+                <li>Hàm <code>resetForm</code> được gọi trong <code>watch</code> (dòng 74 và 81)</li>
+                <li>Nhưng hàm được định nghĩa sau đó (dòng 85)</li>
+                <li>Trong JavaScript/TypeScript, arrow functions không được hoisted</li>
+                <li>Dẫn đến lỗi "Cannot access before initialization"</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔧 Giải pháp Đã Áp dụng</h2>
+        
+        <div class="fix">
+            <h3>✅ Đã sửa: Di chuyển hàm resetForm lên trước watch</h3>
+            <p>Di chuyển định nghĩa hàm <code>resetForm</code> lên trước các <code>watch</code> để tránh lỗi hoisting.</p>
+        </div>
+
+        <h3>📝 Code trước khi sửa:</h3>
+        <div class="code before">
+// Watch for roleUser changes
+watch(() => props.roleUser, (newRoleUser) => {
+  if (newRoleUser) {
+    formData.value = {
+      roleId: newRoleUser.roleId,
+      userId: newRoleUser.userId,
+    };
+  } else {
+    resetForm(); // ❌ Lỗi: resetForm chưa được định nghĩa
+  }
+}, { immediate: true });
+
+// Watch for show changes
+watch(() => props.show, (newShow) => {
+  if (newShow && !props.roleUser) {
+    resetForm(); // ❌ Lỗi: resetForm chưa được định nghĩa
+  }
+});
+
+const resetForm = () => { // ❌ Định nghĩa sau khi sử dụng
+  formData.value = {
+    roleId: '',
+    userId: 0,
+  };
+  errors.value = {};
+};
+        </div>
+
+        <h3>📝 Code sau khi sửa:</h3>
+        <div class="code after">
+// Form reset function
+const resetForm = () => { // ✅ Định nghĩa trước khi sử dụng
+  formData.value = {
+    roleId: '',
+    userId: 0,
+  };
+  errors.value = {};
+};
+
+// Watch for roleUser changes
+watch(() => props.roleUser, (newRoleUser) => {
+  if (newRoleUser) {
+    formData.value = {
+      roleId: newRoleUser.roleId,
+      userId: newRoleUser.userId,
+    };
+  } else {
+    resetForm(); // ✅ OK: resetForm đã được định nghĩa
+  }
+}, { immediate: true });
+
+// Watch for show changes
+watch(() => props.show, (newShow) => {
+  if (newShow && !props.roleUser) {
+    resetForm(); // ✅ OK: resetForm đã được định nghĩa
+  }
+});
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🧪 Cách Test Fix</h2>
+        
+        <div class="info">
+            <h3>1. Test Dialog Create:</h3>
+            <ol>
+                <li>Đăng nhập với user có quyền <code>access_menu_super_admin</code></li>
+                <li>Truy cập route <code>/backend/role-user</code></li>
+                <li>Click nút "Thêm Role-User"</li>
+                <li>Xác nhận dialog mở ra không có lỗi</li>
+                <li>Kiểm tra console không có lỗi JavaScript</li>
+            </ol>
+        </div>
+
+        <div class="info">
+            <h3>2. Test Dialog Edit:</h3>
+            <ol>
+                <li>Click nút edit (biểu tượng bút chì) trên một role-user</li>
+                <li>Xác nhận dialog mở ra với dữ liệu đã điền sẵn</li>
+                <li>Kiểm tra console không có lỗi JavaScript</li>
+            </ol>
+        </div>
+
+        <div class="info">
+            <h3>3. Test Dialog Close/Open:</h3>
+            <ol>
+                <li>Mở dialog create/edit</li>
+                <li>Đóng dialog bằng nút "Hủy" hoặc "X"</li>
+                <li>Mở lại dialog</li>
+                <li>Xác nhận form được reset đúng cách</li>
+                <li>Kiểm tra console không có lỗi JavaScript</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔍 Kiểm tra Linting</h2>
+        
+        <div class="fix">
+            <h3>✅ Linting Status:</h3>
+            <ul>
+                <li>✅ Không có lỗi ESLint</li>
+                <li>✅ Không có lỗi TypeScript</li>
+                <li>✅ Code style đúng chuẩn</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📋 Checklist Fix</h2>
+        
+        <div class="fix">
+            <h3>✅ Đã hoàn thành:</h3>
+            <ul>
+                <li>✅ Di chuyển hàm <code>resetForm</code> lên trước <code>watch</code></li>
+                <li>✅ Kiểm tra không có lỗi linting</li>
+                <li>✅ Kiểm tra logic hoạt động đúng</li>
+                <li>✅ Tạo tài liệu test fix</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🎯 Kết quả Mong đợi</h2>
+        
+        <div class="fix">
+            <h3>✅ Sau khi fix:</h3>
+            <ul>
+                <li>✅ Click "Vai trò - người dùng" không còn lỗi</li>
+                <li>✅ Dialog create/edit mở ra bình thường</li>
+                <li>✅ Form reset hoạt động đúng</li>
+                <li>✅ Console không có lỗi JavaScript</li>
+                <li>✅ Tất cả chức năng hoạt động bình thường</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        console.log('🔧 Role-User Dialog Fix Test Page Loaded');
+        console.log('✅ Fix applied: resetForm function moved before watch');
+        console.log('🧪 Ready for testing dialog functionality');
+        
+        // Simulate the fix
+        const fixInfo = {
+            issue: "Cannot access 'resetForm' before initialization",
+            cause: "Function called in watch before definition",
+            solution: "Move resetForm function before watch statements",
+            status: "Fixed",
+            files: ["frontend/src/views/backend/permission-management/RoleUserDialog.vue"]
+        };
+        
+        console.log('📊 Fix Info:', fixInfo);
+    </script>
+</body>
+</html>

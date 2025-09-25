@@ -8,6 +8,9 @@ export class User extends BaseEntity {
     @Index('IDX_USERS_USERNAME', { unique: true })
     @Column({ name: 'USERNAME' })
     username: string;
+
+    @Column({ name: 'FULL_NAME', nullable: true })
+    fullName: string;
     
     @Index('IDX_USERS_EMAIL')
     @Column({ name: 'EMAIL', nullable: true })
@@ -28,7 +31,4 @@ export class User extends BaseEntity {
 
     @Column({ name: 'LAST_LOGIN_USER_AGENT', nullable: true })
     lastLoginUserAgent: string;
-
-    @Column({ name: 'FULL_NAME', nullable: true })
-    fullName: string;
 } 
