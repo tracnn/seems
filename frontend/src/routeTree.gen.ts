@@ -16,7 +16,6 @@ import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
-import { Route as authTestUserInfoRouteImport } from './routes/(auth)/test-user-info'
 import { Route as authTestLoginRouteImport } from './routes/(auth)/test-login'
 import { Route as authTestFullnameRouteImport } from './routes/(auth)/test-fullname'
 import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
@@ -65,11 +64,6 @@ const errors403Route = errors403RouteImport.update({
 const errors401Route = errors401RouteImport.update({
   id: '/(errors)/401',
   path: '/401',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const authTestUserInfoRoute = authTestUserInfoRouteImport.update({
-  id: '/(auth)/test-user-info',
-  path: '/test-user-info',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authTestLoginRoute = authTestLoginRouteImport.update({
@@ -165,7 +159,6 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof authSignUpRoute
   '/test-fullname': typeof authTestFullnameRoute
   '/test-login': typeof authTestLoginRoute
-  '/test-user-info': typeof authTestUserInfoRoute
   '/401': typeof errors401Route
   '/403': typeof errors403Route
   '/404': typeof errors404Route
@@ -188,7 +181,6 @@ export interface FileRoutesByTo {
   '/sign-up': typeof authSignUpRoute
   '/test-fullname': typeof authTestFullnameRoute
   '/test-login': typeof authTestLoginRoute
-  '/test-user-info': typeof authTestUserInfoRoute
   '/401': typeof errors401Route
   '/403': typeof errors403Route
   '/404': typeof errors404Route
@@ -214,7 +206,6 @@ export interface FileRoutesById {
   '/(auth)/sign-up': typeof authSignUpRoute
   '/(auth)/test-fullname': typeof authTestFullnameRoute
   '/(auth)/test-login': typeof authTestLoginRoute
-  '/(auth)/test-user-info': typeof authTestUserInfoRoute
   '/(errors)/401': typeof errors401Route
   '/(errors)/403': typeof errors403Route
   '/(errors)/404': typeof errors404Route
@@ -240,7 +231,6 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/test-fullname'
     | '/test-login'
-    | '/test-user-info'
     | '/401'
     | '/403'
     | '/404'
@@ -263,7 +253,6 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/test-fullname'
     | '/test-login'
-    | '/test-user-info'
     | '/401'
     | '/403'
     | '/404'
@@ -288,7 +277,6 @@ export interface FileRouteTypes {
     | '/(auth)/sign-up'
     | '/(auth)/test-fullname'
     | '/(auth)/test-login'
-    | '/(auth)/test-user-info'
     | '/(errors)/401'
     | '/(errors)/403'
     | '/(errors)/404'
@@ -313,7 +301,6 @@ export interface RootRouteChildren {
   authSignUpRoute: typeof authSignUpRoute
   authTestFullnameRoute: typeof authTestFullnameRoute
   authTestLoginRoute: typeof authTestLoginRoute
-  authTestUserInfoRoute: typeof authTestUserInfoRoute
   errors401Route: typeof errors401Route
   errors403Route: typeof errors403Route
   errors404Route: typeof errors404Route
@@ -370,13 +357,6 @@ declare module '@tanstack/react-router' {
       path: '/401'
       fullPath: '/401'
       preLoaderRoute: typeof errors401RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(auth)/test-user-info': {
-      id: '/(auth)/test-user-info'
-      path: '/test-user-info'
-      fullPath: '/test-user-info'
-      preLoaderRoute: typeof authTestUserInfoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/test-login': {
@@ -534,7 +514,6 @@ const rootRouteChildren: RootRouteChildren = {
   authSignUpRoute: authSignUpRoute,
   authTestFullnameRoute: authTestFullnameRoute,
   authTestLoginRoute: authTestLoginRoute,
-  authTestUserInfoRoute: authTestUserInfoRoute,
   errors401Route: errors401Route,
   errors403Route: errors403Route,
   errors404Route: errors404Route,

@@ -1040,6 +1040,368 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 // Sử dụng Network tab để debug API calls
 ```
 
+## 🧪 Testing
+
+### Unit Testing với Vitest
+
+```typescript
+// src/features/products/__tests__/product-form.test.tsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ProductForm } from '../components/product-form'
+
+const createTestQueryClient = () => new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+})
+
+const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+  const queryClient = createTestQueryClient()
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  )
+}
+
+describe('ProductForm', () => {
+  it('should render form fields correctly', () => {
+    render(
+      <TestWrapper>
+        <ProductForm onClose={jest.fn()} />
+      </TestWrapper>
+    )
+    
+    expect(screen.getByLabelText('Tên sản phẩm')).toBeInTheDocument()
+    expect(screen.getByLabelText('Giá')).toBeInTheDocument()
+    expect(screen.getByLabelText('Danh mục')).toBeInTheDocument()
+  })
+
+  it('should validate required fields', async () => {
+    render(
+      <TestWrapper>
+        <ProductForm onClose={jest.fn()} />
+      </TestWrapper>
+    )
+    
+    fireEvent.click(screen.getByText('Tạo sản phẩm'))
+    
+    await waitFor(() => {
+      expect(screen.getByText('Tên sản phẩm là bắt buộc')).toBeInTheDocument()
+    })
+  })
+
+  it('should submit form with valid data', async () => {
+    const mockOnClose = jest.fn()
+    render(
+      <TestWrapper>
+        <ProductForm onClose={mockOnClose} />
+      </TestWrapper>
+    )
+    
+    fireEvent.change(screen.getByLabelText('Tên sản phẩm'), {
+      target: { value: 'Test Product' }
+    })
+    fireEvent.change(screen.getByLabelText('Giá'), {
+      target: { value: '100' }
+    })
+    fireEvent.click(screen.getByText('Chọn danh mục'))
+    fireEvent.click(screen.getByText('Điện tử'))
+    
+    fireEvent.click(screen.getByText('Tạo sản phẩm'))
+    
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalled()
+    })
+  })
+})
+```
+
+### Integration Testing
+
+```typescript
+// src/features/products/__tests__/products-integration.test.tsx
+import { render, screen, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { server } from '../../mocks/server'
+import Products from '../index'
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
+
+describe('Products Integration', () => {
+  it('should load and display products', async () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <Products />
+      </QueryClientProvider>
+    )
+    
+    await waitFor(() => {
+      expect(screen.getByText('Laptop Pro')).toBeInTheDocument()
+    })
+  })
+})
+```
+
+### E2E Testing với Playwright
+
+```typescript
+// tests/products.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Products Management', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/products')
+  })
+
+  test('should create new product', async ({ page }) => {
+    await page.click('text=Thêm sản phẩm')
+    await page.fill('[data-testid="product-name"]', 'Test Product')
+    await page.fill('[data-testid="product-price"]', '100')
+    await page.selectOption('[data-testid="product-category"]', 'electronics')
+    await page.click('text=Tạo sản phẩm')
+    
+    await expect(page.locator('text=Test Product')).toBeVisible()
+  })
+
+  test('should edit existing product', async ({ page }) => {
+    await page.click('[data-testid="product-actions"]')
+    await page.click('text=Chỉnh sửa')
+    await page.fill('[data-testid="product-name"]', 'Updated Product')
+    await page.click('text=Cập nhật')
+    
+    await expect(page.locator('text=Updated Product')).toBeVisible()
+  })
+})
+```
+
+## 🚀 Deployment và CI/CD
+
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      
+      - run: pnpm install
+      - run: pnpm run lint
+      - run: pnpm run test
+      - run: pnpm run build
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      
+      - run: pnpm install
+      - run: pnpm run build
+      
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2.0
+        with:
+          publish-dir: './dist'
+          production-branch: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+```
+
+### Environment Configuration
+
+```typescript
+// src/lib/env.ts
+export const env = {
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+  APP_ENV: import.meta.env.VITE_APP_ENV || 'development',
+  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN,
+  ANALYTICS_ID: import.meta.env.VITE_ANALYTICS_ID,
+} as const
+
+// Validation
+import { z } from 'zod'
+
+const envSchema = z.object({
+  VITE_API_BASE_URL: z.string().url(),
+  VITE_APP_ENV: z.enum(['development', 'staging', 'production']),
+})
+
+export const validatedEnv = envSchema.parse(import.meta.env)
+```
+
+## 📊 Performance Optimization
+
+### Code Splitting và Lazy Loading
+
+```typescript
+// src/routes/_authenticated/products/index.tsx
+import { lazy, Suspense } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+import { Skeleton } from '@/components/ui/skeleton'
+
+const Products = lazy(() => import('@/features/products'))
+
+export const Route = createFileRoute('/_authenticated/products/')({
+  component: () => (
+    <Suspense fallback={<ProductsSkeleton />}>
+      <Products />
+    </Suspense>
+  ),
+})
+
+function ProductsSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Skeleton className="h-8 w-64" />
+      <Skeleton className="h-32 w-full" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
+}
+```
+
+### Memoization và Optimization
+
+```typescript
+// src/features/products/components/products-table.tsx
+import { memo, useMemo, useCallback } from 'react'
+
+interface ProductsTableProps {
+  data: Product[]
+  onEdit: (id: string) => void
+  onDelete: (id: string) => void
+}
+
+export const ProductsTable = memo<ProductsTableProps>(({ 
+  data, 
+  onEdit, 
+  onDelete 
+}) => {
+  const sortedData = useMemo(() => {
+    return [...data].sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+  }, [data])
+
+  const handleEdit = useCallback((id: string) => {
+    onEdit(id)
+  }, [onEdit])
+
+  const handleDelete = useCallback((id: string) => {
+    onDelete(id)
+  }, [onDelete])
+
+  return (
+    // Table implementation
+  )
+})
+```
+
+### Virtual Scrolling cho Large Lists
+
+```typescript
+// src/features/products/components/virtual-products-table.tsx
+import { FixedSizeList as List } from 'react-window'
+
+interface VirtualTableProps {
+  items: Product[]
+  height: number
+}
+
+export function VirtualProductsTable({ items, height }: VirtualTableProps) {
+  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => (
+    <div style={style}>
+      <ProductRow product={items[index]} />
+    </div>
+  )
+
+  return (
+    <List
+      height={height}
+      itemCount={items.length}
+      itemSize={60}
+      width="100%"
+    >
+      {Row}
+    </List>
+  )
+}
+```
+
+## 🔍 Monitoring và Analytics
+
+### Error Tracking với Sentry
+
+```typescript
+// src/lib/sentry.ts
+import * as Sentry from '@sentry/react'
+
+Sentry.init({
+  dsn: env.SENTRY_DSN,
+  environment: env.APP_ENV,
+  integrations: [
+    new Sentry.BrowserTracing(),
+    new Sentry.Replay(),
+  ],
+  tracesSampleRate: 1.0,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+})
+
+// Error Boundary
+export function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <Sentry.ErrorBoundary fallback={ErrorFallback}>
+      {children}
+    </Sentry.ErrorBoundary>
+  )
+}
+```
+
+### Performance Monitoring
+
+```typescript
+// src/hooks/usePerformance.ts
+import { useEffect } from 'react'
+
+export function usePerformance() {
+  useEffect(() => {
+    // Web Vitals
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(console.log)
+      getFID(console.log)
+      getFCP(console.log)
+      getLCP(console.log)
+      getTTFB(console.log)
+    })
+  }, [])
+}
+```
+
 ## ✅ Checklist phát triển
 
 ### Trước khi bắt đầu:
@@ -1047,6 +1409,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 - [ ] Thiết kế UI/UX mockup
 - [ ] Xác định API endpoints cần thiết
 - [ ] Lập kế hoạch cấu trúc dữ liệu
+- [ ] Thiết kế database schema (nếu cần)
+- [ ] Lập kế hoạch testing strategy
 
 ### Trong quá trình phát triển:
 - [ ] Tạo TypeScript interfaces và types
@@ -1058,15 +1422,21 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 - [ ] Implement pagination và filtering
 - [ ] Add accessibility features
 - [ ] Write unit tests
+- [ ] Implement error boundaries
+- [ ] Add performance optimizations
+- [ ] Setup monitoring và analytics
 
 ### Sau khi hoàn thành:
 - [ ] Test tính năng trên các trình duyệt khác nhau
 - [ ] Kiểm tra responsive design
 - [ ] Test accessibility với screen reader
-- [ ] Performance testing
+- [ ] Performance testing với Lighthouse
+- [ ] Security testing
 - [ ] Code review
 - [ ] Update documentation
 - [ ] Deploy và test trên staging
+- [ ] Monitor performance metrics
+- [ ] Gather user feedback
 
 ### Code Quality:
 - [ ] Code được format với Prettier
@@ -1076,6 +1446,18 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 - [ ] Loading states cho async operations
 - [ ] Proper cleanup trong useEffect
 - [ ] Memoization cho performance
+- [ ] Code coverage > 80%
+- [ ] No console.log statements in production
+- [ ] Proper SEO meta tags
+
+### Security Checklist:
+- [ ] Input validation và sanitization
+- [ ] XSS protection
+- [ ] CSRF protection
+- [ ] Secure API endpoints
+- [ ] Proper authentication/authorization
+- [ ] Environment variables security
+- [ ] No sensitive data in client code
 
 ---
 

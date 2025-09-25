@@ -15,11 +15,11 @@ export class PermissionService {
     private readonly permissionRepo: Repository<Permission>,
   ) {}
 
-  async getAllPermissions(userId: number): Promise<string[]> {
+  async getAllPermissions(userId: string): Promise<string[]> {
     return this.queryBus.execute(new GetUserPermissionsQuery(userId));
   }
 
-  async can(userId: number, permission: string): Promise<boolean> {
+  async can(userId: string, permission: string): Promise<boolean> {
     const perms = await this.getAllPermissions(userId);
     return perms.includes(permission);
   }
