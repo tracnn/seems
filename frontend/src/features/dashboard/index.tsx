@@ -11,6 +11,7 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { RecentOrdersTable } from './components/recent-orders-table'
+import { ServerSelectDemo } from './components/server-select-demo'
 
 export default function Dashboard() {
   return (
@@ -95,6 +96,21 @@ export default function Dashboard() {
           </Card>
         </div>
 
+        {/* ServerSelect Example */}
+        <div className='mt-8'>
+          <Card>
+            <CardHeader>
+              <CardTitle>ServerSelect Component Demo</CardTitle>
+              <CardDescription>
+                Ví dụ sử dụng ServerSelect với server-side pagination, search, single/multiple selection
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ServerSelectDemo />
+            </CardContent>
+          </Card>
+        </div>
+
         <div className='mt-8'>
           <Card>
             <CardHeader>
@@ -126,6 +142,12 @@ export default function Dashboard() {
                 <h4 className='font-medium'>4. DataTable Component</h4>
                 <p className='text-sm text-muted-foreground'>
                   Sử dụng DataTable component với đầy đủ tính năng lazy loading, pagination, sorting và filtering
+                </p>
+              </div>
+              <div className='space-y-2'>
+                <h4 className='font-medium'>5. ServerSelect Component</h4>
+                <p className='text-sm text-muted-foreground'>
+                  Sử dụng ServerSelect component với server-side pagination, search, single/multiple selection
                 </p>
               </div>
             </CardContent>
