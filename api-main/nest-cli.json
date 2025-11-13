@@ -28,13 +28,13 @@
         "tsConfigPath": "apps/auth-service/tsconfig.app.json"
       }
     },
-    "calatog-service": {
+    "catalog-service": {
       "type": "application",
-      "root": "apps/calatog-service",
+      "root": "apps/catalog-service",
       "entryFile": "main",
-      "sourceRoot": "apps/calatog-service/src",
+      "sourceRoot": "apps/catalog-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/calatog-service/tsconfig.app.json"
+        "tsConfigPath": "apps/catalog-service/tsconfig.app.json"
       }
     },
     "common": {

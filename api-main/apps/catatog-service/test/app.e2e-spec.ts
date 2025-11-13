@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { CalatogServiceModule } from './../src/calatog-service.module';
+import request from 'supertest';
+import { CatalogServiceModule } from '../src/catatog-service.module';
 
-describe('CalatogServiceController (e2e)', () => {
+describe('CatalogServiceController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [CalatogServiceModule],
+      imports: [CatalogServiceModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();

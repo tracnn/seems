@@ -2,41 +2,41 @@ import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '@app/common';
 import { User } from './user.entity';
 
-@Entity('refresh_tokens')
+@Entity('REFRESH_TOKENS')
 export class RefreshToken extends BaseEntity {
   @Column({
-    name: 'user_id',
+    name: 'USER_ID',
     type: 'uuid',
   })
   userId: string;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'USER_ID' })
   user: User;
 
   @Column({
-    name: 'token',
-    type: 'varchar',
+    name: 'TOKEN',
+    type: 'varchar2',
     length: 500,
     unique: true,
   })
   token: string;
 
   @Column({
-    name: 'expires_at',
+    name: 'EXPIRES_AT',
     type: 'timestamp',
   })
   expiresAt: Date;
 
   @Column({
-    name: 'is_revoked',
+    name: 'IS_REVOKED',
     type: 'number',
     default: 0,
   })
   isRevoked: number;
 
   @Column({
-    name: 'ip_address',
+    name: 'IP_ADDRESS',
     type: 'varchar',
     length: 45,
     nullable: true,
@@ -44,7 +44,7 @@ export class RefreshToken extends BaseEntity {
   ipAddress: string | null;
 
   @Column({
-    name: 'user_agent',
+    name: 'USER_AGENT',
     type: 'varchar',
     length: 500,
     nullable: true,

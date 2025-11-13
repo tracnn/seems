@@ -1,66 +1,57 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/common';
 
-@Entity('users')
+@Entity('USERS')
 export class User extends BaseEntity {
   @Column({
-    name: 'username',
-    type: 'varchar',
+    name: 'USERNAME',
+    type: 'varchar2',
     length: 100,
     unique: true,
   })
   username: string;
 
   @Column({
-    name: 'email',
-    type: 'varchar',
+    name: 'EMAIL',
+    type: 'varchar2',
     length: 255,
     unique: true,
   })
   email: string;
 
   @Column({
-    name: 'password',
-    type: 'varchar',
+    name: 'PASSWORD',
+    type: 'varchar2',
     length: 255,
   })
   password: string;
 
   @Column({
-    name: 'first_name',
-    type: 'varchar',
+    name: 'FIRST_NAME',
+    type: 'varchar2',
     length: 100,
     nullable: true,
   })
   firstName: string;
 
   @Column({
-    name: 'last_name',
-    type: 'varchar',
+    name: 'LAST_NAME',
+    type: 'varchar2',
     length: 100,
     nullable: true,
   })
   lastName: string;
 
   @Column({
-    name: 'is_active',
-    type: 'number',
-    default: 1,
+    name: 'IS_EMAIL_VERIFIED',
+    default: false,
   })
-  isActive: number;
+  isEmailVerified: boolean;
 
   @Column({
-    name: 'is_email_verified',
-    type: 'number',
-    default: 0,
-  })
-  isEmailVerified: number;
-
-  @Column({
-    name: 'last_login_at',
-    type: 'timestamp',
+    name: 'LAST_LOGIN_AT',
     nullable: true,
   })
-  lastLoginAt: Date | null;
+  lastLoginAt: Date;
 }
 
