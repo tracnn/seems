@@ -46,8 +46,8 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
       password: hashedPassword,
       firstName,
       lastName,
-      isActive: 1,
-      isEmailVerified: 0,
+      isActive: true,
+      isEmailVerified: false,
     });
 
     return newUser;
