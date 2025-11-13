@@ -1,0 +1,5 @@
+export enum ServiceEnum {
+    AUTH_SERVICE = 'AUTH_SERVICE',
+    CALATOG_SERVICE = 'CALATOG_SERVICE',
+    IAM_SERVICE = 'IAM_SERVICE',
+}
