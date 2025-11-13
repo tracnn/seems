@@ -31,6 +31,13 @@ export class AuthController {
     private readonly authClient: ClientProxy,
   ) {}
 
+  @Get('health')
+  async healthCheck() {
+    return firstValueFrom(
+      this.authClient.send({ cmd: 'health' }, {}),
+    );
+  }
+
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Đăng ký tài khoản mới' })

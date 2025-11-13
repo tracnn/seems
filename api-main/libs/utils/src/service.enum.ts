@@ -1,4 +1,5 @@
 export enum ServiceEnum {
+    API_MAIN = 'API_MAIN',
     AUTH_SERVICE = 'AUTH_SERVICE',
     CATALOG_SERVICE = 'CATALOG_SERVICE',
     IAM_SERVICE = 'IAM_SERVICE',

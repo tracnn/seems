@@ -22,6 +22,7 @@ import { LogoutCommand } from '../../application/use-cases/commands/logout/logou
 import { GetUserQuery } from '../../application/use-cases/queries/get-user/get-user.query';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { MessagePattern } from '@nestjs/microservices';
+import { ServiceEnum } from '@app/utils/service.enum';
 
 @Controller()
 export class AuthController {
@@ -120,6 +121,16 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       message: 'Đăng xuất thành công',
+    };
+  }
+
+  @MessagePattern({ cmd: 'health' })
+  async healthCheck() {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      service: ServiceEnum.AUTH_SERVICE,
+      uptime: process.uptime(),
     };
   }
 }
