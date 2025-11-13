@@ -1,0 +1,49 @@
+name: ${PROJECT_NAME}
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:${KAFKA_VERSION}
+    container_name: ${PROJECT_NAME}-broker
+    # Chỉ publish cổng cho host dùng:
+    ports:
+      - "${HOST_PORT}:9094"   # host -> broker (PLAINTEXT_HOST)
+    environment:
+      KAFKA_NODE_ID: ${BROKER_ID}
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      # 3 listener: nội bộ broker, controller, và listener cho host
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:${KAFKA_PORT},CONTROLLER://0.0.0.0:${CONTROLLER_PORT},PLAINTEXT_HOST://0.0.0.0:9094"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT"
+
+      # QUẢNG BÁ CHUẨN:
+      # - client TRONG Docker: dùng tên service 'kafka' + 9092
+      # - client TRÊN HOST: dùng localhost + 9094
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9094"
+
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      # Controller cũng nên dùng tên service trong network Docker
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "${BROKER_ID}@kafka:${CONTROLLER_PORT}"
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      KAFKA_CLUSTER_ID: ${KAFKA_CLUSTER_ID}
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - ./kafka-data:/var/lib/kafka/data
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: ${PROJECT_NAME}-ui
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      # 🔥 Phải trỏ tới tên service trong Docker, KHÔNG dùng localhost ở đây
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"

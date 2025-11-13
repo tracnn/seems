@@ -1,0 +1,1 @@
+Grafana gán Datasource là: http://prometheus:9090

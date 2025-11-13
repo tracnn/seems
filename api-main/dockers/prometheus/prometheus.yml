@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "nest-api"
+    metrics_path: /metrics
+    static_configs:
+      # - targets: ["api:7111"]    # nếu NestJS cùng docker network
+      # nếu NestJS chạy trên host, dùng:
+      - targets: ["host.docker.internal:7111"]
+        labels:
+          service: "bmph-api"

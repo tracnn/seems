@@ -1,0 +1,48 @@
+services:
+  kong:
+    image: kong:3.8
+    container_name: kong
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres      # tên container Postgres
+      KONG_PG_PORT: 5432
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PG_DATABASE: kong
+      KONG_PROXY_LISTEN: 0.0.0.0:8000, 0.0.0.0:8443 ssl
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+      KONG_PREFIX: /tmp/kong    # ✅ tránh lỗi socket bị kẹt
+    networks:
+      - postgres_default              # network có sẵn của stack Postgres
+  
+  konga:
+    image: pantsel/konga:latest
+    container_name: konga
+    restart: always
+    ports:
+      - "1337:1337"      # Giao diện web
+    environment:
+      NODE_ENV: production
+      KONGA_DB_ADAPTER: postgres
+      KONGA_DB_HOST: postgres          # Cùng Postgres với Kong
+      KONGA_DB_PORT: 5432
+      KONGA_DB_USER: kong
+      KONGA_DB_PASSWORD: kong
+      KONGA_DB_DATABASE: kong
+      TOKEN_SECRET: "supersecret123"   # có thể đổi tuỳ ý
+    networks:
+      - postgres_default
+    depends_on:
+      - kong
+
+networks:
+  postgres_default:
+    external: true
+
+volumes:
+  postgres_data:

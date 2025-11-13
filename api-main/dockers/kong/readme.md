@@ -1,0 +1,4 @@
+docker compose run --rm kong kong migrations bootstrap
+
+docker-compose up -d
+

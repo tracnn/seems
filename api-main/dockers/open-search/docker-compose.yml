@@ -1,0 +1,36 @@
+services:
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1024m -Xmx1024m"
+      # Bắt buộc từ 2.12+: đặt mật khẩu admin (KHÔNG giống 'admin')
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
+      # LƯU Ý: KHÔNG đặt DISABLE_INSTALL_DEMO_CONFIG khi bật security
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      # Bind mount ra ngoài (Windows): map vào ./data/opensearch
+      - ./data/opensearch:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"   # HTTPS (demo config tự bật TLS)
+      - "9600:9600"
+
+  dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: os-dashboards
+    environment:
+      # Phải dùng HTTPS vì security đang bật
+      - OPENSEARCH_HOSTS=["https://opensearch:9200"]
+      # Bỏ verify cert tự ký (demo installer dùng self-signed)
+      - OPENSEARCH_SSL_VERIFICATIONMODE=none
+    volumes:
+      - ./data/dashboards:/usr/share/opensearch-dashboards/data
+    ports:
+      - "5601:5601"
+
+networks: { default: { name: opensearch-net } }

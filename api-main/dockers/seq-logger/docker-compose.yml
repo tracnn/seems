@@ -1,0 +1,25 @@
+# docker-compose.yml
+services:
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINUSERNAME: "admin"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "Your@Strong#Pass"
+      # (khuyên) cấu hình URL ngoài nếu reverse proxy: SEQ_API_CANONICALURI: "https://logs.yourdomain.com"
+    volumes:
+      - ./seq-data:/data
+    ports:
+      - "3341:80"     # UI + API
+      - "5341:5341"   # ingestion-only
+    # Lưu ý: image không có curl/wget, nếu cần healthcheck HTTP phải dùng sidecar hoặc custom image
+    # healthcheck:
+    #   test: ["CMD", "seq", "version"]  # hoặc dùng sidecar để GET /health
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+volumes:
+  seq-data:
+    driver: local
