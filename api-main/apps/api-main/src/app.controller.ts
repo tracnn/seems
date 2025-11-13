@@ -8,6 +8,6 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    return this.appService.getHello() + ' ' + this.utilsService.sum(1, 2);
+    return this.appService.getHello();
   }
 }
