@@ -2,9 +2,16 @@ import { Module } from '@nestjs/common';
 import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
 import { UtilsModule } from '@app/utils';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UtilsModule],
+  imports: [
+    UtilsModule,
+    ConfigModule.forRoot({ 
+      isGlobal: true, 
+      envFilePath: '.env',
+    }),
+  ],
   controllers: [AuthServiceController],
   providers: [AuthServiceService],
 })

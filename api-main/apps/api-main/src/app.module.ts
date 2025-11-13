@@ -3,9 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UtilsModule } from '@app/utils';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [UtilsModule,
+    ConfigModule.forRoot({ 
+      isGlobal: true, 
+      envFilePath: '.env',
+    }),
     ClientsModule.register([
       {
         name: 'AUTH_SERVICE',
