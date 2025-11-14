@@ -104,8 +104,9 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Ip() ip: string,
-    @Headers('user-agent') userAgent: string,
+    @Request() req: any,
   ) {
+    const userAgent = req.headers['user-agent'] || 'unknown';
     return firstValueFrom(
       this.authClient.send(
         { cmd: 'login' },

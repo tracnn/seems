@@ -65,11 +65,11 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     // Tạo refresh token using different secret
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.configService.get<string>('REFRESH_TOKEN_SECRET') || 'refresh-token-secret',
-      expiresIn: '7d',
+      expiresIn: Number(this.configService.get<number>('REFRESH_TOKEN_EXPIRES_IN')) || 7 * 24 * 60 * 60 * 1000,
     });
 
     // Lưu refresh token vào database
-    const expiresIn = 7 * 24 * 60 * 60 * 1000; // 7 days
+    const expiresIn = Number(this.configService.get<number>('REFRESH_TOKEN_EXPIRES_IN')) || 7 * 24 * 60 * 60 * 1000; // 7 days
     await this.refreshTokenRepository.create({
       userId: user.id,
       token: refreshToken,
@@ -79,7 +79,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       isRevoked: 0,
     });
 
-    // Cập nhật last login
+    // Cập nhật last login  
     await this.userRepository.update(user.id, {
       lastLoginAt: new Date(),
     });
@@ -87,7 +87,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     return {
       accessToken,
       refreshToken,
-      expiresIn: 15 * 60, // 15 minutes in seconds
+      expiresIn: Number(this.configService.get<number>('JWT_EXPIRES_IN')) || 15 * 60, // 15 minutes in seconds
       tokenType: 'Bearer',
       user: {
         id: user.id,
