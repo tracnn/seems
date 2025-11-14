@@ -6,7 +6,7 @@ import { RefreshTokenRepository } from '../../../../infrastructure/database/type
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { AuthResponseDto } from '../../../dtos/auth-response.dto';
+import { AuthResponseDto } from '@app/shared-dto';
 import { ErrorCode, ERROR_MESSAGES } from '../../../../domain/constants/error-codes';
 
 @Injectable()

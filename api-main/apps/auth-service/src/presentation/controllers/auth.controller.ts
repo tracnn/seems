@@ -1,6 +1,6 @@
 import { Controller, HttpStatus } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { RegisterDto } from '../../application/dtos/register.dto';
+import { RegisterDto, ActivateAccountDto } from '@app/shared-dto';
 import { RegisterCommand } from '../../application/use-cases/commands/register/register.command';
 import { LoginCommand } from '../../application/use-cases/commands/login/login.command';
 import { RefreshTokenCommand } from '../../application/use-cases/commands/refresh-token/refresh-token.command';
@@ -9,7 +9,6 @@ import { GetUserQuery } from '../../application/use-cases/queries/get-user/get-u
 import { MessagePattern } from '@nestjs/microservices';
 import { ServiceEnum } from '@app/utils/service.enum';
 import { ActivateAccountCommand } from '../../application/use-cases/commands/activate-account/activate-account.command';
-import { ActivateAccountDto } from '../../application/dtos/activate-account.dto';
 
 @Controller()
 export class AuthController {

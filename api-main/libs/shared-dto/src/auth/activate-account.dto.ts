@@ -1,6 +1,10 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+/**
+ * DTO for activating user account
+ * Sử dụng ở: API Gateway và Auth Service
+ */
 export class ActivateAccountDto {
   @ApiProperty({
     description: 'ID của user cần kích hoạt',
@@ -10,13 +14,13 @@ export class ActivateAccountDto {
   @IsString()
   userId: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'ID của admin thực hiện hành động',
     example: '123e4567-e89b-12d3-a456-426614174000',
-    required: false,
   })
   @IsOptional()
   @IsUUID('4', { message: 'activatedBy phải là UUID hợp lệ' })
   @IsString()
-  activatedBy: string;
+  activatedBy?: string;
 }
+

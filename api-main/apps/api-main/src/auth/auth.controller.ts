@@ -19,10 +19,9 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { ServiceEnum } from '@app/utils/service.enum';
-import { RegisterDto, LoginDto, RefreshTokenDto } from './dtos';
+import { RegisterDto, LoginDto, RefreshTokenDto, ActivateAccountDto } from '@app/shared-dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { firstValueFrom } from 'rxjs';
-import { ActivateAccountDto } from './dtos/activate-account.dto';
 
 @ApiTags('Authentication')
 @Controller('api/v1/auth')

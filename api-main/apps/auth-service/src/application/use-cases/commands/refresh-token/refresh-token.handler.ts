@@ -5,7 +5,7 @@ import { UserRepository } from '../../../../infrastructure/database/typeorm/repo
 import { RefreshTokenRepository } from '../../../../infrastructure/database/typeorm/repositories/refresh-token.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { AuthResponseDto } from '../../../dtos/auth-response.dto';
+import { AuthResponseDto } from '@app/shared-dto';
 import { ErrorCode, ERROR_MESSAGES } from '../../../../domain/constants/error-codes';
 
 @Injectable()

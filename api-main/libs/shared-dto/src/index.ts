@@ -1,2 +1,3 @@
-export * from './shared-dto.module';
-export * from './shared-dto.service';
+// Export all shared DTOs
+export * from './auth';
+export * from './common';
