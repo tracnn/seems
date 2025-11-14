@@ -76,7 +76,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       expiresAt: new Date(Date.now() + expiresIn),
       ipAddress,
       userAgent,
-      isRevoked: 0,
+      isRevoked: false,
     });
 
     // Cập nhật last login  

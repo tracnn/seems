@@ -37,13 +37,13 @@ export class RefreshToken extends BaseEntity {
     length: 45,
     nullable: true,
   })
-  ipAddress: string | null;
+  ipAddress: string;
 
   @Column({
     name: 'USER_AGENT',
     length: 500,
     nullable: true,
   })
-  userAgent: string | null;
+  userAgent: string;
 }
 

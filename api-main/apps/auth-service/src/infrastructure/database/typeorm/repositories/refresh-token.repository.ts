@@ -33,14 +33,14 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
   async revoke(token: string): Promise<void> {
     await this.repository.update(
       { token },
-      { isRevoked: 1, updatedAt: new Date() },
+      { isRevoked: true, updatedAt: new Date() },
     );
   }
 
   async revokeAllByUserId(userId: string): Promise<void> {
     await this.repository.update(
-      { userId, isRevoked: 0 },
-      { isRevoked: 1, updatedAt: new Date() },
+      { userId, isRevoked: false },
+      { isRevoked: true, updatedAt: new Date() },
     );
   }
 

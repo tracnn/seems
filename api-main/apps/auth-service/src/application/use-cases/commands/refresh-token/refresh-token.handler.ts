@@ -100,7 +100,7 @@ export class RefreshTokenHandler
         expiresAt: new Date(Date.now() + expiresInRefreshToken),
         ipAddress,
         userAgent,
-        isRevoked: 0,
+        isRevoked: false,
       });
 
       return {
