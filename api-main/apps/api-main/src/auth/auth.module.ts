@@ -10,15 +10,18 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService): JwtModuleOptions => ({
         secret:
-          configService.get<string>('JWT_SECRET') ||
-          'your-default-secret-key-change-this',
+          configService.get<string>('JWT_SECRET') ?? 'your-default-secret-key-change-this',
         signOptions: {
-          expiresIn: (configService.get<string>('JWT_EXPIRES_IN') || '15m') as any,
+          expiresIn: Number(configService.get<number>('JWT_EXPIRES_IN')) ?? 15 * 60,
         },
       }),
       inject: [ConfigService],
@@ -29,7 +32,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
         transport: Transport.TCP,
         options: {
           host: process.env.AUTH_SERVICE_HOST ?? '0.0.0.0',
-          port: Number(process.env.AUTH_SERVICE_PORT ?? 3001),
+          port: Number(process.env.AUTH_SERVICE_PORT ?? 4001),
         },
       },
     ]),

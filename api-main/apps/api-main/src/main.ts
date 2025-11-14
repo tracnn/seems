@@ -29,7 +29,7 @@ async function bootstrap() {
   if (enableSwagger) {
     const swaggerTitle = process.env.SWAGGER_TITLE || 'App Microservice SEEMS Hub API';
     const swaggerDesc = process.env.SWAGGER_DESC || 'The App Microservice SEEMS Hub API documentation';
-    const swaggerVersion = process.env.SWAGGER_VERSION || '1.0';
+    const swaggerVersion = process.env.SWAGGER_VERSION || '1.0.0';
     const swaggerPrefix = process.env.SWAGGER_PREFIX || 'api/v1/docs';
     const config = new DocumentBuilder()
       .setTitle(swaggerTitle)
@@ -47,7 +47,7 @@ async function bootstrap() {
   logger.warn('Warning message');
   logger.error('Error message');
 
-  await app.listen(process.env.API_MAIN_PORT ?? 3000, '0.0.0.0');
+  await app.listen(process.env.API_MAIN_PORT ?? 4000, '0.0.0.0');
   logger.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

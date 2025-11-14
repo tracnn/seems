@@ -184,8 +184,9 @@ export class AuthController {
   async refreshToken(
     @Body() refreshTokenDto: RefreshTokenDto,
     @Ip() ip: string,
-    @Headers('user-agent') userAgent: string,
+    @Request() req: any,
   ) {
+    const userAgent = req.headers['user-agent'] || 'unknown';
     return firstValueFrom(
       this.authClient.send(
         { cmd: 'refresh-token' },

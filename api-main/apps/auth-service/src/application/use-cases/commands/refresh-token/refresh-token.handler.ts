@@ -84,18 +84,20 @@ export class RefreshTokenHandler
       };
       const newAccessToken = this.jwtService.sign(newPayload);
 
+      const expiresInRefreshToken = Number(this.configService.get<number>('REFRESH_TOKEN_EXPIRES_IN')) || 7 * 24 * 60 * 60 * 1000;
+      const expiresIn = Number(this.configService.get<number>('JWT_EXPIRES_IN')) || 3600;
+
       // Tạo refresh token mới
       const newRefreshToken = this.jwtService.sign(newPayload, {
         secret: this.configService.get<string>('REFRESH_TOKEN_SECRET') || 'refresh-token-secret',
-        expiresIn: '7d',
+        expiresIn: expiresInRefreshToken,
       });
 
       // Lưu refresh token mới
-      const expiresIn = 7 * 24 * 60 * 60 * 1000; // 7 days
       await this.refreshTokenRepository.create({
         userId: user.id,
         token: newRefreshToken,
-        expiresAt: new Date(Date.now() + expiresIn),
+        expiresAt: new Date(Date.now() + expiresInRefreshToken),
         ipAddress,
         userAgent,
         isRevoked: 0,
@@ -104,7 +106,7 @@ export class RefreshTokenHandler
       return {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-        expiresIn: 15 * 60, // 15 minutes in seconds
+        expiresIn: expiresIn,
         tokenType: 'Bearer',
         user: {
           id: user.id,
