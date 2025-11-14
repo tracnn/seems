@@ -22,6 +22,10 @@ export enum ErrorCode {
   // Server Errors
   INTERNAL_SERVER_ERROR = 'SRV_001',
   DATABASE_ERROR = 'SRV_002',
+
+  // Account Activation Errors
+  USER_ALREADY_ACTIVE = 'AUTH_011',
+  ACCOUNT_ACTIVATION_FAILED = 'AUTH_012',
 }
 
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
@@ -41,5 +45,7 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   [ErrorCode.MISSING_REQUIRED_FIELD]: 'Thiếu trường bắt buộc',
   [ErrorCode.INTERNAL_SERVER_ERROR]: 'Lỗi máy chủ nội bộ',
   [ErrorCode.DATABASE_ERROR]: 'Lỗi cơ sở dữ liệu',
+  [ErrorCode.USER_ALREADY_ACTIVE]: 'Tài khoản đã được kích hoạt',
+  [ErrorCode.ACCOUNT_ACTIVATION_FAILED]: 'Không thể kích hoạt tài khoản',
 };
 

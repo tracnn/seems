@@ -8,6 +8,8 @@ import { LogoutCommand } from '../../application/use-cases/commands/logout/logou
 import { GetUserQuery } from '../../application/use-cases/queries/get-user/get-user.query';
 import { MessagePattern } from '@nestjs/microservices';
 import { ServiceEnum } from '@app/utils/service.enum';
+import { ActivateAccountCommand } from '../../application/use-cases/commands/activate-account/activate-account.command';
+import { ActivateAccountDto } from '../../application/dtos/activate-account.dto';
 
 @Controller()
 export class AuthController {
@@ -105,6 +107,24 @@ export class AuthController {
       timestamp: new Date().toISOString(),
       service: ServiceEnum.AUTH_SERVICE,
       uptime: process.uptime(),
+    };
+  }
+  @MessagePattern({ cmd: 'activate-account' })
+  async activateAccount(data: ActivateAccountDto) {
+    const command = new ActivateAccountCommand(
+      data.userId,
+      data.activatedBy, // Nếu có trong DTO
+    );
+
+    const user = await this.commandBus.execute(command);
+
+    // Không trả về password
+    const { password, ...userWithoutPassword } = user;
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Kích hoạt tài khoản thành công',
+      data: userWithoutPassword,
     };
   }
 }

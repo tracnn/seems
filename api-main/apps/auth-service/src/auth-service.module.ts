@@ -14,6 +14,7 @@ import { RegisterHandler } from './application/use-cases/commands/register/regis
 import { LoginHandler } from './application/use-cases/commands/login/login.handler';
 import { RefreshTokenHandler } from './application/use-cases/commands/refresh-token/refresh-token.handler';
 import { LogoutHandler } from './application/use-cases/commands/logout/logout.handler';
+import { ActivateAccountHandler } from './application/use-cases/commands/activate-account/activate-account.handler';
 
 // Application - Query Handlers
 import { GetUserHandler } from './application/use-cases/queries/get-user/get-user.handler';
@@ -26,6 +27,7 @@ const CommandHandlers = [
   LoginHandler,
   RefreshTokenHandler,
   LogoutHandler,
+  ActivateAccountHandler,
 ];
 const QueryHandlers = [GetUserHandler];
 

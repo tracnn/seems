@@ -22,6 +22,7 @@ import { ServiceEnum } from '@app/utils/service.enum';
 import { RegisterDto, LoginDto, RefreshTokenDto } from './dtos';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { firstValueFrom } from 'rxjs';
+import { ActivateAccountDto } from './dtos/activate-account.dto';
 
 @ApiTags('Authentication')
 @Controller('api/v1/auth')
@@ -221,6 +222,17 @@ export class AuthController {
   async logout(@Request() req: any) {
     return firstValueFrom(
       this.authClient.send({ cmd: 'logout' }, { userId: req.user.id }),
+    );
+  }
+
+  @Post('activate-account')
+  //@UseGuards(JwtAuthGuard, RolesGuard)
+  //@Roles('ADMIN') // Chỉ admin mới có quyền kích hoạt tài khoản
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Kích hoạt tài khoản người dùng' })
+  async activateAccount(@Body() dto: ActivateAccountDto) {
+    return firstValueFrom(
+      this.authClient.send({ cmd: 'activate-account' }, dto),
     );
   }
 }
