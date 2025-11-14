@@ -28,6 +28,36 @@
       "@app/common/*": [
         "libs/common/src/*"
       ],
+      "@app/shared-decorators": [
+        "libs/shared-decorators/src"
+      ],
+      "@app/shared-decorators/*": [
+        "libs/shared-decorators/src/*"
+      ],
+      "@app/shared-dto": [
+        "libs/shared-dto/src"
+      ],
+      "@app/shared-dto/*": [
+        "libs/shared-dto/src/*"
+      ],
+      "@app/shared-exceptions": [
+        "libs/shared-exceptions/src"
+      ],
+      "@app/shared-exceptions/*": [
+        "libs/shared-exceptions/src/*"
+      ],
+      "@app/shared-guards": [
+        "libs/shared-guards/src"
+      ],
+      "@app/shared-guards/*": [
+        "libs/shared-guards/src/*"
+      ],
+      "@app/shared-types": [
+        "libs/shared-types/src"
+      ],
+      "@app/shared-types/*": [
+        "libs/shared-types/src/*"
+      ],
       "@app/utils": [
         "libs/utils/src"
       ],

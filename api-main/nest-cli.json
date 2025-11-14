@@ -55,6 +55,51 @@
         "tsConfigPath": "apps/iam-service/tsconfig.app.json"
       }
     },
+    "shared-decorators": {
+      "type": "library",
+      "root": "libs/shared-decorators",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared-decorators/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared-decorators/tsconfig.lib.json"
+      }
+    },
+    "shared-dto": {
+      "type": "library",
+      "root": "libs/shared-dto",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared-dto/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared-dto/tsconfig.lib.json"
+      }
+    },
+    "shared-exceptions": {
+      "type": "library",
+      "root": "libs/shared-exceptions",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared-exceptions/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared-exceptions/tsconfig.lib.json"
+      }
+    },
+    "shared-guards": {
+      "type": "library",
+      "root": "libs/shared-guards",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared-guards/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared-guards/tsconfig.lib.json"
+      }
+    },
+    "shared-types": {
+      "type": "library",
+      "root": "libs/shared-types",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared-types/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared-types/tsconfig.lib.json"
+      }
+    },
     "utils": {
       "type": "library",
       "root": "libs/utils",
