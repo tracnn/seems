@@ -1,26 +1,11 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpCode,
-  HttpStatus,
-  Get,
-  UseGuards,
-  Request,
-  ValidationPipe,
-  Ip,
-  Headers,
-} from '@nestjs/common';
+import { Controller, HttpStatus } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { RegisterDto } from '../../application/dtos/register.dto';
-import { LoginDto } from '../../application/dtos/login.dto';
-import { RefreshTokenDto } from '../../application/dtos/refresh-token.dto';
 import { RegisterCommand } from '../../application/use-cases/commands/register/register.command';
 import { LoginCommand } from '../../application/use-cases/commands/login/login.command';
 import { RefreshTokenCommand } from '../../application/use-cases/commands/refresh-token/refresh-token.command';
 import { LogoutCommand } from '../../application/use-cases/commands/logout/logout.command';
 import { GetUserQuery } from '../../application/use-cases/queries/get-user/get-user.query';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { MessagePattern } from '@nestjs/microservices';
 import { ServiceEnum } from '@app/utils/service.enum';
 
@@ -32,13 +17,13 @@ export class AuthController {
   ) {}
 
   @MessagePattern({ cmd: 'register' })
-  async register(@Body(ValidationPipe) registerDto: RegisterDto) {
+  async register(data: RegisterDto) {
     const command = new RegisterCommand(
-      registerDto.username,
-      registerDto.email,
-      registerDto.password,
-      registerDto.firstName,
-      registerDto.lastName,
+      data.username,
+      data.email,
+      data.password,
+      data.firstName,
+      data.lastName,
     );
 
     const user = await this.commandBus.execute(command);
@@ -53,17 +38,13 @@ export class AuthController {
   }
 
   @MessagePattern({ cmd: 'login' })
-  @HttpCode(HttpStatus.OK)
-  async login(
-    @Body(ValidationPipe) loginDto: LoginDto,
-    @Ip() ip: string,
-    @Headers('user-agent') userAgent: string,
-  ) {
+  async login(data: any) {
+    // Data từ TCP message pattern bao gồm: usernameOrEmail, password, ipAddress, userAgent
     const command = new LoginCommand(
-      loginDto.usernameOrEmail,
-      loginDto.password,
-      ip,
-      userAgent,
+      data.usernameOrEmail,
+      data.password,
+      data.ipAddress,
+      data.userAgent,
     );
 
     const result = await this.commandBus.execute(command);
@@ -76,9 +57,8 @@ export class AuthController {
   }
 
   @MessagePattern({ cmd: 'get-me' })
-  @UseGuards(JwtAuthGuard)
-  async getMe(@Request() req: any) {
-    const query = new GetUserQuery(req.user.id);
+  async getMe(data: any) {
+    const query = new GetUserQuery(data.userId);
     const user = await this.queryBus.execute(query);
 
     return {
@@ -89,16 +69,12 @@ export class AuthController {
   }
 
   @MessagePattern({ cmd: 'refresh-token' })
-  @HttpCode(HttpStatus.OK)
-  async refreshToken(
-    @Body(ValidationPipe) refreshTokenDto: RefreshTokenDto,
-    @Ip() ip: string,
-    @Headers('user-agent') userAgent: string,
-  ) {
+  async refreshToken(data: any) {
+    // Data từ TCP message pattern bao gồm: refreshToken, ipAddress, userAgent
     const command = new RefreshTokenCommand(
-      refreshTokenDto.refreshToken,
-      ip,
-      userAgent,
+      data.refreshToken,
+      data.ipAddress,
+      data.userAgent,
     );
 
     const result = await this.commandBus.execute(command);
@@ -111,10 +87,8 @@ export class AuthController {
   }
 
   @MessagePattern({ cmd: 'logout' })
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  async logout(@Request() req: any) {
-    const command = new LogoutCommand(req.user.id);
+  async logout(data: any) {
+    const command = new LogoutCommand(data.userId);
 
     await this.commandBus.execute(command);
 

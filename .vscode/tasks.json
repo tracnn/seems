@@ -1,0 +1,58 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+	  {
+		"type": "npm",
+		"script": "build",
+		"path": "api-main",
+		"group": "build",
+		"problemMatcher": ["$tsc"],
+		"label": "npm: build - api-main",
+		"detail": "Build all services"
+	  },
+	  {
+		"type": "npm",
+		"script": "start:dev",
+		"path": "api-main",
+		"label": "npm: start:dev - api-main",
+		"isBackground": true,
+		"problemMatcher": {
+		  "pattern": [
+			{
+			  "regexp": ".",
+			  "file": 1,
+			  "location": 2,
+			  "message": 3
+			}
+		  ],
+		  "background": {
+			"activeOnStart": true,
+			"beginsPattern": ".",
+			"endsPattern": "."
+		  }
+		}
+	  },
+	  {
+		"type": "npm",
+		"script": "start:debug",
+		"path": "api-main",
+		"label": "npm: start:debug - api-main",
+		"isBackground": true,
+		"problemMatcher": {
+		  "pattern": [
+			{
+			  "regexp": ".",
+			  "file": 1,
+			  "location": 2,
+			  "message": 3
+			}
+		  ],
+		  "background": {
+			"activeOnStart": true,
+			"beginsPattern": ".",
+			"endsPattern": "."
+		  }
+		}
+	  }
+	]
+}

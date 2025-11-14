@@ -1,0 +1,316 @@
+# 📘 `cursor-rules.md`
+### **qSEEMS Backend – MDC + Scaffold Prompt**
+### **Monorepo + pnpm + NestJS Microservice + UUID + CQRS + Oracle + Swagger + Winston/Seq**
+
+# ======================================================================
+# 🧱 **PHẦN 1 – MDC (BỘ QUY TẮC XÂY DỰNG BACKEND qSEEMS)**
+# ======================================================================
+
+# 0) MỤC TIÊU  
+Cursor phải xây dựng hệ thống backend qSEEMS theo các nguyên tắc sau:
+
+- **Monorepo + pnpm workspace**  
+- Kiến trúc **microservice độc lập**  
+- **NestJS chuẩn**, KHÔNG sử dụng DDD  
+- **CQRS toàn bộ use-case**  
+- **UUID v4** làm primary key  
+- **Oracle XE** (TypeORM + oracledb)  
+- **Swagger/OpenAPI đầy đủ**  
+- **Winston + Seq logging**  
+- **Docker Compose** chạy được ngay  
+- Code dễ đọc, rõ ràng, dễ mở rộng
+
+---
+
+# 1) TỔNG THỂ HỆ THỐNG  
+
+Hệ thống có 4 service:
+
+### 1. `api-gateway`
+- NestJS HTTP  
+- JWT guard  
+- RBAC guard  
+- Reverse proxy → service khác  
+- Rate limit  
+- Logging request  
+- Swagger  
+- Không chứa logic nghiệp vụ  
+
+### 2. `auth-service`
+- Login  
+- Refresh token  
+- Argon2 hashing  
+- Cấp JWT HS256  
+- CQRS  
+
+### 3. `iam-service`
+- Users  
+- Roles  
+- Permissions  
+- Assign role  
+- CQRS  
+- Oracle  
+
+### 4. `catalog-service`
+- Stations  
+- Ambulances  
+- Crews  
+- Equipment  
+- CRUD  
+- CQRS  
+- Oracle  
+
+Tất cả service độc lập hoàn toàn, giao tiếp qua **HTTP thông qua api-gateway**.
+
+---
+
+# 2) CẤU TRÚC FOLDER CHUẨN NESTJS (bắt buộc)
+
+Mỗi service phải theo chuẩn:
+
+```
+src/
+  main.ts
+  app.module.ts
+
+  modules/
+    <module>/
+      <module>.module.ts
+      controllers/
+      services/
+      dtos/
+      entities/
+      repositories/
+      cqrs/
+        commands/
+        queries/
+      guards/
+      interceptors/
+      filters/
+```
+
+**KHÔNG dùng DDD**  
+**KHÔNG tạo domain/application/infrastructure layers**
+
+---
+
+# 3) CQRS (bắt buộc)
+
+Cấu trúc:
+
+```
+modules/<module>/cqrs/commands/create-xxx.command.ts
+modules/<module>/cqrs/commands/create-xxx.handler.ts
+modules/<module>/cqrs/queries/get-xxx.query.ts
+modules/<module>/cqrs/queries/get-xxx.handler.ts
+```
+
+- Command = ghi (create/update/delete)  
+- Query = đọc (get/list)  
+- Handler dùng `@CommandHandler`, `@QueryHandler`  
+
+---
+
+# 4) ORACLE + TYPEORM (bắt buộc)
+
+### KHÔNG dùng sequence + trigger  
+→ Sử dụng UUID cho ID
+
+### Entity chuẩn UUID:
+
+```ts
+@PrimaryGeneratedColumn("uuid")
+id: string;
+```
+
+### Cột Oracle tương ứng:
+
+```
+VARCHAR2(36 CHAR)
+```
+
+### Migration mẫu:
+
+```sql
+CREATE TABLE USERS (
+  ID VARCHAR2(36 CHAR) PRIMARY KEY,
+  USERNAME VARCHAR2(255 CHAR) NOT NULL,
+  PASSWORD VARCHAR2(255 CHAR) NOT NULL,
+  FULL_NAME VARCHAR2(255 CHAR),
+  IS_ACTIVE NUMBER(1) DEFAULT 1 NOT NULL
+);
+```
+
+### KHÔNG ĐƯỢC DÙNG:
+- NUMBER PRIMARY KEY  
+- AUTO_INCREMENT  
+- SEQUENCE  
+- TRIGGER BEFORE INSERT  
+
+---
+
+# 5) LOGGING – WINSTON + SEQ (bắt buộc)
+
+### Format:
+- JSON  
+- timestamp  
+- level  
+- context  
+- requestId  
+- userId (nếu có)  
+
+### Transport:
+- console  
+- file `logs/`  
+- Seq (`@datalust/winston-seq`)  
+
+### ENV:
+```
+SEQ_URL=http://seq:5341
+SEQ_API_KEY=
+```
+
+### Middleware start/end request:
+- Gắn requestId  
+- Log method, url  
+- Log response time  
+- Log userId  
+
+---
+
+# 6) API GATEWAY (bắt buộc)
+
+- JWT validation  
+- RBAC guard  
+- Reverse proxy dùng Axios  
+- Rate-limit (NestJS Throttler)  
+- Logging  
+- Không chứa logic nghiệp vụ  
+
+### Routing:
+```
+/auth        → auth-service
+/iam         → iam-service
+/resources   → catalog-service
+```
+
+---
+
+# 7) VALIDATION
+
+- Dùng `class-validator` + `class-transformer`  
+- Validate tại controller  
+- DTO phải có decorator đầy đủ  
+- Không validate tại service  
+
+---
+
+# 8) ERROR HANDLING
+
+Tạo filter:
+
+```
+HttpExceptionFilter
+```
+
+Format lỗi chuẩn:
+
+```json
+{
+  "success": false,
+  "errorCode": "VALIDATION_ERROR",
+  "message": "Dữ liệu không hợp lệ",
+  "timestamp": "2025-01-01T12:00:00Z",
+  "path": "/iam/users"
+}
+```
+
+---
+
+# 9) ENV (bắt buộc)
+
+```
+PORT=
+DB_HOST=
+DB_PORT=
+DB_SID=
+DB_USER=
+DB_PASS=
+JWT_SECRET=
+SEQ_URL=
+SEQ_API_KEY=
+SWAGGER_TITLE=
+SWAGGER_DESC=
+API_VERSION=
+```
+
+---
+
+# 10) YÊU CẦU TỪNG SERVICE (rút gọn do giới hạn)
+(auth, iam, catalog – như đã mô tả đầy đủ ở trên)
+
+---
+
+# 11) DOCKER COMPOSE (rút gọn)
+
+Bao gồm:
+- api-gateway  
+- auth-service  
+- iam-service  
+- catalog-service  
+- oracle-xe  
+- seq  
+
+---
+
+# 12) SWAGGER
+
+- `/docs`, `/docs-json`  
+- JWT BearerAuth  
+- DTO có decorator `@ApiProperty()`  
+- Tag theo module  
+
+---
+
+# 13) LIBS COMMON
+
+Chứa filter, middleware, interceptor chung.
+
+---
+
+# 14) TIÊU CHUẨN CODE  
+- Không dùng any  
+- Không logic trong controller  
+- Service xử lý nghiệp vụ  
+
+---
+
+# 15) CURSOR PHẢI SINH RA  
+- Monorepo  
+- pnpm  
+- 4 services  
+- libs/common  
+- CQRS  
+- UUID Entities  
+- Oracle migrations  
+- Swagger  
+- Winston + Seq  
+- Dockerfile  
+- docker-compose  
+- Seed admin  
+- README  
+
+---
+
+# ======================================================================
+# PHẦN 2 – PROMPT KHỞI TẠO DỰ ÁN
+# ======================================================================
+
+(Hướng dẫn tạo monorepo, services, cqrs, docker, swagger, seed — đầy đủ như phần trước)
+
+---
+
+# ======================================================================
+# ✔️ KẾT THÚC
+# ======================================================================
+

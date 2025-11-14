@@ -6,7 +6,8 @@ import { User } from './user.entity';
 export class RefreshToken extends BaseEntity {
   @Column({
     name: 'USER_ID',
-    type: 'uuid',
+    type: 'varchar2',
+    length: 36,
   })
   userId: string;
 
@@ -37,7 +38,7 @@ export class RefreshToken extends BaseEntity {
 
   @Column({
     name: 'IP_ADDRESS',
-    type: 'varchar',
+    type: 'varchar2',
     length: 45,
     nullable: true,
   })
@@ -45,7 +46,7 @@ export class RefreshToken extends BaseEntity {
 
   @Column({
     name: 'USER_AGENT',
-    type: 'varchar',
+    type: 'varchar2',
     length: 500,
     nullable: true,
   })

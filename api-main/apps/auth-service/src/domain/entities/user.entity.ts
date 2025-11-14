@@ -44,12 +44,18 @@ export class User extends BaseEntity {
 
   @Column({
     name: 'IS_EMAIL_VERIFIED',
-    default: false,
+    type: 'number',
+    default: 0,
+    transformer: {
+      to: (value: boolean): number => (value ? 1 : 0),
+      from: (value: number): boolean => value === 1,
+    },
   })
   isEmailVerified: boolean;
 
   @Column({
     name: 'LAST_LOGIN_AT',
+    type: 'timestamp',
     nullable: true,
   })
   lastLoginAt: Date;

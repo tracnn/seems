@@ -2,9 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AuthServiceModule } from './auth-service.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from './presentation/filters/http-exception.filter';
+import { RpcExceptionFilter } from './presentation/filters/rpc-exception.filter';
 
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
+  
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AuthServiceModule,
     {
@@ -28,16 +30,21 @@ async function bootstrap() {
     }),
   );
 
-  // Global filters
-  app.useGlobalFilters(new HttpExceptionFilter());
+  // Global filters - sử dụng RPC exception filter cho microservice
+  app.useGlobalFilters(new RpcExceptionFilter());
 
-  const logger = new Logger('Bootstrap');
   logger.log('Starting auth-service...');
+  logger.log(`Transport: TCP`);
+  logger.log(`Host: ${process.env.AUTH_SERVICE_HOST ?? '0.0.0.0'}`);
+  logger.log(`Port: ${process.env.AUTH_SERVICE_PORT ?? 3001}`);
 
   await app.listen();
 
-  logger.log(
-    `auth-service is running on: ${process.env.AUTH_SERVICE_HOST}:${process.env.AUTH_SERVICE_PORT}`,
-  );
+  logger.log('✅ auth-service is running and listening for messages');
 }
-bootstrap();
+
+bootstrap().catch((error) => {
+  const logger = new Logger('Bootstrap');
+  logger.error('Failed to start auth-service:', error);
+  process.exit(1);
+});

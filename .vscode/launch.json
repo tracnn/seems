@@ -1,0 +1,96 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug API Gateway",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:debug", "--", "api-main"],
+      "cwd": "${workspaceFolder}/api-main",
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/api-main/dist/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Auth Service",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:debug", "--", "auth-service"],
+      "cwd": "${workspaceFolder}/api-main",
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/api-main/dist/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug IAM Service",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:debug", "--", "iam-service"],
+      "cwd": "${workspaceFolder}/api-main",
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/api-main/dist/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Catalog Service",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:debug", "--", "catalog-service"],
+      "cwd": "${workspaceFolder}/api-main",
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/api-main/dist/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to NestJS (Debug Mode)",
+      "port": 9229,
+      "restart": true,
+      "stopOnEntry": false,
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/api-main/dist/**/*.js"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug All Services",
+      "configurations": [
+        "Debug API Gateway",
+        "Debug Auth Service",
+        "Debug IAM Service",
+        "Debug Catalog Service"
+      ],
+      "stopAll": true
+    }
+  ]
+}
