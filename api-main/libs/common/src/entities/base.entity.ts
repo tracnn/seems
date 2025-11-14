@@ -19,10 +19,10 @@ export abstract class BaseEntity {
   @Generated('uuid')
   id: string;
 
-  @CreateDateColumn({ name: 'CREATED_AT', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ name: 'CREATED_AT' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'UPDATED_AT', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({ name: 'UPDATED_AT' })
   updatedAt: Date;
 
   @Column({ name: 'CREATED_BY', length: 100, nullable: true })
@@ -31,7 +31,7 @@ export abstract class BaseEntity {
   @Column({ name: 'UPDATED_BY', length: 100, nullable: true })
   updatedBy: string;
 
-  @DeleteDateColumn({ name: 'DELETED_AT', type: 'timestamp', nullable: true })
+  @DeleteDateColumn({ name: 'DELETED_AT', nullable: true })
   deletedAt: Date | null;
 
   @VersionColumn({name: 'VERSION'})

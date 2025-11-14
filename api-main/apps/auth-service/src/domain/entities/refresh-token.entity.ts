@@ -6,7 +6,6 @@ import { User } from './user.entity';
 export class RefreshToken extends BaseEntity {
   @Column({
     name: 'USER_ID',
-    type: 'varchar2',
     length: 36,
   })
   userId: string;
@@ -17,7 +16,6 @@ export class RefreshToken extends BaseEntity {
 
   @Column({
     name: 'TOKEN',
-    type: 'varchar2',
     length: 500,
     unique: true,
   })
@@ -25,20 +23,17 @@ export class RefreshToken extends BaseEntity {
 
   @Column({
     name: 'EXPIRES_AT',
-    type: 'timestamp',
   })
   expiresAt: Date;
 
   @Column({
     name: 'IS_REVOKED',
-    type: 'number',
-    default: 0,
+    default: false,
   })
-  isRevoked: number;
+  isRevoked: boolean;
 
   @Column({
     name: 'IP_ADDRESS',
-    type: 'varchar2',
     length: 45,
     nullable: true,
   })
@@ -46,7 +41,6 @@ export class RefreshToken extends BaseEntity {
 
   @Column({
     name: 'USER_AGENT',
-    type: 'varchar2',
     length: 500,
     nullable: true,
   })
