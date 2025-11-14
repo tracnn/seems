@@ -55,6 +55,15 @@
         "tsConfigPath": "apps/iam-service/tsconfig.app.json"
       }
     },
+    "logger": {
+      "type": "library",
+      "root": "libs/logger",
+      "entryFile": "index",
+      "sourceRoot": "libs/logger/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/logger/tsconfig.lib.json"
+      }
+    },
     "shared-decorators": {
       "type": "library",
       "root": "libs/shared-decorators",

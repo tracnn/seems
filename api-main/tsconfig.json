@@ -28,6 +28,12 @@
       "@app/common/*": [
         "libs/common/src/*"
       ],
+      "@app/logger": [
+        "libs/logger/src"
+      ],
+      "@app/logger/*": [
+        "libs/logger/src/*"
+      ],
       "@app/shared-decorators": [
         "libs/shared-decorators/src"
       ],
