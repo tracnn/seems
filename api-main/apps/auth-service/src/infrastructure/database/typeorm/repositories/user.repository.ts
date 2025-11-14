@@ -48,5 +48,14 @@ export class UserRepository implements IUserRepository {
   async findAll(): Promise<User[]> {
     return this.repository.find();
   }
+
+  async activateUser(id: string): Promise<User> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.isActive = true;  
+    return await this.repository.save(user);
+  }
 }
 

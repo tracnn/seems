@@ -41,7 +41,7 @@ const QueryHandlers = [GetUserHandler];
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-default-secret-key-change-this',
-      signOptions: { expiresIn: '15m' },
+      signOptions: { expiresIn: Number(process.env.JWT_EXPIRES_IN) || 15 * 60 },
     }),
   ],
   controllers: [AuthController],

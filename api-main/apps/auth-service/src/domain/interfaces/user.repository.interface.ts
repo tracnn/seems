@@ -9,5 +9,7 @@ export interface IUserRepository {
   delete(id: string): Promise<void>;
   softDelete(id: string): Promise<void>;
   findAll(): Promise<User[]>;
+  
+  activateUser(id: string): Promise<User>;
 }
 

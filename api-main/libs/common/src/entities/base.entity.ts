@@ -4,9 +4,8 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   Column,
-  BeforeInsert,
-  BeforeUpdate,
   Generated,
+  VersionColumn,
 } from 'typeorm';
 
 /**
@@ -16,79 +15,29 @@ import {
  */
 export abstract class BaseEntity {
   // Sử dụng UUID với type varchar2 cho Oracle
-  @PrimaryColumn({
-    type: 'varchar2',
-    length: 36,
-    name: 'ID',
-  })
+  @PrimaryColumn({ name: 'ID', length: 36 })
   @Generated('uuid')
   id: string;
 
-  @CreateDateColumn({
-    name: 'CREATED_AT',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
+  @CreateDateColumn({ name: 'CREATED_AT', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @UpdateDateColumn({
-    name: 'UPDATED_AT',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
+  @UpdateDateColumn({ name: 'UPDATED_AT', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @Column({
-    name: 'CREATED_BY',
-    type: 'varchar2',
-    length: 100,
-    nullable: true,
-  })
+  @Column({ name: 'CREATED_BY', length: 100, nullable: true })
   createdBy: string;
 
-  @Column({
-    name: 'UPDATED_BY',
-    type: 'varchar2',
-    length: 100,
-    nullable: true,
-  })
+  @Column({ name: 'UPDATED_BY', length: 100, nullable: true })
   updatedBy: string;
 
-  @DeleteDateColumn({
-    name: 'DELETED_AT',
-    type: 'timestamp',
-    nullable: true,
-  })
+  @DeleteDateColumn({ name: 'DELETED_AT', type: 'timestamp', nullable: true })
   deletedAt: Date | null;
 
-  @Column({
-    name: 'VERSION',
-    type: 'number',
-    default: 1,
-  })
+  @VersionColumn({name: 'VERSION'})
   version: number;
 
-  @Column({
-    name: 'IS_ACTIVE',
-    type: 'number',
-    default: 1,
-    transformer: {
-      to: (value: boolean): number => (value ? 1 : 0),
-      from: (value: number): boolean => value === 1,
-    },
-  })
+  @Column({ name: 'IS_ACTIVE', default: true })
   isActive: boolean;
-
-  @BeforeInsert()
-  setDefaultVersion() {
-    if (!this.version) {
-      this.version = 1;
-    }
-  }
-
-  @BeforeUpdate()
-  incrementVersion() {
-    this.version += 1;
-  }
 }
 
