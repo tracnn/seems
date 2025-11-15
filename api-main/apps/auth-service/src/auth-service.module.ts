@@ -34,12 +34,12 @@ const QueryHandlers = [GetUserHandler];
 
 @Module({
   imports: [
+    LoggerModule.forRoot('auth-service'),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
       load: [databaseConfig],
     }),
-    LoggerModule.forRoot('auth-service'),
     CqrsModule,
     DatabaseModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
