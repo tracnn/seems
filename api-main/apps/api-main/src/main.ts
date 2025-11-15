@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
 import { WinstonLoggerService } from '@app/logger';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,8 +14,11 @@ async function bootstrap() {
   logger.setContext('Bootstrap');
   app.useLogger(logger);
 
-  app.use(json({ limit: '100mb' }));
-  app.use(urlencoded({ extended: true, limit: '100mb' }));
+  app.use(helmet());
+  logger.log('Helmet enabled');
+
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ extended: true, limit: '10mb' }));
 
   // Enable CORS
   app.enableCors();
@@ -29,6 +33,7 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
+      disableErrorMessages: process.env.NODE_ENV === 'production', // Ẩn error detail trong prod
     }),
   );
   logger.log('Global validation pipe configured');

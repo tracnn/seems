@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LoginCommand } from './login.command';
-import { UnauthorizedException, Injectable } from '@nestjs/common';
+import { UnauthorizedException, Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from '../../../../infrastructure/database/typeorm/repositories/user.repository';
 import { RefreshTokenRepository } from '../../../../infrastructure/database/typeorm/repositories/refresh-token.repository';
 import { JwtService } from '@nestjs/jwt';
@@ -12,6 +12,7 @@ import { ErrorCode, ERROR_MESSAGES } from '../../../../domain/constants/error-co
 @Injectable()
 @CommandHandler(LoginCommand)
 export class LoginHandler implements ICommandHandler<LoginCommand> {
+  private readonly logger = new Logger(LoginHandler.name);
   constructor(
     private readonly userRepository: UserRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
@@ -29,6 +30,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     }
 
     if (!user) {
+      this.logger.error('User not found', { usernameOrEmail });
       throw new UnauthorizedException({
         statusCode: 401,
         error: 'Unauthorized',
@@ -50,6 +52,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
 
     // Kiểm tra user active
     if (!user.isActive) {
+      this.logger.error('User inactive', { userId: user.id });
       throw new UnauthorizedException({
         statusCode: 401,
         error: 'Unauthorized',
