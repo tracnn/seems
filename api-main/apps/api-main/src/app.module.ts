@@ -11,9 +11,7 @@ import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 
 @Module({
   imports: [
-    // Logger Module - Global logger cho API Gateway
     LoggerModule.forRoot('api-gateway'),
-    
     UtilsModule,
     CqrsModule,
     ConfigModule.forRoot({ 
@@ -46,7 +44,6 @@ import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Apply HTTP logger middleware to all routes
     consumer.apply(HttpLoggerMiddleware).forRoutes('*');
   }
 }

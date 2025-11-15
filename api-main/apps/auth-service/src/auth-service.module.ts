@@ -21,6 +21,7 @@ import { GetUserHandler } from './application/use-cases/queries/get-user/get-use
 
 // Presentation
 import { AuthController } from './presentation/controllers/auth.controller';
+import { LoggerModule } from '@app/logger';
 
 const CommandHandlers = [
   RegisterHandler,
@@ -33,6 +34,7 @@ const QueryHandlers = [GetUserHandler];
 
 @Module({
   imports: [
+    LoggerModule.forRoot('auth-service'),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',

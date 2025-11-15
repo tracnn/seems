@@ -3,10 +3,9 @@ import { AuthServiceModule } from './auth-service.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { RpcExceptionFilter } from './presentation/filters/rpc-exception.filter';
+import { WinstonLoggerService } from '@app/logger';
 
 async function bootstrap() {
-  const logger = new Logger('Bootstrap');
-  
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AuthServiceModule,
     {
@@ -17,6 +16,10 @@ async function bootstrap() {
       },
     },
   );
+  
+  const logger = app.get(WinstonLoggerService);
+  logger.setContext('Bootstrap');
+  app.useLogger(logger);
 
   // Global pipes
   app.useGlobalPipes(
@@ -44,7 +47,6 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
-  const logger = new Logger('Bootstrap');
-  logger.error('Failed to start auth-service:', error);
+  console.error('❌ Failed to start auth-service:', error);
   process.exit(1);
 });
