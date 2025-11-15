@@ -19,8 +19,16 @@ export default registerAs(
     // Thêm autoLoadEntities nếu cần
     autoLoadEntities: true,
     extra: {
-      connectionLimit: 10,
-    },
+      poolMin: parseInt(process.env.DB_POOL_MIN || '5', 10),
+      poolMax: parseInt(process.env.DB_POOL_MAX || '20', 10),
+      poolIncrement: parseInt(process.env.DB_POOL_INCREMENT || '2', 10),
+      connectTimeout: 60000,
+      poolTimeout: 60000,
+      queueTimeout: 60000,
+      poolPingInterval: 60,
+      stmtCacheSize: 30,
+      enableConnectionValidation: true,
+    }
   }),
 );
 

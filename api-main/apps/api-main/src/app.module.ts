@@ -8,6 +8,8 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { LogServiceEnum, ServiceEnum } from '@app/utils/service.enum';
 import { AuthModule } from './auth/auth.module';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -18,6 +20,10 @@ import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
       envFilePath: '.env',
     }),
     LoggerModule.forRoot(LogServiceEnum.API_MAIN),
+    ThrottlerModule.forRoot([{
+      ttl: 60,
+      limit: 10,
+    }]),
     AuthModule,
     ClientsModule.register([
       {
@@ -39,7 +45,13 @@ import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
   exports: [CqrsModule],
 })
 export class AppModule implements NestModule {
