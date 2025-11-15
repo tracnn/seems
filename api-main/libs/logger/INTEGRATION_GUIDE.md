@@ -10,6 +10,7 @@ Tài liệu này hướng dẫn chi tiết cách tích hợp Winston Logger vào
 - [ ] Inject logger vào use cases/handlers
 - [ ] Inject logger vào repositories (optional)
 - [ ] Thêm HTTP request logging middleware (optional)
+- [ ] Cấu hình Seq centralized logging (recommended)
 
 ---
 
@@ -447,6 +448,159 @@ export class AuthServiceModule implements NestModule {
 
 ---
 
+## 5️⃣ Seq Centralized Logging Setup (Recommended)
+
+### Tại sao cần Seq?
+
+Với kiến trúc microservices, mỗi service có logs riêng rất khó quản lý. Seq giúp:
+- Tập trung logs từ tất cả services
+- Query và filter logs mạnh mẽ
+- Real-time monitoring
+- Alerting tự động
+
+### Bước 1: Chạy Seq Server (Docker)
+
+```bash
+# Pull và chạy Seq container
+docker run \
+  --name seq \
+  -d \
+  -e ACCEPT_EULA=Y \
+  -p 5341:80 \
+  -v /path/to/seq-data:/data \
+  datalust/seq
+```
+
+Hoặc sử dụng Docker Compose (recommended):
+
+**File: `docker-compose.yml` (thêm vào project root)**
+
+```yaml
+version: '3.8'
+
+services:
+  seq:
+    image: datalust/seq:latest
+    container_name: seq-logging
+    ports:
+      - "5341:80"
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - seq-data:/data
+    restart: unless-stopped
+
+volumes:
+  seq-data:
+```
+
+**Chạy Seq:**
+```bash
+docker-compose up -d seq
+```
+
+**Truy cập Seq UI:**
+```
+http://localhost:5341
+```
+
+### Bước 2: Cấu hình .env cho mỗi service
+
+**File: `.env` (trong mỗi service hoặc root)**
+
+```env
+# Existing config
+LOG_LEVEL=debug
+LOG_TO_FILE=true
+NODE_ENV=development
+
+# Thêm Seq configuration
+SEQ_SERVER_URL=http://localhost:5341
+SEQ_API_KEY=                            # Optional: để trống cho local dev
+```
+
+**Production .env:**
+```env
+LOG_LEVEL=info
+LOG_TO_FILE=true
+NODE_ENV=production
+
+# Seq production
+SEQ_SERVER_URL=https://seq.yourdomain.com
+SEQ_API_KEY=your-production-api-key-here
+```
+
+### Bước 3: Tạo API Key trong Seq (Optional - cho Production)
+
+1. Mở Seq UI: http://localhost:5341
+2. Vào **Settings** → **API Keys**
+3. Click **Add API Key**
+4. Điền thông tin:
+   - Title: `auth-service` (hoặc tên service)
+   - Minimum level: `Verbose`
+   - Properties: Không cần thay đổi
+5. Click **Save Changes**
+6. Copy API key và thêm vào `.env`
+
+### Bước 4: Verify Seq Integration
+
+**Terminal 1: Start Seq**
+```bash
+docker-compose up seq
+# Hoặc
+docker start seq
+```
+
+**Terminal 2: Start service**
+```bash
+npm run start:dev auth-service
+```
+
+**Kiểm tra console output:**
+```
+[auth-service] Seq logging enabled: http://localhost:5341
+[Nest] 12345  - 2024-11-14 10:30:45   [Bootstrap] Auth Service is running on port 3001
+```
+
+**Terminal 3: Test login endpoint**
+```bash
+curl -X POST http://localhost:3001/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"test123"}'
+```
+
+**Xem logs trong Seq:**
+1. Mở http://localhost:5341
+2. Logs sẽ hiển thị real-time
+3. Thử filter: `label = 'auth-service'`
+
+### Bước 5: Tạo Dashboard trong Seq (Optional)
+
+1. Trong Seq UI, vào **Dashboards** → **Add Chart**
+2. Tạo chart cho:
+   - **Error Rate**: `level = 'error' | count(*) group by time(5m)`
+   - **Login Events**: `message like '%login%' | count(*) group by time(1h)`
+   - **Response Times**: `type = 'HTTP_REQUEST' | average(responseTime) group by time(5m)`
+
+### Troubleshooting Seq
+
+**Seq không nhận logs:**
+- Kiểm tra `SEQ_SERVER_URL` đúng format: `http://localhost:5341`
+- Kiểm tra Seq container đang chạy: `docker ps | grep seq`
+- Kiểm tra logs của service có thông báo: "Seq logging enabled"
+- Kiểm tra firewall/network không block port 5341
+
+**Seq timeout:**
+```typescript
+// winston.config.ts đã có xử lý tự động:
+onError: (e: any) => {
+  console.error('[SEQ Transport Error]:', e);
+}
+// Service vẫn chạy bình thường khi Seq offline
+```
+
+---
+
 ## ✅ Verification
 
 Sau khi tích hợp, kiểm tra:
@@ -458,6 +612,7 @@ npm run start:dev auth-service
 
 ### 2. Xem logs trong console
 ```
+[auth-service] Seq logging enabled: http://localhost:5341
 [Nest] 12345  - 2024-11-14 10:30:45   [Bootstrap] Auth Service is running on port 3001
 [Nest] 12345  - 2024-11-14 10:30:50   [AuthController] Login attempt for email: john@example.com
 [Nest] 12345  - 2024-11-14 10:30:51   [LoginHandler] Executing login command for: john@example.com
@@ -469,6 +624,11 @@ npm run start:dev auth-service
 cat logs/auth-service/combined.log
 cat logs/auth-service/error.log
 ```
+
+### 4. Kiểm tra Seq (nếu có cấu hình)
+1. Mở http://localhost:5341
+2. Xem logs real-time từ tất cả services
+3. Query: `label = 'auth-service' and level = 'info'`
 
 ---
 

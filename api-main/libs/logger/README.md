@@ -127,6 +127,10 @@ Trong file `.env`:
 LOG_LEVEL=info          # Production: info hoặc warn
 LOG_TO_FILE=true        # Bật file logging
 NODE_ENV=production     # Production mode
+
+# Seq centralized logging (optional)
+SEQ_SERVER_URL=http://localhost:5341    # Seq server URL
+SEQ_API_KEY=your-api-key-here           # Seq API key (optional)
 ```
 
 Development:
@@ -134,6 +138,10 @@ Development:
 LOG_LEVEL=debug         # Xem nhiều thông tin hơn
 LOG_TO_FILE=false       # Chỉ log ra console
 NODE_ENV=development    # Development mode
+
+# Seq centralized logging (optional)
+SEQ_SERVER_URL=http://localhost:5341    # Seq server URL
+SEQ_API_KEY=                            # Leave empty for local dev
 ```
 
 ## 🎯 Helper Methods
@@ -174,16 +182,22 @@ Logs được lưu vào thư mục theo service:
 logs/
 ├── auth-service/
 │   ├── combined.log      # Tất cả logs
-│   ├── error.log         # Chỉ errors
+│   ├── info.log          # Info level logs
+│   ├── warn.log          # Warning logs
+│   ├── error.log         # Error logs
 │   ├── exceptions.log    # Uncaught exceptions
 │   └── rejections.log    # Unhandled promise rejections
 ├── iam-service/
 │   ├── combined.log
+│   ├── info.log
+│   ├── warn.log
 │   ├── error.log
 │   ├── exceptions.log
 │   └── rejections.log
 └── catalog-service/
     ├── combined.log
+    ├── info.log
+    ├── warn.log
     ├── error.log
     ├── exceptions.log
     └── rejections.log
@@ -191,8 +205,8 @@ logs/
 
 ### Log Rotation
 
-- Mỗi file tối đa: 5MB
-- Giữ tối đa: 5 files
+- Mỗi file tối đa: 10MB
+- Giữ tối đa: 10 files
 - Tự động rotate khi đạt limit
 
 ## 🎨 Log Format
@@ -215,6 +229,126 @@ logs/
   "metadata": {}
 }
 ```
+
+## 📊 Seq Centralized Logging
+
+Logger library đã tích hợp sẵn **Seq** - một nền tảng centralized logging mạnh mẽ giúp tập trung và phân tích logs từ tất cả microservices.
+
+### Tại sao sử dụng Seq?
+
+- **Centralized**: Tập trung logs từ nhiều services vào một nơi
+- **Structured Logging**: Hỗ trợ JSON structured logs với query mạnh mẽ
+- **Real-time**: Xem logs real-time từ tất cả services
+- **Search & Filter**: Tìm kiếm và lọc logs theo bất kỳ field nào
+- **Alerts**: Cảnh báo tự động khi có lỗi nghiêm trọng
+- **Dashboard**: Tạo dashboard trực quan cho monitoring
+
+### Cài đặt Seq Server (Docker)
+
+Cách nhanh nhất là chạy Seq bằng Docker:
+
+```bash
+# Pull Seq image
+docker pull datalust/seq
+
+# Run Seq container
+docker run \
+  --name seq \
+  -d \
+  -e ACCEPT_EULA=Y \
+  -p 5341:80 \
+  -v /path/to/seq-data:/data \
+  datalust/seq
+
+# Truy cập Seq UI: http://localhost:5341
+```
+
+### Cấu hình trong .env
+
+Thêm biến môi trường để kết nối tới Seq:
+
+```env
+# Seq Configuration
+SEQ_SERVER_URL=http://localhost:5341
+SEQ_API_KEY=                            # Optional: API key từ Seq UI
+```
+
+**Lưu ý**: 
+- Nếu không có `SEQ_SERVER_URL`, Seq transport sẽ không được bật
+- `SEQ_API_KEY` là optional, chỉ cần khi Seq yêu cầu authentication
+
+### Tạo API Key trong Seq (Optional)
+
+1. Truy cập Seq UI: http://localhost:5341
+2. Vào **Settings** → **API Keys**
+3. Click **Add API Key**
+4. Đặt tên (vd: `auth-service`) và chọn permissions
+5. Copy API key và thêm vào `.env`
+
+### Xem Logs trong Seq
+
+Sau khi cấu hình:
+
+1. Start service: `npm run start:dev auth-service`
+2. Logs sẽ tự động gửi tới Seq
+3. Mở Seq UI: http://localhost:5341
+4. Xem logs real-time với structured data
+
+### Query Logs trong Seq
+
+Seq hỗ trợ query language mạnh mẽ:
+
+```sql
+-- Tìm tất cả errors
+level = 'error'
+
+-- Tìm logs từ auth-service
+label = 'auth-service'
+
+-- Tìm login attempts
+message like '%login%'
+
+-- Tìm logs của user cụ thể
+userId = '123e4567-e89b-12d3-a456-426614174000'
+
+-- Tìm logs trong khoảng thời gian
+@Timestamp >= DateTime('2024-11-14T10:00:00')
+
+-- Kết hợp nhiều điều kiện
+level = 'error' and label = 'auth-service' and @Timestamp >= Now() - 1h
+```
+
+### Seq Best Practices
+
+1. **Structured Logging**: Luôn log object thay vì string để query dễ dàng
+   ```typescript
+   // ✅ Good
+   this.logger.log({
+     message: 'User login',
+     userId: user.id,
+     email: user.email,
+     ip: request.ip,
+   });
+   
+   // ❌ Bad
+   this.logger.log(`User ${user.id} logged in from ${request.ip}`);
+   ```
+
+2. **Add Context**: Sử dụng context để phân biệt nguồn logs
+   ```typescript
+   this.logger.setContext(ClassName.name);
+   ```
+
+3. **Create Dashboards**: Tạo dashboard trong Seq để monitor:
+   - Error rates per service
+   - Response times
+   - Login/logout events
+   - API usage
+
+4. **Set up Alerts**: Cấu hình alerts trong Seq để nhận thông báo khi:
+   - Error rate cao
+   - Response time chậm
+   - Login failed nhiều lần
 
 ## 🔒 Best Practices
 
@@ -310,6 +444,12 @@ Xem thêm examples trong:
 - `apps/auth-service` - Authentication logging
 - `apps/iam-service` - IAM operations logging
 - `apps/catalog-service` - Catalog operations logging
+
+## 📚 Tài liệu bổ sung
+
+- **[INTEGRATION_GUIDE.md](./INTEGRATION_GUIDE.md)** - Hướng dẫn chi tiết tích hợp logger vào từng service
+- **[ENVIRONMENT_VARIABLES.md](./ENVIRONMENT_VARIABLES.md)** - Danh sách và giải thích các biến môi trường
+- **[SEQ_QUICKSTART.md](./SEQ_QUICKSTART.md)** - Hướng dẫn nhanh setup Seq trong 5 phút
 
 ## 📞 Support
 

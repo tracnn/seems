@@ -1,6 +1,11 @@
 /**
  * Logger Library - Shared Winston Logger cho tất cả microservices
  * 
+ * Tích hợp:
+ * - Winston: Core logging
+ * - nest-winston: NestJS integration
+ * - Seq: Centralized logging platform
+ * 
  * Export public API của logger library
  */
 

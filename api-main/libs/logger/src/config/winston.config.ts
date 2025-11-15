@@ -1,12 +1,29 @@
 import * as winston from 'winston';
 import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
+import { SeqTransport } from '@datalust/winston-seq';
+import * as path from 'path';
+import * as fs from 'fs';
 
 /**
  * Tạo Winston configuration cho từng service
  * @param serviceName - Tên service (vd: 'auth-service', 'iam-service')
  */
 export const createWinstonConfig = (serviceName: string) => {
-  // Format cho production - JSON structured logging
+  // Đảm bảo thư mục logs tồn tại
+  const logDir = path.join(process.cwd(), 'logs', serviceName);
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+  // Format cho file logs - JSON structured logging
+  const fileFormat = winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
+    winston.format.ms(),
+    winston.format.errors({ stack: true }),
+    winston.format.splat(),
+    winston.format.json(),
+  );
+
+  // Format cho production logs
   const logFormat = winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.errors({ stack: true }),
@@ -40,22 +57,58 @@ export const createWinstonConfig = (serviceName: string) => {
   // Chỉ ghi file logs trong production hoặc khi LOG_TO_FILE=true
   if (process.env.NODE_ENV === 'production' || process.env.LOG_TO_FILE === 'true') {
     transports.push(
-      // Error logs - chỉ lỗi
+      // Info log file
       new winston.transports.File({
-        filename: `logs/${serviceName}/error.log`,
+        filename: path.join(logDir, 'info.log'),
+        level: 'info',
+        maxsize: 10485760, // 10MB
+        maxFiles: 10,
+        format: fileFormat,
+      }),
+      // Warn log file
+      new winston.transports.File({
+        filename: path.join(logDir, 'warn.log'),
+        level: 'warn',
+        maxsize: 10485760, // 10MB
+        maxFiles: 10,
+        format: fileFormat,
+      }),
+      // Error log file
+      new winston.transports.File({
+        filename: path.join(logDir, 'error.log'),
         level: 'error',
-        format: logFormat,
-        maxsize: 5242880, // 5MB
-        maxFiles: 5,
+        maxsize: 10485760, // 10MB
+        maxFiles: 10,
+        format: fileFormat,
       }),
       // Combined logs - tất cả levels
       new winston.transports.File({
-        filename: `logs/${serviceName}/combined.log`,
-        format: logFormat,
-        maxsize: 5242880, // 5MB
-        maxFiles: 5,
+        filename: path.join(logDir, 'combined.log'),
+        maxsize: 10485760, // 10MB
+        maxFiles: 10,
+        format: fileFormat,
       }),
     );
+  }
+
+  // Thêm Seq transport nếu có cấu hình
+  if (process.env.SEQ_SERVER_URL) {
+    try {
+      transports.push(
+        new SeqTransport({
+          serverUrl: process.env.SEQ_SERVER_URL,
+          apiKey: process.env.SEQ_API_KEY,
+          onError: (e: any) => {
+            console.error('[SEQ Transport Error]:', e);
+          },
+          handleExceptions: true,
+          handleRejections: true,
+        }),
+      );
+      console.log(`[${serviceName}] Seq logging enabled: ${process.env.SEQ_SERVER_URL}`);
+    } catch (error) {
+      console.warn(`[${serviceName}] Failed to initialize Seq transport:`, error);
+    }
   }
 
   return {
