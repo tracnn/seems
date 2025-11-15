@@ -10,6 +10,9 @@ export * from './logger.module';
 // Service
 export * from './winston-logger.service';
 
+// Middleware
+export * from './http-logger.middleware';
+
 // Interface
 export * from './interfaces/logger.interface';
 

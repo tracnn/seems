@@ -22,6 +22,7 @@ import { ServiceEnum } from '@app/utils/service.enum';
 import { RegisterDto, LoginDto, RefreshTokenDto, ActivateAccountDto } from '@app/shared-dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { firstValueFrom } from 'rxjs';
+import { WinstonLoggerService } from '@app/logger';
 
 @ApiTags('Authentication')
 @Controller('api/v1/auth')
@@ -29,7 +30,10 @@ export class AuthController {
   constructor(
     @Inject(ServiceEnum.AUTH_SERVICE)
     private readonly authClient: ClientProxy,
-  ) {}
+    private readonly logger: WinstonLoggerService,
+  ) {
+    this.logger.setContext(AuthController.name);
+  }
 
   @Get('health')
   async healthCheck() {
@@ -66,9 +70,22 @@ export class AuthController {
     description: 'Username hoặc email đã tồn tại',
   })
   async register(@Body() registerDto: RegisterDto) {
-    return firstValueFrom(
-      this.authClient.send({ cmd: 'register' }, registerDto),
-    );
+    this.logger.log(`Registration attempt for email: ${registerDto.email}`);
+    
+    try {
+      const result = await firstValueFrom(
+        this.authClient.send({ cmd: 'register' }, registerDto),
+      );
+      
+      this.logger.log(`User registered successfully: ${registerDto.email}`);
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `Registration failed for ${registerDto.email}: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
   }
 
   @Post('login')
@@ -107,16 +124,23 @@ export class AuthController {
     @Request() req: any,
   ) {
     const userAgent = req.headers['user-agent'] || 'unknown';
-    return firstValueFrom(
-      this.authClient.send(
-        { cmd: 'login' },
-        {
-          ...loginDto,
-          ipAddress: ip,
-          userAgent: userAgent || 'unknown',
-        },
-      ),
-    );
+    
+    try {
+      const result = await firstValueFrom(
+        this.authClient.send(
+          { cmd: 'login' },
+          {
+            ...loginDto,
+            ipAddress: ip,
+            userAgent: userAgent || 'unknown',
+          },
+        ),
+      );
+      
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get('me')
@@ -148,6 +172,8 @@ export class AuthController {
     description: 'Token không hợp lệ hoặc đã hết hạn',
   })
   async getMe(@Request() req: any) {
+    this.logger.debug(`Get user profile: ${req.user.id}`);
+    
     return firstValueFrom(
       this.authClient.send({ cmd: 'get-me' }, { userId: req.user.id }),
     );
@@ -219,9 +245,19 @@ export class AuthController {
     description: 'Token không hợp lệ hoặc đã hết hạn',
   })
   async logout(@Request() req: any) {
-    return firstValueFrom(
-      this.authClient.send({ cmd: 'logout' }, { userId: req.user.id }),
-    );
+    this.logger.logAuth('LOGOUT', req.user.id);
+    
+    try {
+      const result = await firstValueFrom(
+        this.authClient.send({ cmd: 'logout' }, { userId: req.user.id }),
+      );
+      
+      this.logger.log(`User logged out: ${req.user.id}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`Logout failed for user ${req.user.id}`, error.stack);
+      throw error;
+    }
   }
 
   @Post('activate-account')

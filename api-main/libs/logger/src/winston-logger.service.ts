@@ -1,4 +1,5 @@
-import { Injectable, LoggerService, Scope } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, Scope } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { ILogger } from './interfaces/logger.interface';
 
@@ -6,14 +7,16 @@ import { ILogger } from './interfaces/logger.interface';
  * Winston Logger Service
  * Implement NestJS LoggerService để có thể thay thế logger mặc định
  * 
- * Scope.TRANSIENT: Mỗi injection sẽ tạo instance riêng
- * => Mỗi class có thể có context riêng
+ * Scope.DEFAULT: Singleton instance, nhưng mỗi class có thể set context riêng
+ * => Lightweight và đủ dùng cho logging
  */
-@Injectable({ scope: Scope.TRANSIENT })
+@Injectable()
 export class WinstonLoggerService implements LoggerService, ILogger {
   private context?: string;
 
-  constructor(private readonly logger: Logger) {}
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  ) {}
 
   /**
    * Set context cho logger instance này
