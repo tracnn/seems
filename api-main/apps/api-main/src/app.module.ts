@@ -5,13 +5,13 @@ import { UtilsModule } from '@app/utils';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ServiceEnum } from '@app/utils/service.enum';
+import { LogServiceEnum, ServiceEnum } from '@app/utils/service.enum';
 import { AuthModule } from './auth/auth.module';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 
 @Module({
   imports: [
-    LoggerModule.forRoot('api-gateway'),
+    LoggerModule.forRoot(LogServiceEnum.API_MAIN),
     UtilsModule,
     CqrsModule,
     ConfigModule.forRoot({ 

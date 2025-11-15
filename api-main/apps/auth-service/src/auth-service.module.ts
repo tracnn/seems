@@ -22,6 +22,7 @@ import { GetUserHandler } from './application/use-cases/queries/get-user/get-use
 // Presentation
 import { AuthController } from './presentation/controllers/auth.controller';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
+import { LogServiceEnum } from '@app/utils/service.enum';
 
 const CommandHandlers = [
   RegisterHandler,
@@ -34,7 +35,7 @@ const QueryHandlers = [GetUserHandler];
 
 @Module({
   imports: [
-    LoggerModule.forRoot('auth-service'),
+    LoggerModule.forRoot(LogServiceEnum.AUTH_SERVICE),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
