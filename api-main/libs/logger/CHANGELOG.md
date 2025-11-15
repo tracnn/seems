@@ -35,6 +35,10 @@ Thêm biến môi trường mới:
 
 - `winston.config.ts`: 
   - Thêm Seq transport với error handling
+  - Thêm `additionalProperties` để phân biệt logs theo service:
+    - `Service`: Tên service (auth-service, iam-service, etc.)
+    - `Environment`: Môi trường (development, production, test)
+    - `Application`: Tên application (qhis-plus-backend)
   - Tạo thư mục logs tự động
   - Cải thiện file format với milliseconds timestamp
   - Tăng maxsize từ 5MB lên 10MB
@@ -80,9 +84,28 @@ this.logger.log({
   email: user.email,
   ip: request.ip,
 });
+```
 
-// Query trong Seq UI
-// userId = '123e4567-e89b-12d3-a456-426614174000'
+**Query trong Seq UI để phân biệt services:**
+
+```sql
+-- Logs từ auth-service
+Service = 'auth-service'
+
+-- Logs từ iam-service
+Service = 'iam-service'
+
+-- So sánh errors giữa services
+level = 'error' | count(*) group by Service
+
+-- Logs từ production
+Environment = 'production'
+
+-- Logs từ auth-service trong production
+Service = 'auth-service' and Environment = 'production'
+
+-- Tìm user cụ thể
+userId = '123e4567-e89b-12d3-a456-426614174000'
 ```
 
 #### 🔧 Configuration Example

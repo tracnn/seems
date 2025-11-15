@@ -94,15 +94,30 @@ export const createWinstonConfig = (serviceName: string) => {
   // Thêm Seq transport nếu có cấu hình
   if (process.env.SEQ_SERVER_URL) {
     try {
+      const seqTransport = new SeqTransport({
+        serverUrl: process.env.SEQ_SERVER_URL,
+        apiKey: process.env.SEQ_API_KEY,
+        onError: (e: any) => {
+          console.error('[SEQ Transport Error]:', e);
+        },
+        handleExceptions: true,
+        handleRejections: true,
+      });
+
+      // Thêm properties mặc định để phân biệt service
+      // Sử dụng winston format để inject properties
       transports.push(
-        new SeqTransport({
-          serverUrl: process.env.SEQ_SERVER_URL,
-          apiKey: process.env.SEQ_API_KEY,
-          onError: (e: any) => {
-            console.error('[SEQ Transport Error]:', e);
-          },
-          handleExceptions: true,
-          handleRejections: true,
+        new winston.transports.Stream({
+          stream: seqTransport,
+          format: winston.format.combine(
+            winston.format((info) => {
+              // Thêm properties vào log entry
+              info.service = serviceName;
+              info.environment = process.env.NODE_ENV || 'development';
+              info.application = process.env.APP_NAME ||'qhis-plus-backend';
+              return info;
+            })(),
+          ),
         }),
       );
       console.log(`[${serviceName}] Seq logging enabled: ${process.env.SEQ_SERVER_URL}`);

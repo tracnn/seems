@@ -296,14 +296,27 @@ Sau khi cấu hình:
 
 ### Query Logs trong Seq
 
-Seq hỗ trợ query language mạnh mẽ:
+Seq hỗ trợ query language mạnh mẽ. Logs được gửi với các properties sau:
+
+**Properties tự động:**
+- `Service`: Tên service (auth-service, iam-service, catalog-service, api-gateway)
+- `Environment`: Môi trường (development, production, test)
+- `Application`: Tên application (qhis-plus-backend)
+- `level`: Log level (error, warn, info, debug, verbose)
+- `message`: Nội dung log
+- `@Timestamp`: Thời gian log
+
+**Query examples:**
 
 ```sql
 -- Tìm tất cả errors
 level = 'error'
 
--- Tìm logs từ auth-service
-label = 'auth-service'
+-- Tìm logs từ auth-service (QUAN TRỌNG - dùng property Service)
+Service = 'auth-service'
+
+-- Tìm logs từ môi trường production
+Environment = 'production'
 
 -- Tìm login attempts
 message like '%login%'
@@ -315,7 +328,16 @@ userId = '123e4567-e89b-12d3-a456-426614174000'
 @Timestamp >= DateTime('2024-11-14T10:00:00')
 
 -- Kết hợp nhiều điều kiện
-level = 'error' and label = 'auth-service' and @Timestamp >= Now() - 1h
+level = 'error' and Service = 'auth-service' and @Timestamp >= Now() - 1h
+
+-- So sánh logs giữa các services
+Service in ['auth-service', 'iam-service'] and level = 'error'
+
+-- Đếm errors theo service
+level = 'error' | count(*) group by Service
+
+-- Tìm slow requests từ api-gateway
+Service = 'api-gateway' and type = 'HTTP_REQUEST' and responseTime > '1000ms'
 ```
 
 ### Seq Best Practices
@@ -340,15 +362,31 @@ level = 'error' and label = 'auth-service' and @Timestamp >= Now() - 1h
    ```
 
 3. **Create Dashboards**: Tạo dashboard trong Seq để monitor:
-   - Error rates per service
-   - Response times
-   - Login/logout events
-   - API usage
+   ```sql
+   -- Error rates per service
+   level = 'error' | count(*) group by Service, time(5m)
+   
+   -- Response times by service
+   type = 'HTTP_REQUEST' | average(responseTime) group by Service, time(5m)
+   
+   -- Login events
+   event = 'LOGIN_SUCCESS' | count(*) group by Service, time(1h)
+   
+   -- API usage by service
+   type = 'HTTP_REQUEST' | count(*) group by Service, url
+   ```
 
 4. **Set up Alerts**: Cấu hình alerts trong Seq để nhận thông báo khi:
-   - Error rate cao
-   - Response time chậm
-   - Login failed nhiều lần
+   ```sql
+   -- Error rate cao (>10 errors trong 5 phút)
+   level = 'error' | count(*) > 10 group by Service, time(5m)
+   
+   -- Response time chậm (>2000ms)
+   type = 'HTTP_REQUEST' and responseTime > '2000ms'
+   
+   -- Login failed nhiều lần (>5 lần trong 10 phút)
+   event = 'LOGIN_FAILED' | count(*) > 5 group by Service, time(10m)
+   ```
 
 ## 🔒 Best Practices
 
@@ -449,7 +487,7 @@ Xem thêm examples trong:
 
 - **[INTEGRATION_GUIDE.md](./INTEGRATION_GUIDE.md)** - Hướng dẫn chi tiết tích hợp logger vào từng service
 - **[ENVIRONMENT_VARIABLES.md](./ENVIRONMENT_VARIABLES.md)** - Danh sách và giải thích các biến môi trường
-- **[SEQ_QUICKSTART.md](./SEQ_QUICKSTART.md)** - Hướng dẫn nhanh setup Seq trong 5 phút
+- **[SEQ_SERVICE_FILTERING.md](./SEQ_SERVICE_FILTERING.md)** - Hướng dẫn filter và phân biệt logs theo service trong Seq
 
 ## 📞 Support
 

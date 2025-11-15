@@ -571,16 +571,34 @@ curl -X POST http://localhost:3001/auth/login \
 
 **Xem logs trong Seq:**
 1. Mở http://localhost:5341
-2. Logs sẽ hiển thị real-time
-3. Thử filter: `label = 'auth-service'`
+2. Logs sẽ hiển thị real-time với properties:
+   - `Service`: Tên service (vd: auth-service)
+   - `Environment`: Môi trường (development/production)
+   - `Application`: qhis-plus-backend
+3. Thử filter: `Service = 'auth-service'`
+4. Filter theo environment: `Environment = 'development'`
+5. Kết hợp: `Service = 'auth-service' and level = 'error'`
 
 ### Bước 5: Tạo Dashboard trong Seq (Optional)
 
 1. Trong Seq UI, vào **Dashboards** → **Add Chart**
 2. Tạo chart cho:
-   - **Error Rate**: `level = 'error' | count(*) group by time(5m)`
-   - **Login Events**: `message like '%login%' | count(*) group by time(1h)`
-   - **Response Times**: `type = 'HTTP_REQUEST' | average(responseTime) group by time(5m)`
+   - **Error Rate by Service**: 
+     ```sql
+     level = 'error' | count(*) group by Service, time(5m)
+     ```
+   - **Login Events by Service**: 
+     ```sql
+     event = 'LOGIN_SUCCESS' | count(*) group by Service, time(1h)
+     ```
+   - **Response Times by Service**: 
+     ```sql
+     type = 'HTTP_REQUEST' | average(responseTime) group by Service, time(5m)
+     ```
+   - **Service Activity (requests per service)**:
+     ```sql
+     type = 'HTTP_REQUEST' | count(*) group by Service
+     ```
 
 ### Troubleshooting Seq
 
@@ -628,7 +646,10 @@ cat logs/auth-service/error.log
 ### 4. Kiểm tra Seq (nếu có cấu hình)
 1. Mở http://localhost:5341
 2. Xem logs real-time từ tất cả services
-3. Query: `label = 'auth-service' and level = 'info'`
+3. Query theo service: `Service = 'auth-service'`
+4. Query theo level: `Service = 'auth-service' and level = 'info'`
+5. Xem tất cả services: `Service in ['auth-service', 'iam-service', 'catalog-service']`
+6. So sánh errors: `level = 'error' | count(*) group by Service`
 
 ---
 
