@@ -112,7 +112,6 @@ export const createWinstonConfig = (serviceName: string) => {
           format: winston.format.combine(
             winston.format((info) => {
               // Thêm properties vào log entry
-              info.service = serviceName;
               info.environment = process.env.NODE_ENV || 'development';
               info.application = process.env.APP_NAME ||'qhis-plus-backend';
               return info;
