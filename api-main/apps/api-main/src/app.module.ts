@@ -11,13 +11,13 @@ import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 
 @Module({
   imports: [
-    LoggerModule.forRoot(LogServiceEnum.API_MAIN),
     UtilsModule,
     CqrsModule,
     ConfigModule.forRoot({ 
       isGlobal: true, 
       envFilePath: '.env',
     }),
+    LoggerModule.forRoot(LogServiceEnum.API_MAIN),
     AuthModule,
     ClientsModule.register([
       {

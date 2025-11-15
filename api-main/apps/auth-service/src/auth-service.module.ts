@@ -35,12 +35,12 @@ const QueryHandlers = [GetUserHandler];
 
 @Module({
   imports: [
-    LoggerModule.forRoot(LogServiceEnum.AUTH_SERVICE),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
       load: [databaseConfig],
     }),
+    LoggerModule.forRoot(LogServiceEnum.AUTH_SERVICE),
     CqrsModule,
     DatabaseModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
