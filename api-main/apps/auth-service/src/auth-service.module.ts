@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
@@ -21,7 +21,7 @@ import { GetUserHandler } from './application/use-cases/queries/get-user/get-use
 
 // Presentation
 import { AuthController } from './presentation/controllers/auth.controller';
-import { LoggerModule } from '@app/logger';
+import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 
 const CommandHandlers = [
   RegisterHandler,
@@ -34,12 +34,12 @@ const QueryHandlers = [GetUserHandler];
 
 @Module({
   imports: [
-    LoggerModule.forRoot('auth-service'),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
       load: [databaseConfig],
     }),
+    LoggerModule.forRoot('auth-service'),
     CqrsModule,
     DatabaseModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -55,4 +55,8 @@ const QueryHandlers = [GetUserHandler];
     JwtStrategy,
   ],
 })
-export class AuthServiceModule {}
+export class AuthServiceModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpLoggerMiddleware).forRoutes('*');
+  }
+}

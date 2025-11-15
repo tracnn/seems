@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RegisterCommand } from './register.command';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from '../../../../infrastructure/database/typeorm/repositories/user.repository';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../../../domain/entities/user.entity';
@@ -9,6 +9,7 @@ import { ErrorCode, ERROR_MESSAGES } from '../../../../domain/constants/error-co
 @Injectable()
 @CommandHandler(RegisterCommand)
 export class RegisterHandler implements ICommandHandler<RegisterCommand> {
+  private readonly logger = new Logger(RegisterHandler.name);
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(command: RegisterCommand): Promise<User> {
@@ -17,6 +18,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
     // Kiểm tra username đã tồn tại
     const existingUsername = await this.userRepository.findByUsername(username);
     if (existingUsername) {
+      this.logger.error(`Username ${username} already exists`);
       throw new ConflictException({
         statusCode: 409,
         error: 'Conflict',
@@ -28,6 +30,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
     // Kiểm tra email đã tồn tại
     const existingEmail = await this.userRepository.findByEmail(email);
     if (existingEmail) {
+      this.logger.error(`Email ${email} already exists`);
       throw new ConflictException({
         statusCode: 409,
         error: 'Conflict',
@@ -49,6 +52,8 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
       isActive: false,
       isEmailVerified: false,
     });
+
+    this.logger.log(`User ${username} registered successfully`);
 
     return newUser;
   }
