@@ -64,6 +64,15 @@
         "tsConfigPath": "libs/logger/tsconfig.lib.json"
       }
     },
+    "shared-constants": {
+      "type": "library",
+      "root": "libs/shared-constants",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared-constants/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared-constants/tsconfig.lib.json"
+      }
+    },
     "shared-decorators": {
       "type": "library",
       "root": "libs/shared-decorators",

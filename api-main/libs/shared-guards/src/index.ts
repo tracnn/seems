@@ -1,2 +1,3 @@
 export * from './shared-guards.module';
-export * from './shared-guards.service';
+export * from './guards/jwt-auth.guard';
+export * from './guards/roles.guard';

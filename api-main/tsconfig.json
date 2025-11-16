@@ -34,6 +34,12 @@
       "@app/logger/*": [
         "libs/logger/src/*"
       ],
+      "@app/shared-constants": [
+        "libs/shared-constants/src"
+      ],
+      "@app/shared-constants/*": [
+        "libs/shared-constants/src/*"
+      ],
       "@app/shared-decorators": [
         "libs/shared-decorators/src"
       ],

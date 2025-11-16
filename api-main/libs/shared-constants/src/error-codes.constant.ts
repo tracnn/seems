@@ -10,10 +10,16 @@ export enum ErrorCode {
   REFRESH_TOKEN_NOT_FOUND = 'AUTH_008',
   REFRESH_TOKEN_REVOKED = 'AUTH_009',
   REFRESH_TOKEN_EXPIRED = 'AUTH_010',
+  USER_ALREADY_ACTIVE = 'AUTH_011',
+  ACCOUNT_ACTIVATION_FAILED = 'AUTH_012',
   
   // User Errors
   USER_INACTIVE = 'USER_001',
   USER_NOT_VERIFIED = 'USER_002',
+  
+  // Authorization Errors
+  INSUFFICIENT_PERMISSIONS = 'AUTHZ_001',
+  FORBIDDEN = 'AUTHZ_002',
   
   // Validation Errors
   INVALID_INPUT = 'VAL_001',
@@ -22,10 +28,6 @@ export enum ErrorCode {
   // Server Errors
   INTERNAL_SERVER_ERROR = 'SRV_001',
   DATABASE_ERROR = 'SRV_002',
-
-  // Account Activation Errors
-  USER_ALREADY_ACTIVE = 'AUTH_011',
-  ACCOUNT_ACTIVATION_FAILED = 'AUTH_012',
 }
 
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
@@ -34,18 +36,20 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   [ErrorCode.USER_ALREADY_EXISTS]: 'Người dùng đã tồn tại',
   [ErrorCode.EMAIL_ALREADY_EXISTS]: 'Email đã được sử dụng',
   [ErrorCode.USERNAME_ALREADY_EXISTS]: 'Tên đăng nhập đã được sử dụng',
-  [ErrorCode.INVALID_TOKEN]: 'Token không hợp lệ',
+  [ErrorCode.INVALID_TOKEN]: 'Token không hợp lệ hoặc đã hết hạn',
   [ErrorCode.TOKEN_EXPIRED]: 'Token đã hết hạn',
   [ErrorCode.REFRESH_TOKEN_NOT_FOUND]: 'Refresh token không tồn tại',
   [ErrorCode.REFRESH_TOKEN_REVOKED]: 'Refresh token đã bị thu hồi',
   [ErrorCode.REFRESH_TOKEN_EXPIRED]: 'Refresh token đã hết hạn',
+  [ErrorCode.USER_ALREADY_ACTIVE]: 'Tài khoản đã được kích hoạt',
+  [ErrorCode.ACCOUNT_ACTIVATION_FAILED]: 'Không thể kích hoạt tài khoản',
   [ErrorCode.USER_INACTIVE]: 'Tài khoản đã bị vô hiệu hóa',
   [ErrorCode.USER_NOT_VERIFIED]: 'Email chưa được xác thực',
+  [ErrorCode.INSUFFICIENT_PERMISSIONS]: 'Người dùng không có quyền truy cập',
+  [ErrorCode.FORBIDDEN]: 'Truy cập bị từ chối',
   [ErrorCode.INVALID_INPUT]: 'Dữ liệu đầu vào không hợp lệ',
   [ErrorCode.MISSING_REQUIRED_FIELD]: 'Thiếu trường bắt buộc',
   [ErrorCode.INTERNAL_SERVER_ERROR]: 'Lỗi máy chủ nội bộ',
   [ErrorCode.DATABASE_ERROR]: 'Lỗi cơ sở dữ liệu',
-  [ErrorCode.USER_ALREADY_ACTIVE]: 'Tài khoản đã được kích hoạt',
-  [ErrorCode.ACCOUNT_ACTIVATION_FAILED]: 'Không thể kích hoạt tài khoản',
 };
 

@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { AuthResponseDto } from '@app/shared-dto';
-import { ErrorCode, ERROR_MESSAGES } from '../../../../domain/constants/error-codes';
+import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
 
 @Injectable()
 @CommandHandler(LoginCommand)

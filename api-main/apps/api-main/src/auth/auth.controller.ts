@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { ServiceEnum } from '@app/utils/service.enum';
 import { RegisterDto, LoginDto, RefreshTokenDto, ActivateAccountDto } from '@app/shared-dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@app/shared-guards';
 import { firstValueFrom } from 'rxjs';
 import { WinstonLoggerService } from '@app/logger';
 

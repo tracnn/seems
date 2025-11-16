@@ -6,7 +6,7 @@ import { RefreshTokenRepository } from '../../../../infrastructure/database/type
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthResponseDto } from '@app/shared-dto';
-import { ErrorCode, ERROR_MESSAGES } from '../../../../domain/constants/error-codes';
+import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
 
 @Injectable()
 @CommandHandler(RefreshTokenCommand)

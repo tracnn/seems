@@ -4,7 +4,7 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from '../../../../infrastructure/database/typeorm/repositories/user.repository';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../../../domain/entities/user.entity';
-import { ErrorCode, ERROR_MESSAGES } from '../../../../domain/constants/error-codes';
+import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
 
 @Injectable()
 @CommandHandler(RegisterCommand)
