@@ -1,61 +1,59 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RegisterCommand } from './register.command';
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
-import { UserRepository } from '../../../../infrastructure/database/typeorm/repositories/user.repository';
-import * as bcrypt from 'bcrypt';
-import { User } from '../../../../domain/entities/user.entity';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
 import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
 
+/**
+ * Register Handler
+ * Delegates user creation to IAM Service (Single Source of Truth)
+ */
 @Injectable()
 @CommandHandler(RegisterCommand)
 export class RegisterHandler implements ICommandHandler<RegisterCommand> {
   private readonly logger = new Logger(RegisterHandler.name);
-  constructor(private readonly userRepository: UserRepository) {}
+  
+  constructor(private readonly iamClient: IamClientService) {}
 
-  async execute(command: RegisterCommand): Promise<User> {
+  async execute(command: RegisterCommand): Promise<any> {
     const { username, email, password, firstName, lastName } = command;
 
-    // Kiểm tra username đã tồn tại
-    const existingUsername = await this.userRepository.findByUsername(username);
-    if (existingUsername) {
-      this.logger.error(`Username ${username} already exists`);
-      throw new ConflictException({
-        statusCode: 409,
-        error: 'Conflict',
-        message: ERROR_MESSAGES[ErrorCode.USERNAME_ALREADY_EXISTS],
-        code: ErrorCode.USERNAME_ALREADY_EXISTS,
+    this.logger.log(`Registering user via IAM Service: ${username}`);
+
+    try {
+      // Delegate user creation to IAM Service
+      const newUser = await this.iamClient.createUser({
+        username,
+        email,
+        password,
+        firstName,
+        lastName,
+      });
+
+      this.logger.log(`User ${username} registered successfully via IAM Service`);
+
+      // Return response without password
+      const { password: _, ...userWithoutPassword } = newUser;
+      return userWithoutPassword;
+    } catch (error) {
+      this.logger.error(`Registration failed: ${error.message}`);
+      
+      // Map IAM Service errors to Auth Service errors
+      if (error.message?.includes('already exists')) {
+        throw new BadRequestException({
+          statusCode: 400,
+          error: 'Bad Request',
+          message: ERROR_MESSAGES[ErrorCode.USERNAME_ALREADY_EXISTS] || 'Username or email already exists',
+          code: ErrorCode.USERNAME_ALREADY_EXISTS,
+        });
+      }
+      
+      throw new BadRequestException({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: error.message || 'Registration failed',
       });
     }
-
-    // Kiểm tra email đã tồn tại
-    const existingEmail = await this.userRepository.findByEmail(email);
-    if (existingEmail) {
-      this.logger.error(`Email ${email} already exists`);
-      throw new ConflictException({
-        statusCode: 409,
-        error: 'Conflict',
-        message: ERROR_MESSAGES[ErrorCode.EMAIL_ALREADY_EXISTS],
-        code: ErrorCode.EMAIL_ALREADY_EXISTS,
-      });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Tạo user mới
-    const newUser = await this.userRepository.create({
-      username,
-      email,
-      password: hashedPassword,
-      firstName,
-      lastName,
-      isActive: false,
-      isEmailVerified: false,
-    });
-
-    this.logger.log(`User ${username} registered successfully`);
-
-    return newUser;
   }
 }
 

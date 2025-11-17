@@ -1,8 +1,9 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 // Infrastructure
 import { DatabaseModule } from './infrastructure/database/database.module';
@@ -23,6 +24,9 @@ import { GetUserHandler } from './application/use-cases/queries/get-user/get-use
 import { AuthController } from './presentation/controllers/auth.controller';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 import { LogServiceEnum } from '@app/utils/service.enum';
+
+// Infrastructure Clients
+import { IamClientService } from './infrastructure/clients/iam-client.service';
 
 const CommandHandlers = [
   RegisterHandler,
@@ -48,12 +52,28 @@ const QueryHandlers = [GetUserHandler];
       secret: process.env.JWT_SECRET || 'your-default-secret-key-change-this',
       signOptions: { expiresIn: Number(process.env.JWT_EXPIRES_IN) || 15 * 60 },
     }),
+    // TCP Client for IAM Service
+    ClientsModule.registerAsync([
+      {
+        name: 'IAM_SERVICE',
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get<string>('IAM_SERVICE_HOST') || 'localhost',
+            port: Number(configService.get<string>('IAM_SERVICE_PORT') || 3003),
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
   ],
   controllers: [AuthController],
   providers: [
     ...CommandHandlers,
     ...QueryHandlers,
     JwtStrategy,
+    IamClientService,
   ],
 })
 export class AuthServiceModule implements NestModule {

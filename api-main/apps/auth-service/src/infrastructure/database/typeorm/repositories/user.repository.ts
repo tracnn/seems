@@ -4,6 +4,11 @@ import { Repository } from 'typeorm';
 import { User } from '../../../../domain/entities/user.entity';
 import { IUserRepository } from '../../../../domain/interfaces/user.repository.interface';
 
+/**
+ * Auth Service User Repository
+ * Read-only operations for authentication
+ * User CRUD is handled by IAM Service
+ */
 @Injectable()
 export class UserRepository implements IUserRepository {
   constructor(
@@ -23,39 +28,16 @@ export class UserRepository implements IUserRepository {
     return this.repository.findOne({ where: { email } });
   }
 
-  async create(user: Partial<User>): Promise<User> {
-    const newUser = this.repository.create(user);
-    return this.repository.save(newUser);
+  async updateLastLogin(id: string): Promise<void> {
+    await this.repository.update(id, {
+      lastLoginAt: new Date(),
+    });
   }
 
-  async update(id: string, user: Partial<User>): Promise<User> {
-    await this.repository.update(id, user);
-    const updated = await this.findById(id);
-    if (!updated) {
-      throw new Error('User not found after update');
-    }
-    return updated;
-  }
-
-  async delete(id: string): Promise<void> {
-    await this.repository.delete(id);
-  }
-
-  async softDelete(id: string): Promise<void> {
-    await this.repository.softDelete(id);
-  }
-
-  async findAll(): Promise<User[]> {
-    return this.repository.find();
-  }
-
-  async activateUser(id: string): Promise<User> {
-    const user = await this.findById(id);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    user.isActive = true;  
-    return await this.repository.save(user);
+  async updateEmailVerified(id: string, isVerified: boolean): Promise<void> {
+    await this.repository.update(id, {
+      isEmailVerified: isVerified,
+    });
   }
 }
 

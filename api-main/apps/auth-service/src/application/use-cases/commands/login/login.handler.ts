@@ -83,9 +83,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     });
 
     // Cập nhật last login  
-    await this.userRepository.update(user.id, {
-      lastLoginAt: new Date(),
-    });
+    await this.userRepository.updateLastLogin(user.id);
 
     return {
       accessToken,
