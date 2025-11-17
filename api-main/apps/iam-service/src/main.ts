@@ -24,15 +24,16 @@ async function bootstrap() {
   logger.setContext(LogServiceEnum.IAM_SERVICE);
   app.useLogger(logger);
 
-  // Global validation pipe
+  // Global validation pipe - relaxed for TCP microservice
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true,
+      forbidNonWhitelisted: false, // Allow extra fields for TCP flexibility
       transform: true,
       transformOptions: {
         enableImplicitConversion: true,
       },
+      skipMissingProperties: true, // Don't validate missing optional properties
     }),
   );
 

@@ -245,6 +245,24 @@ export class IamClientService implements OnModuleInit {
     }
   }
 
+  async getPermissionById(permissionId: string): Promise<any> {
+    try {
+      this.logger.log(`📤 Getting permission by ID: ${permissionId}`);
+      
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.permission.findById', { permissionId }).pipe(
+          timeout(5000),
+        ),
+      );
+      
+      this.logger.log(`✅ Permission found: ${result.id}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to get permission: ${error.message}`);
+      throw error;
+    }
+  }
+
   /**
    * Organization operations
    */
@@ -274,6 +292,182 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get organization: ${error.message}`);
+      throw error;
+    }
+  }
+
+  // ================================================================================
+  // CRUD OPERATIONS - NEW
+  // ================================================================================
+
+  // Role CRUD
+  async updateRole(roleId: string, data: any): Promise<any> {
+    try {
+      this.logger.log(`📤 Updating role: ${roleId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.role.update', { roleId, ...data }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Role updated: ${roleId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to update role: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async deleteRole(roleId: string, deletedBy: string): Promise<any> {
+    try {
+      this.logger.log(`📤 Deleting role: ${roleId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.role.delete', { roleId, deletedBy }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Role deleted: ${roleId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to delete role: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async assignPermissionsToRole(roleId: string, permissionIds: string[], assignedBy?: string): Promise<any> {
+    try {
+      this.logger.log(`📤 Assigning ${permissionIds.length} permissions to role: ${roleId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.role.assignPermissions', { roleId, permissionIds, assignedBy }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Permissions assigned to role: ${roleId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to assign permissions: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async removePermissionsFromRole(roleId: string, permissionIds: string[]): Promise<any> {
+    try {
+      this.logger.log(`📤 Removing ${permissionIds.length} permissions from role: ${roleId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.role.removePermissions', { roleId, permissionIds }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Permissions removed from role: ${roleId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to remove permissions: ${error.message}`);
+      throw error;
+    }
+  }
+
+  // Permission CRUD
+  async createPermission(data: any): Promise<any> {
+    try {
+      this.logger.log(`📤 Creating permission: ${data.name}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.permission.create', data).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Permission created: ${result.id}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to create permission: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async updatePermission(permissionId: string, data: any): Promise<any> {
+    try {
+      this.logger.log(`📤 Updating permission: ${permissionId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.permission.update', { permissionId, ...data }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Permission updated: ${permissionId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to update permission: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async deletePermission(permissionId: string, deletedBy: string): Promise<any> {
+    try {
+      this.logger.log(`📤 Deleting permission: ${permissionId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.permission.delete', { permissionId, deletedBy }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Permission deleted: ${permissionId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to delete permission: ${error.message}`);
+      throw error;
+    }
+  }
+
+  // Organization CRUD
+  async createOrganization(data: any): Promise<any> {
+    try {
+      this.logger.log(`📤 Creating organization: ${data.name}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.organization.create', data).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Organization created: ${result.id}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to create organization: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async updateOrganization(organizationId: string, data: any): Promise<any> {
+    try {
+      this.logger.log(`📤 Updating organization: ${organizationId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.organization.update', { organizationId, ...data }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Organization updated: ${organizationId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to update organization: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async deleteOrganization(organizationId: string, deletedBy: string): Promise<any> {
+    try {
+      this.logger.log(`📤 Deleting organization: ${organizationId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.organization.delete', { organizationId, deletedBy }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Organization deleted: ${organizationId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to delete organization: ${error.message}`);
+      throw error;
+    }
+  }
+
+  // User Organization Operations
+  async assignOrganizationsToUser(userId: string, organizations: any[]): Promise<any> {
+    try {
+      this.logger.log(`📤 Assigning ${organizations.length} organizations to user: ${userId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.user.assignOrganizations', { userId, organizations }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Organizations assigned to user: ${userId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to assign organizations: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async removeOrganizationsFromUser(userId: string, organizationIds: string[]): Promise<any> {
+    try {
+      this.logger.log(`📤 Removing ${organizationIds.length} organizations from user: ${userId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.user.removeOrganizations', { userId, organizationIds }).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Organizations removed from user: ${userId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to remove organizations: ${error.message}`);
       throw error;
     }
   }

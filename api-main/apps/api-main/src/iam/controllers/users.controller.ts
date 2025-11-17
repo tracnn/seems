@@ -139,5 +139,29 @@ export class UsersController {
     this.logger.log(`HTTP → Getting permissions for user: ${userId}`);
     return await this.iamClient.getUserPermissions(userId);
   }
+
+  @Post(':id/organizations')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Assign organizations to user' })
+  @ApiResponse({ status: 200, description: 'Organizations assigned successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async assignOrganizations(@Param('id') userId: string, @Body() dto: any) {
+    this.logger.log(`HTTP → Assigning organizations to user: ${userId}`);
+    return await this.iamClient.assignOrganizationsToUser(userId, dto.organizations);
+  }
+
+  @Delete(':id/organizations')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Remove organizations from user' })
+  @ApiResponse({ status: 200, description: 'Organizations removed successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async removeOrganizations(@Param('id') userId: string, @Body() dto: any) {
+    this.logger.log(`HTTP → Removing organizations from user: ${userId}`);
+    return await this.iamClient.removeOrganizationsFromUser(userId, dto.organizationIds);
+  }
 }
 

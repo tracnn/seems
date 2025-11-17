@@ -7,6 +7,10 @@ import { CreateRoleDto } from '../../application/dtos/role/create-role.dto';
 
 // Commands
 import { CreateRoleCommand } from '../../application/use-cases/commands/roles/create-role/create-role.command';
+import { UpdateRoleCommand } from '../../application/use-cases/commands/roles/update-role/update-role.command';
+import { DeleteRoleCommand } from '../../application/use-cases/commands/roles/delete-role/delete-role.command';
+import { AssignPermissionsCommand } from '../../application/use-cases/commands/roles/assign-permissions/assign-permissions.command';
+import { RemovePermissionsCommand } from '../../application/use-cases/commands/roles/remove-permissions/remove-permissions.command';
 
 // Queries
 import { GetRolesQuery } from '../../application/use-cases/queries/roles/get-roles/get-roles.query';
@@ -96,6 +100,115 @@ export class RolesController {
       throw new RpcException({
         statusCode: error.status || 404,
         message: error.message || 'Role not found',
+      });
+    }
+  }
+
+  /**
+   * Update role
+   * Pattern: iam.role.update
+   */
+  @MessagePattern('iam.role.update')
+  async updateRole(@Payload() data: any) {
+    try {
+      this.logger.log(`Updating role: ${data.roleId}`);
+      
+      const command = new UpdateRoleCommand(
+        data.roleId,
+        data.name,
+        data.code,
+        data.description,
+        data.level,
+        data.updatedBy || 'system',
+      );
+      
+      const role = await this.commandBus.execute(command);
+      this.logger.log(`Role updated successfully: ${role.id}`);
+      return role;
+    } catch (error) {
+      this.logger.error(`Failed to update role: ${error.message}`);
+      throw new RpcException({
+        statusCode: error.status || 400,
+        message: error.message || 'Failed to update role',
+      });
+    }
+  }
+
+  /**
+   * Delete role (soft delete)
+   * Pattern: iam.role.delete
+   */
+  @MessagePattern('iam.role.delete')
+  async deleteRole(@Payload() data: { roleId: string; deletedBy?: string }) {
+    try {
+      this.logger.log(`Deleting role: ${data.roleId}`);
+      
+      const command = new DeleteRoleCommand(
+        data.roleId,
+        data.deletedBy || 'system',
+      );
+      
+      await this.commandBus.execute(command);
+      this.logger.log(`Role deleted successfully: ${data.roleId}`);
+      return { success: true, message: 'Role deleted successfully' };
+    } catch (error) {
+      this.logger.error(`Failed to delete role: ${error.message}`);
+      throw new RpcException({
+        statusCode: error.status || 400,
+        message: error.message || 'Failed to delete role',
+      });
+    }
+  }
+
+  /**
+   * Assign permissions to role
+   * Pattern: iam.role.assignPermissions
+   */
+  @MessagePattern('iam.role.assignPermissions')
+  async assignPermissions(@Payload() data: { roleId: string; permissionIds: string[]; assignedBy?: string }) {
+    try {
+      this.logger.log(`Assigning permissions to role: ${data.roleId}`);
+      
+      const command = new AssignPermissionsCommand(
+        data.roleId,
+        data.permissionIds,
+        data.assignedBy || 'system',
+      );
+      
+      await this.commandBus.execute(command);
+      this.logger.log(`Permissions assigned successfully to role: ${data.roleId}`);
+      return { success: true, message: 'Permissions assigned successfully' };
+    } catch (error) {
+      this.logger.error(`Failed to assign permissions: ${error.message}`);
+      throw new RpcException({
+        statusCode: error.status || 400,
+        message: error.message || 'Failed to assign permissions',
+      });
+    }
+  }
+
+  /**
+   * Remove permissions from role
+   * Pattern: iam.role.removePermissions
+   */
+  @MessagePattern('iam.role.removePermissions')
+  async removePermissions(@Payload() data: { roleId: string; permissionIds: string[] }) {
+    try {
+      this.logger.log(`Removing permissions from role: ${data.roleId}`);
+      
+      const command = new RemovePermissionsCommand(
+        data.roleId,
+        data.permissionIds,
+      );
+      
+      await this.commandBus.execute(command);
+      this.logger.log(`Permissions removed successfully from role: ${data.roleId}`);
+      return { success: true, message: 'Permissions removed successfully' };
+    } catch (error) {
+      this.logger.error(`Failed to remove permissions: ${error.message}`);
+      throw new RpcException({
+        statusCode: error.status || 400,
+        message: error.message || 'Failed to remove permissions',
       });
     }
   }

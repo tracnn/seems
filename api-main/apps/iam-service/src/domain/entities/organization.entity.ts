@@ -21,6 +21,13 @@ export class Organization extends BaseEntity {
   code: string;
 
   @Column({
+    name: 'TYPE',
+    length: 50,
+    nullable: true,
+  })
+  type: string;
+
+  @Column({
     name: 'PARENT_ID',
     length: 36,
     nullable: true,
@@ -47,6 +54,36 @@ export class Organization extends BaseEntity {
     nullable: true,
   })
   description: string;
+
+  @Column({
+    name: 'ADDRESS',
+    type: 'clob',
+    nullable: true,
+  })
+  address: string;
+
+  @Column({
+    name: 'PHONE',
+    length: 20,
+    nullable: true,
+  })
+  phone: string;
+
+  @Column({
+    name: 'EMAIL',
+    length: 100,
+    nullable: true,
+  })
+  email: string;
+
+  @Column({
+    name: 'WEBSITE',
+    length: 200,
+    nullable: true,
+  })
+  website: string;
+
+  // Note: isActive inherited from BaseEntity
 
   // Relationships
   @ManyToOne(() => Organization, { nullable: true })

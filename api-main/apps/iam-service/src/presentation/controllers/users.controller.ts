@@ -13,6 +13,8 @@ import { CreateUserCommand } from '../../application/use-cases/commands/users/cr
 import { UpdateUserCommand } from '../../application/use-cases/commands/users/update-user/update-user.command';
 import { DeleteUserCommand } from '../../application/use-cases/commands/users/delete-user/delete-user.command';
 import { AssignRolesCommand } from '../../application/use-cases/commands/users/assign-roles/assign-roles.command';
+import { AssignOrganizationsCommand } from '../../application/use-cases/commands/users/assign-organizations/assign-organizations.command';
+import { RemoveOrganizationsCommand } from '../../application/use-cases/commands/users/remove-organizations/remove-organizations.command';
 
 // Queries
 import { GetUserByIdQuery } from '../../application/use-cases/queries/users/get-user-by-id/get-user-by-id.query';
@@ -68,11 +70,21 @@ export class UsersController {
    * Pattern: iam.user.list
    */
   @MessagePattern('iam.user.list')
-  async getUsers(@Payload() filter: UserFilterDto) {
+  async getUsers(@Payload() filter: any) {
     try {
-      this.logger.log(`Getting users list, page: ${filter.page}, limit: ${filter.limit}`);
+      // Safely extract and validate filter params
+      const validFilter = {
+        page: filter?.page || 1,
+        limit: filter?.limit || 10,
+        search: filter?.search,
+        isActive: filter?.isActive,
+        sortBy: filter?.sortBy || 'createdAt',
+        sortOrder: filter?.sortOrder || 'DESC',
+      };
       
-      const query = new GetUsersQuery(filter);
+      this.logger.log(`Getting users list, page: ${validFilter.page}, limit: ${validFilter.limit}`);
+      
+      const query = new GetUsersQuery(validFilter);
       const result = await this.queryBus.execute(query);
       
       this.logger.log(`Found ${result.total} users`);
@@ -202,6 +214,61 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 500,
         message: error.message || 'Failed to get user permissions',
+      });
+    }
+  }
+
+  /**
+   * Assign organizations to user
+   * Pattern: iam.user.assignOrganizations
+   */
+  @MessagePattern('iam.user.assignOrganizations')
+  async assignOrganizations(@Payload() data: { 
+    userId: string; 
+    organizations: Array<{ organizationId: string; role?: string; isPrimary?: boolean }> 
+  }) {
+    try {
+      this.logger.log(`Assigning organizations to user: ${data.userId}`);
+      
+      const command = new AssignOrganizationsCommand(
+        data.userId,
+        data.organizations,
+      );
+      
+      await this.commandBus.execute(command);
+      this.logger.log(`Organizations assigned successfully to user: ${data.userId}`);
+      return { success: true, message: 'Organizations assigned successfully' };
+    } catch (error) {
+      this.logger.error(`Failed to assign organizations: ${error.message}`);
+      throw new RpcException({
+        statusCode: error.status || 400,
+        message: error.message || 'Failed to assign organizations',
+      });
+    }
+  }
+
+  /**
+   * Remove organizations from user
+   * Pattern: iam.user.removeOrganizations
+   */
+  @MessagePattern('iam.user.removeOrganizations')
+  async removeOrganizations(@Payload() data: { userId: string; organizationIds: string[] }) {
+    try {
+      this.logger.log(`Removing organizations from user: ${data.userId}`);
+      
+      const command = new RemoveOrganizationsCommand(
+        data.userId,
+        data.organizationIds,
+      );
+      
+      await this.commandBus.execute(command);
+      this.logger.log(`Organizations removed successfully from user: ${data.userId}`);
+      return { success: true, message: 'Organizations removed successfully' };
+    } catch (error) {
+      this.logger.error(`Failed to remove organizations: ${error.message}`);
+      throw new RpcException({
+        statusCode: error.status || 400,
+        message: error.message || 'Failed to remove organizations',
       });
     }
   }
