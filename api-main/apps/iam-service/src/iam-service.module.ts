@@ -15,14 +15,18 @@ import { CreateUserHandler } from './application/use-cases/commands/users/create
 import { UpdateUserHandler } from './application/use-cases/commands/users/update-user/update-user.handler';
 import { DeleteUserHandler } from './application/use-cases/commands/users/delete-user/delete-user.handler';
 import { AssignRolesHandler } from './application/use-cases/commands/users/assign-roles/assign-roles.handler';
+import { CreateRoleHandler } from './application/use-cases/commands/roles/create-role/create-role.handler';
 
 // Application - Query Handlers
 import { GetUserByIdHandler } from './application/use-cases/queries/users/get-user-by-id/get-user-by-id.handler';
 import { GetUsersHandler } from './application/use-cases/queries/users/get-users/get-users.handler';
 import { GetUserPermissionsHandler } from './application/use-cases/queries/users/get-user-permissions/get-user-permissions.handler';
+import { GetRolesHandler } from './application/use-cases/queries/roles/get-roles/get-roles.handler';
+import { GetRoleByIdHandler } from './application/use-cases/queries/roles/get-role-by-id/get-role-by-id.handler';
 
 // Presentation
 import { UsersController } from './presentation/controllers/users.controller';
+import { RolesController } from './presentation/controllers/roles.controller';
 import { HttpExceptionFilter } from './presentation/filters/http-exception.filter';
 
 // Shared
@@ -34,12 +38,15 @@ const CommandHandlers = [
   UpdateUserHandler,
   DeleteUserHandler,
   AssignRolesHandler,
+  CreateRoleHandler,
 ];
 
 const QueryHandlers = [
   GetUserByIdHandler,
   GetUsersHandler,
   GetUserPermissionsHandler,
+  GetRolesHandler,
+  GetRoleByIdHandler,
 ];
 
 @Module({
@@ -58,7 +65,7 @@ const QueryHandlers = [
       signOptions: { expiresIn: '15m' },
     }),
   ],
-  controllers: [UsersController],
+  controllers: [UsersController, RolesController],
   providers: [
     ...CommandHandlers,
     ...QueryHandlers,

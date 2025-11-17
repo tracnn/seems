@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LogServiceEnum, ServiceEnum } from '@app/utils/service.enum';
 import { AuthModule } from './auth/auth.module';
+import { IamModule } from './iam/iam.module';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -25,6 +26,7 @@ import { APP_GUARD } from '@nestjs/core';
       limit: 10,
     }]),
     AuthModule,
+    IamModule, // IAM Module includes IAM_SERVICE TCP client
     ClientsModule.register([
       {
         name: ServiceEnum.CATALOG_SERVICE,
@@ -32,14 +34,6 @@ import { APP_GUARD } from '@nestjs/core';
         options: {
           host: process.env.CATALOG_SERVICE_HOST ?? '0.0.0.0',
           port: Number(process.env.CATALOG_SERVICE_PORT ?? 3002),
-        },
-      },
-      {
-        name: ServiceEnum.IAM_SERVICE,
-        transport: Transport.TCP,
-        options: {
-          host: process.env.IAM_SERVICE_HOST ?? '0.0.0.0',
-          port: Number(process.env.IAM_SERVICE_PORT ?? 3003),
         },
       },
     ]),
