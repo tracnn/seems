@@ -1,9 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject, BadRequestException, Logger } from '@nestjs/common';
+import { Inject, BadRequestException, Logger, HttpStatus } from '@nestjs/common';
 import { CreateUserCommand } from './create-user.command';
 import type { IUserRepository } from '../../../../../domain/interfaces/user.repository.interface';
 import { User } from '../../../../../domain/entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { BaseException } from '@app/shared-exceptions';
+import { ERROR_DESCRIPTIONS, ErrorCode } from '@app/shared-constants';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
@@ -24,7 +26,12 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     );
 
     if (existingUser) {
-      throw new BadRequestException('Username or email already exists');
+      throw new BaseException(
+        ErrorCode.IAM_SERVICE_0002,
+        ERROR_DESCRIPTIONS[ErrorCode.IAM_SERVICE_0002] || 'Username or email already exists',
+        HttpStatus.BAD_REQUEST,
+        { username: command.username, email: command.email },
+      );
     }
 
     // Hash password
