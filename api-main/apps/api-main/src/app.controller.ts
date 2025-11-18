@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UtilsService } from '@app/utils';
-import { ServiceEnum } from '@app/utils/service.enum';
+import { ServiceName } from '@app/shared-constants';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { WinstonLoggerService } from '@app/logger';
 
@@ -33,7 +33,7 @@ export class AppController {
     const healthData = {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      service: ServiceEnum.API_MAIN,
+      service: ServiceName.API_MAIN,
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || 'development',
       version: process.env.API_VERSION || '1',

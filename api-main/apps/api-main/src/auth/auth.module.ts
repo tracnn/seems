@@ -3,7 +3,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ServiceEnum } from '@app/utils/service.enum';
+import { ServiceName } from '@app/shared-constants';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from '@app/shared-guards';
@@ -28,7 +28,7 @@ import { JwtAuthGuard } from '@app/shared-guards';
     }),
     ClientsModule.register([
       {
-        name: ServiceEnum.AUTH_SERVICE,
+        name: ServiceName.AUTH_SERVICE,
         transport: Transport.TCP,
         options: {
           host: process.env.AUTH_SERVICE_HOST ?? '0.0.0.0',

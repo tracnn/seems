@@ -1,19 +1,18 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetUserQuery } from './get-user.query';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { UserRepository } from '../../../../infrastructure/database/typeorm/repositories/user.repository';
-import { User } from '../../../../domain/entities/user.entity';
+import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
 import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
 
 @Injectable()
 @QueryHandler(GetUserQuery)
 export class GetUserHandler implements IQueryHandler<GetUserQuery> {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly iamClient: IamClientService) {}
 
-  async execute(query: GetUserQuery): Promise<Partial<User>> {
+  async execute(query: GetUserQuery): Promise<any> {
     const { userId } = query;
 
-    const user = await this.userRepository.findById(userId);
+    const user = await this.iamClient.getUserById(userId);
     if (!user) {
       throw new NotFoundException({
         statusCode: 404,

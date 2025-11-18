@@ -1,7 +1,7 @@
 import { Injectable, Logger, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { ServiceEnum } from '@app/utils/service.enum';
+import { ServiceName } from '@app/shared-constants';
 
 /**
  * IAM Service Client for API Gateway
@@ -12,7 +12,7 @@ export class IamClientService implements OnModuleInit {
   private readonly logger = new Logger(IamClientService.name);
 
   constructor(
-    @Inject(ServiceEnum.IAM_SERVICE) private readonly iamClient: ClientProxy,
+    @Inject(ServiceName.IAM_SERVICE) private readonly iamClient: ClientProxy,
   ) {}
 
   async onModuleInit() {

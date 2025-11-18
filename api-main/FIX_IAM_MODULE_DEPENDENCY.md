@@ -26,7 +26,7 @@ Please make sure that the argument "IAM_SERVICE" at index [0] is available in th
     IamModule,
     ClientsModule.register([
       {
-        name: ServiceEnum.IAM_SERVICE,  // ❌ Registered here
+        name: ServiceName.IAM_SERVICE,  // ❌ Registered here
         transport: Transport.TCP,
         // ...
       },

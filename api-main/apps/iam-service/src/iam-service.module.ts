@@ -55,7 +55,7 @@ import { HttpExceptionFilter } from './presentation/filters/http-exception.filte
 
 // Shared
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
-import { LogServiceEnum } from '@app/utils/service.enum';
+import { LogServiceName } from '@app/shared-constants';
 
 const CommandHandlers = [
   // User Commands
@@ -100,7 +100,7 @@ const QueryHandlers = [
       envFilePath: '.env',
       load: [databaseConfig],
     }),
-    LoggerModule.forRoot(LogServiceEnum.IAM_SERVICE),
+    LoggerModule.forRoot(LogServiceName.IAM_SERVICE),
     CqrsModule,
     DatabaseModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),

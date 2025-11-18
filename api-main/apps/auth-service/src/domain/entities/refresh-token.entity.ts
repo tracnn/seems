@@ -1,6 +1,5 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/common';
-import { User } from './user.entity';
 
 @Entity('AUTH_REFRESH_TOKENS')
 export class RefreshToken extends BaseEntity {
@@ -8,11 +7,7 @@ export class RefreshToken extends BaseEntity {
     name: 'USER_ID',
     length: 36,
   })
-  userId: string;
-
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'USER_ID' })
-  user: User;
+  userId: string; // Reference to IAM Service User ID (no foreign key)
 
   @Column({
     name: 'TOKEN',

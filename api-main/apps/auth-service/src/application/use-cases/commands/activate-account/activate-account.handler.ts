@@ -1,26 +1,25 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { ActivateAccountCommand } from './activate-account.command';
-import { UserRepository } from '../../../../infrastructure/database/typeorm/repositories/user.repository';
-import { User } from '../../../../domain/entities/user.entity';
+import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
 import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
 
 /**
  * Activate Account Handler
- * Updates email verification status (Auth Service scope)
+ * Updates email verification status via IAM Service
  */
 @Injectable()
 @CommandHandler(ActivateAccountCommand)
 export class ActivateAccountHandler implements ICommandHandler<ActivateAccountCommand> {
   private readonly logger = new Logger(ActivateAccountHandler.name);
 
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly iamClient: IamClientService) {}
 
-  async execute(command: ActivateAccountCommand): Promise<User> {
+  async execute(command: ActivateAccountCommand): Promise<any> {
     const { userId } = command;
 
-    // 1. Kiểm tra user tồn tại
-    const user = await this.userRepository.findById(userId);
+    // 1. Kiểm tra user tồn tại trong IAM Service
+    const user = await this.iamClient.getUserById(userId);
     if (!user) {
       throw new NotFoundException({
         statusCode: 404,
@@ -36,16 +35,16 @@ export class ActivateAccountHandler implements ICommandHandler<ActivateAccountCo
       return user;
     }
 
-    // 3. Cập nhật email verification status
-    await this.userRepository.updateEmailVerified(userId, true);
+    // 3. Cập nhật email verification status trong IAM Service
+    await this.iamClient.updateEmailVerified(userId, true);
 
     // 4. (Optional) Gửi email thông báo kích hoạt thành công
     // await this.emailService.sendActivationSuccessEmail(user.email);
 
     this.logger.log(`User ${userId} email verified successfully`);
 
-    // Return updated user
-    const updatedUser = await this.userRepository.findById(userId);
+    // Return updated user from IAM Service
+    const updatedUser = await this.iamClient.getUserById(userId);
     if (!updatedUser) {
       throw new NotFoundException('User not found after update');
     }

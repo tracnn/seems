@@ -5,7 +5,7 @@ import { UtilsModule } from '@app/utils';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
-import { LogServiceEnum, ServiceEnum } from '@app/utils/service.enum';
+import { LogServiceName, ServiceName } from '@app/shared-constants';
 import { AuthModule } from './auth/auth.module';
 import { IamModule } from './iam/iam.module';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
@@ -20,7 +20,7 @@ import { APP_GUARD } from '@nestjs/core';
       isGlobal: true, 
       envFilePath: '.env',
     }),
-    LoggerModule.forRoot(LogServiceEnum.API_MAIN),
+    LoggerModule.forRoot(LogServiceName.API_MAIN),
     ThrottlerModule.forRoot([{
       ttl: 60,
       limit: 10,
@@ -29,7 +29,7 @@ import { APP_GUARD } from '@nestjs/core';
     IamModule, // IAM Module includes IAM_SERVICE TCP client
     ClientsModule.register([
       {
-        name: ServiceEnum.CATALOG_SERVICE,
+        name: ServiceName.CATALOG_SERVICE,
         transport: Transport.TCP,
         options: {
           host: process.env.CATALOG_SERVICE_HOST ?? '0.0.0.0',

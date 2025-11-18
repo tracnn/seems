@@ -23,7 +23,8 @@ import { GetUserHandler } from './application/use-cases/queries/get-user/get-use
 // Presentation
 import { AuthController } from './presentation/controllers/auth.controller';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
-import { LogServiceEnum } from '@app/utils/service.enum';
+import { LogServiceName } from '@app/shared-constants';
+import { ServiceName } from '@app/shared-constants';
 
 // Infrastructure Clients
 import { IamClientService } from './infrastructure/clients/iam-client.service';
@@ -44,7 +45,7 @@ const QueryHandlers = [GetUserHandler];
       envFilePath: '.env',
       load: [databaseConfig],
     }),
-    LoggerModule.forRoot(LogServiceEnum.AUTH_SERVICE),
+    LoggerModule.forRoot(LogServiceName.AUTH_SERVICE),
     CqrsModule,
     DatabaseModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -55,7 +56,7 @@ const QueryHandlers = [GetUserHandler];
     // TCP Client for IAM Service
     ClientsModule.registerAsync([
       {
-        name: 'IAM_SERVICE',
+        name: ServiceName.IAM_SERVICE,
         imports: [ConfigModule],
         useFactory: (configService: ConfigService) => ({
           transport: Transport.TCP,

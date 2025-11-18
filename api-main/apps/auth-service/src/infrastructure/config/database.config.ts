@@ -1,6 +1,5 @@
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { User } from '../../domain/entities/user.entity';
 import { RefreshToken } from '../../domain/entities/refresh-token.entity';
 
 export default registerAs(
@@ -13,7 +12,7 @@ export default registerAs(
     password: process.env.DB_AUTH_PASSWORD || '',
     serviceName: process.env.DB_AUTH_SERVICE_NAME || 'XE',
     // Import entities trực tiếp thay vì dùng glob pattern
-    entities: [User, RefreshToken],
+    entities: [RefreshToken],
     synchronize: process.env.NODE_ENV === 'development',
     logging: process.env.NODE_ENV === 'development',
     // Thêm autoLoadEntities nếu cần

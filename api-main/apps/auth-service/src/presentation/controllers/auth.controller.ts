@@ -7,7 +7,7 @@ import { RefreshTokenCommand } from '../../application/use-cases/commands/refres
 import { LogoutCommand } from '../../application/use-cases/commands/logout/logout.command';
 import { GetUserQuery } from '../../application/use-cases/queries/get-user/get-user.query';
 import { MessagePattern } from '@nestjs/microservices';
-import { ServiceEnum } from '@app/utils/service.enum';
+import { ServiceName } from '@app/shared-constants';
 import { ActivateAccountCommand } from '../../application/use-cases/commands/activate-account/activate-account.command';
 
 @Controller()
@@ -104,7 +104,7 @@ export class AuthController {
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      service: ServiceEnum.AUTH_SERVICE,
+      service: ServiceName.AUTH_SERVICE,
       uptime: process.uptime(),
     };
   }

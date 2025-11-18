@@ -3,7 +3,6 @@ import { AuthServiceModule } from '../../../auth-service.module';
 import { IamClientService } from '../../clients/iam-client.service';
 import * as bcrypt from 'bcrypt';
 import { Logger } from '@nestjs/common';
-import { UserRepository } from '../typeorm/repositories/user.repository';
 
 /**
  * Auth Service Seed
@@ -19,13 +18,12 @@ async function seed() {
   
   try {
     const iamClient = app.get(IamClientService);
-    const userRepository = app.get(UserRepository);
     
     // Wait for IAM connection
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Check if user already exists
-    const existingUser = await userRepository.findByEmail('john.doe@example.com');
+    // Check if user already exists in IAM Service
+    const existingUser = await iamClient.getUserByEmail('john.doe@example.com');
     
     if (existingUser) {
       logger.warn('User john.doe@example.com already exists. Skipping...');

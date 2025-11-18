@@ -4,7 +4,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { RpcExceptionFilter } from './presentation/filters/rpc-exception.filter';
 import { WinstonLoggerService } from '@app/logger';
-import { LogServiceEnum } from '@app/utils/service.enum';
+import { LogServiceName } from '@app/shared-constants';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -19,7 +19,7 @@ async function bootstrap() {
   );
   
   const logger = app.get(WinstonLoggerService);
-  logger.setContext(LogServiceEnum.AUTH_SERVICE);
+  logger.setContext(LogServiceName.AUTH_SERVICE);
   app.useLogger(logger);
 
   // Global pipes

@@ -19,7 +19,7 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
-import { ServiceEnum } from '@app/utils/service.enum';
+import { ServiceName } from '@app/shared-constants';
 import { RegisterDto, LoginDto, RefreshTokenDto, ActivateAccountDto } from '@app/shared-dto';
 import { JwtAuthGuard } from '@app/shared-guards';
 import { firstValueFrom } from 'rxjs';
@@ -29,7 +29,7 @@ import { firstValueFrom } from 'rxjs';
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
   constructor(
-    @Inject(ServiceEnum.AUTH_SERVICE)
+    @Inject(ServiceName.AUTH_SERVICE)
     private readonly authClient: ClientProxy,
   ) {
   }
@@ -43,14 +43,14 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Đăng ký tài khoản mới' })
+  @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({
     status: 201,
-    description: 'Đăng ký thành công',
+    description: 'Register successfully',
     schema: {
       example: {
         statusCode: 201,
-        message: 'Đăng ký thành công',
+        message: 'Register successfully',
         data: {
           id: '123e4567-e89b-12d3-a456-426614174000',
           username: 'john.doe',
@@ -66,7 +66,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 409,
-    description: 'Username hoặc email đã tồn tại',
+    description: 'Username or email already exists',
   })
   async register(@Body() registerDto: RegisterDto) {
     this.logger.log(`Registration attempt for email: ${registerDto.email}`);
@@ -89,14 +89,14 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Đăng nhập' })
+  @ApiOperation({ summary: 'Login' })
   @ApiResponse({
     status: 200,
-    description: 'Đăng nhập thành công',
+    description: 'Login successfully',
     schema: {
       example: {
         statusCode: 200,
-        message: 'Đăng nhập thành công',
+        message: 'Login successfully',
         data: {
           accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
           refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -115,7 +115,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Tên đăng nhập hoặc mật khẩu không đúng',
+    description: 'Username or password is incorrect',
   })
   async login(
     @Body() loginDto: LoginDto,
@@ -145,14 +145,14 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Lấy thông tin người dùng hiện tại' })
+  @ApiOperation({ summary: 'Get current user information' })
   @ApiResponse({
     status: 200,
-    description: 'Lấy thông tin thành công',
+    description: 'Get user information successfully',
     schema: {
       example: {
         statusCode: 200,
-        message: 'Lấy thông tin người dùng thành công',
+        message: 'Get user information successfully',
         data: {
           id: '123e4567-e89b-12d3-a456-426614174000',
           username: 'john.doe',
@@ -168,7 +168,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Token không hợp lệ hoặc đã hết hạn',
+    description: 'Token is invalid or expired',
   })
   async getMe(@Request() req: any) {
     this.logger.debug(`Get user profile: ${req.user.id}`);
@@ -180,14 +180,14 @@ export class AuthController {
 
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Làm mới access token' })
+  @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({
     status: 200,
-    description: 'Làm mới token thành công',
+    description: 'Refresh token successfully',
     schema: {
       example: {
         statusCode: 200,
-        message: 'Làm mới token thành công',
+        message: 'Refresh token successfully',
         data: {
           accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
           refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -204,7 +204,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Refresh token không hợp lệ hoặc đã hết hạn',
+    description: 'Refresh token is invalid or expired',
   })
   async refreshToken(
     @Body() refreshTokenDto: RefreshTokenDto,
@@ -228,20 +228,20 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Đăng xuất' })
+  @ApiOperation({ summary: 'Logout' })
   @ApiResponse({
     status: 200,
-    description: 'Đăng xuất thành công',
+    description: 'Logout successfully',
     schema: {
       example: {
         statusCode: 200,
-        message: 'Đăng xuất thành công',
+        message: 'Logout successfully',
       },
     },
   })
   @ApiResponse({
     status: 401,
-    description: 'Token không hợp lệ hoặc đã hết hạn',
+    description: 'Token is invalid or expired',
   })
   async logout(@Request() req: any) {
     this.logger.log('LOGOUT', req.user.id);
@@ -263,7 +263,7 @@ export class AuthController {
   //@UseGuards(JwtAuthGuard, RolesGuard)
   //@Roles('ADMIN') // Chỉ admin mới có quyền kích hoạt tài khoản
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Kích hoạt tài khoản người dùng' })
+  @ApiOperation({ summary: 'Activate user account' })
   async activateAccount(@Body() dto: ActivateAccountDto) {
     return firstValueFrom(
       this.authClient.send({ cmd: 'activate-account' }, dto),

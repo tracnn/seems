@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RefreshTokenCommand } from './refresh-token.command';
 import { UnauthorizedException, Injectable } from '@nestjs/common';
-import { UserRepository } from '../../../../infrastructure/database/typeorm/repositories/user.repository';
+import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
 import { RefreshTokenRepository } from '../../../../infrastructure/database/typeorm/repositories/refresh-token.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +14,7 @@ export class RefreshTokenHandler
   implements ICommandHandler<RefreshTokenCommand>
 {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly iamClient: IamClientService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -62,8 +62,8 @@ export class RefreshTokenHandler
         secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
       });
 
-      // Lấy thông tin user
-      const user = await this.userRepository.findById(payload.sub);
+      // Lấy thông tin user từ IAM Service
+      const user = await this.iamClient.getUserById(payload.sub);
       if (!user || !user.isActive) {
         throw new UnauthorizedException({
           statusCode: 401,

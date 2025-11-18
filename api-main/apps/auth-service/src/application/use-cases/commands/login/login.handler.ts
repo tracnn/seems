@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LoginCommand } from './login.command';
 import { UnauthorizedException, Injectable, Logger } from '@nestjs/common';
-import { UserRepository } from '../../../../infrastructure/database/typeorm/repositories/user.repository';
+import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
 import { RefreshTokenRepository } from '../../../../infrastructure/database/typeorm/repositories/refresh-token.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +14,7 @@ import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
 export class LoginHandler implements ICommandHandler<LoginCommand> {
   private readonly logger = new Logger(LoginHandler.name);
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly iamClient: IamClientService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -23,10 +23,10 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
   async execute(command: LoginCommand): Promise<AuthResponseDto> {
     const { usernameOrEmail, password, ipAddress, userAgent } = command;
 
-    // Tìm user bằng username hoặc email
-    let user = await this.userRepository.findByUsername(usernameOrEmail);
+    // Tìm user bằng username hoặc email từ IAM Service
+    let user = await this.iamClient.getUserByUsername(usernameOrEmail);
     if (!user) {
-      user = await this.userRepository.findByEmail(usernameOrEmail);
+      user = await this.iamClient.getUserByEmail(usernameOrEmail);
     }
 
     if (!user) {
@@ -82,8 +82,8 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       isRevoked: false,
     });
 
-    // Cập nhật last login  
-    await this.userRepository.updateLastLogin(user.id);
+    // Cập nhật last login trong IAM Service
+    await this.iamClient.updateLastLogin(user.id);
 
     return {
       accessToken,

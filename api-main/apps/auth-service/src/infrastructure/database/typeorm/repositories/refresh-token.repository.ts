@@ -14,7 +14,6 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
   async findByToken(token: string): Promise<RefreshToken | null> {
     return this.repository.findOne({
       where: { token },
-      relations: ['user'],
     });
   }
 

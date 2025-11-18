@@ -4,7 +4,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { IamServiceModule } from './iam-service.module';
 import { WinstonLoggerService } from '@app/logger';
 import { RpcExceptionFilter } from './presentation/filters/rpc-exception.filter';
-import { LogServiceEnum } from '@app/utils/service.enum';
+import { LogServiceName } from '@app/shared-constants';
 
 async function bootstrap() {
   // Create pure TCP microservice
@@ -21,7 +21,7 @@ async function bootstrap() {
 
   // Use Winston logger
   const logger = app.get(WinstonLoggerService);
-  logger.setContext(LogServiceEnum.IAM_SERVICE);
+  logger.setContext(LogServiceName.IAM_SERVICE);
   app.useLogger(logger);
 
   // Global validation pipe - relaxed for TCP microservice

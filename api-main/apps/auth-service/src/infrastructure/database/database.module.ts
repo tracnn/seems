@@ -2,9 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from '../config/database.config';
-import { User } from '../../domain/entities/user.entity';
 import { RefreshToken } from '../../domain/entities/refresh-token.entity';
-import { UserRepository } from './typeorm/repositories/user.repository';
 import { RefreshTokenRepository } from './typeorm/repositories/refresh-token.repository';
 
 @Module({
@@ -21,10 +19,10 @@ import { RefreshTokenRepository } from './typeorm/repositories/refresh-token.rep
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, RefreshToken]),
+    TypeOrmModule.forFeature([RefreshToken]),
   ],
-  providers: [UserRepository, RefreshTokenRepository],
-  exports: [UserRepository, RefreshTokenRepository, TypeOrmModule],
+  providers: [RefreshTokenRepository],
+  exports: [RefreshTokenRepository, TypeOrmModule],
 })
 export class DatabaseModule {}
 
