@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
 import { WinstonLoggerService } from '@app/logger';
+import { HttpExceptionFilter } from '@app/shared-exceptions';
 import helmet from 'helmet';
 
 async function bootstrap() {
@@ -37,6 +38,10 @@ async function bootstrap() {
     }),
   );
   logger.log('Global validation pipe configured');
+
+  // Global HTTP exception filter - xử lý RPC errors từ microservices
+  app.useGlobalFilters(new HttpExceptionFilter());
+  logger.log('Global HTTP exception filter configured');
 
   // Swagger Configuration
   const enableSwagger = process.env.ENABLE_SWAGGER === 'true';

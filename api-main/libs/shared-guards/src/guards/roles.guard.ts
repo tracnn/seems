@@ -1,11 +1,12 @@
 import { 
   Injectable, 
   CanActivate, 
-  ExecutionContext, 
-  ForbiddenException 
+  ExecutionContext,
+  HttpStatus
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
+import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { BaseException } from '@app/shared-exceptions';
 
 /**
  * Interface cho JWT Payload
@@ -57,12 +58,11 @@ export class RolesGuard implements CanActivate {
 
     // Kiểm tra user có tồn tại và có roles không
     if (!user || !user.roles || user.roles.length === 0) {
-      throw new ForbiddenException({
-        statusCode: 403,
-        error: 'Forbidden',
-        message: ERROR_MESSAGES[ErrorCode.INSUFFICIENT_PERMISSIONS],
-        code: ErrorCode.INSUFFICIENT_PERMISSIONS,
-      });
+      throw new BaseException(
+        ErrorCode.IAM_SERVICE_0600,
+        ERROR_DESCRIPTIONS[ErrorCode.IAM_SERVICE_0600] || 'The user does not have sufficient permissions to perform this action',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     // Kiểm tra user có ít nhất một trong các roles yêu cầu
@@ -71,12 +71,12 @@ export class RolesGuard implements CanActivate {
     );
 
     if (!hasRole) {
-      throw new ForbiddenException({
-        statusCode: 403,
-        error: 'Forbidden',
-        message: `${ERROR_MESSAGES[ErrorCode.INSUFFICIENT_PERMISSIONS]}. Yêu cầu vai trò: ${requiredRoles.join(', ')}`,
-        code: ErrorCode.INSUFFICIENT_PERMISSIONS,
-      });
+      throw new BaseException(
+        ErrorCode.IAM_SERVICE_0600,
+        ERROR_DESCRIPTIONS[ErrorCode.IAM_SERVICE_0600] || 'The user does not have sufficient permissions to perform this action',
+        HttpStatus.FORBIDDEN,
+        { requiredRoles },
+      );
     }
 
     return true;

@@ -1,8 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RegisterCommand } from './register.command';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, HttpStatus } from '@nestjs/common';
 import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
-import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
+import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { BaseException } from '@app/shared-exceptions';
 
 /**
  * Register Handler
@@ -38,11 +39,18 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
     } catch (error) {
       this.logger.error(`Registration failed: ${error.message}`);
       
-      throw new BadRequestException({
-        statusCode: 400,
-        error: 'Bad Request',
-        message: error.message || 'Registration failed',
-      });
+      // Nếu error đã là BaseException, throw trực tiếp
+      if (error instanceof BaseException) {
+        throw error;
+      }
+      
+      // Nếu không, tạo BaseException mới
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0003,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0003] || 'A user with the same identifier already exists',
+        HttpStatus.BAD_REQUEST,
+        { error: error.message },
+      );
     }
   }
 }

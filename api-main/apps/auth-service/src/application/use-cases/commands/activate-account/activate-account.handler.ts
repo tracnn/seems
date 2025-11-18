@@ -1,8 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, Logger, HttpStatus } from '@nestjs/common';
 import { ActivateAccountCommand } from './activate-account.command';
 import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
-import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
+import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { BaseException } from '@app/shared-exceptions';
 
 /**
  * Activate Account Handler
@@ -21,12 +22,12 @@ export class ActivateAccountHandler implements ICommandHandler<ActivateAccountCo
     // 1. Kiểm tra user tồn tại trong IAM Service
     const user = await this.iamClient.getUserById(userId);
     if (!user) {
-      throw new NotFoundException({
-        statusCode: 404,
-        error: 'Not Found',
-        message: ERROR_MESSAGES[ErrorCode.USER_NOT_FOUND],
-        code: ErrorCode.USER_NOT_FOUND,
-      });
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0002,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0002] || 'The requested user does not exist in the system',
+        HttpStatus.NOT_FOUND,
+        { userId },
+      );
     }
 
     // 2. Kiểm tra user đã verify email chưa
@@ -46,7 +47,12 @@ export class ActivateAccountHandler implements ICommandHandler<ActivateAccountCo
     // Return updated user from IAM Service
     const updatedUser = await this.iamClient.getUserById(userId);
     if (!updatedUser) {
-      throw new NotFoundException('User not found after update');
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0002,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0002] || 'The requested user does not exist in the system',
+        HttpStatus.NOT_FOUND,
+        { userId },
+      );
     }
     return updatedUser;
   }

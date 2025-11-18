@@ -1,13 +1,14 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LoginCommand } from './login.command';
-import { UnauthorizedException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, HttpStatus } from '@nestjs/common';
 import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
 import { RefreshTokenRepository } from '../../../../infrastructure/database/typeorm/repositories/refresh-token.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { AuthResponseDto } from '@app/shared-dto';
-import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
+import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
 @CommandHandler(LoginCommand)
@@ -31,34 +32,31 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
 
     if (!user) {
       this.logger.error('User not found', { usernameOrEmail });
-      throw new UnauthorizedException({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: ERROR_MESSAGES[ErrorCode.INVALID_CREDENTIALS],
-        code: ErrorCode.INVALID_CREDENTIALS,
-      });
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0001,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0001] || 'The provided username or password is incorrect',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     // Kiểm tra password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: ERROR_MESSAGES[ErrorCode.INVALID_CREDENTIALS],
-        code: ErrorCode.INVALID_CREDENTIALS,
-      });
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0001,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0001] || 'The provided username or password is incorrect',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     // Kiểm tra user active
     if (!user.isActive) {
       this.logger.error('User inactive', { userId: user.id });
-      throw new UnauthorizedException({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: ERROR_MESSAGES[ErrorCode.USER_INACTIVE],
-        code: ErrorCode.USER_INACTIVE,
-      });
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0013,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0013] || 'The user account has been deactivated',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     // Tạo access token

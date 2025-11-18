@@ -1,11 +1,12 @@
 import { 
   Injectable, 
-  ExecutionContext, 
-  UnauthorizedException 
+  ExecutionContext,
+  HttpStatus
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
+import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { BaseException } from '@app/shared-exceptions';
 
 /**
  * JWT Authentication Guard
@@ -54,14 +55,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    */
   handleRequest(err: any, user: any, info: any) {
     if (err || !user) {
-      throw (
-        err ||
-        new UnauthorizedException({
-          statusCode: 401,
-          error: 'Unauthorized',
-          message: ERROR_MESSAGES[ErrorCode.INVALID_TOKEN],
-          code: ErrorCode.INVALID_TOKEN,
-        })
+      // Nếu đã là BaseException, throw trực tiếp
+      if (err instanceof BaseException) {
+        throw err;
+      }
+      
+      // Nếu không, tạo BaseException mới
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0006,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0006] || 'The provided token is invalid or malformed',
+        HttpStatus.UNAUTHORIZED,
+        { info },
       );
     }
     return user;

@@ -1,12 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RefreshTokenCommand } from './refresh-token.command';
-import { UnauthorizedException, Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
 import { RefreshTokenRepository } from '../../../../infrastructure/database/typeorm/repositories/refresh-token.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthResponseDto } from '@app/shared-dto';
-import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
+import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
 @CommandHandler(RefreshTokenCommand)
@@ -28,32 +29,29 @@ export class RefreshTokenHandler
       await this.refreshTokenRepository.findByToken(refreshToken);
 
     if (!storedToken) {
-      throw new UnauthorizedException({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: ERROR_MESSAGES[ErrorCode.REFRESH_TOKEN_NOT_FOUND],
-        code: ErrorCode.REFRESH_TOKEN_NOT_FOUND,
-      });
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0008,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0008] || 'The requested refresh token does not exist',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     // Kiểm tra token đã bị revoke chưa
     if (storedToken.isRevoked) {
-      throw new UnauthorizedException({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: ERROR_MESSAGES[ErrorCode.REFRESH_TOKEN_REVOKED],
-        code: ErrorCode.REFRESH_TOKEN_REVOKED,
-      });
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0009,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0009] || 'The refresh token has been revoked',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     // Kiểm tra token đã hết hạn chưa
     if (new Date() > storedToken.expiresAt) {
-      throw new UnauthorizedException({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: ERROR_MESSAGES[ErrorCode.REFRESH_TOKEN_EXPIRED],
-        code: ErrorCode.REFRESH_TOKEN_EXPIRED,
-      });
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0010,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0010] || 'The refresh token has expired',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     // Verify JWT token
@@ -65,12 +63,11 @@ export class RefreshTokenHandler
       // Lấy thông tin user từ IAM Service
       const user = await this.iamClient.getUserById(payload.sub);
       if (!user || !user.isActive) {
-        throw new UnauthorizedException({
-          statusCode: 401,
-          error: 'Unauthorized',
-          message: ERROR_MESSAGES[ErrorCode.USER_NOT_FOUND],
-          code: ErrorCode.USER_NOT_FOUND,
-        });
+        throw new BaseException(
+          ErrorCode.AUTH_SERVICE_0002,
+          ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0002] || 'The requested user does not exist in the system',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
       // Thu hồi refresh token cũ
@@ -117,12 +114,16 @@ export class RefreshTokenHandler
         },
       };
     } catch (error) {
-      throw new UnauthorizedException({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: ERROR_MESSAGES[ErrorCode.INVALID_TOKEN],
-        code: ErrorCode.INVALID_TOKEN,
-      });
+      // Nếu error đã là BaseException, throw trực tiếp
+      if (error instanceof BaseException) {
+        throw error;
+      }
+      
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0006,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0006] || 'The provided token is invalid or malformed',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 }

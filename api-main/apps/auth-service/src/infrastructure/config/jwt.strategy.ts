@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { IamClientService } from '../clients/iam-client.service';
-import { ErrorCode, ERROR_MESSAGES } from '@app/shared-constants';
+import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -22,21 +23,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.iamClient.getUserById(payload.sub);
     
     if (!user) {
-      throw new UnauthorizedException({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: ERROR_MESSAGES[ErrorCode.USER_NOT_FOUND],
-        code: ErrorCode.USER_NOT_FOUND,
-      });
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0002,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0002] || 'The requested user does not exist in the system',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException({
-        statusCode: 401,
-        error: 'Unauthorized',
-        message: ERROR_MESSAGES[ErrorCode.USER_INACTIVE],
-        code: ErrorCode.USER_INACTIVE,
-      });
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0013,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0013] || 'The user account has been deactivated',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     return {

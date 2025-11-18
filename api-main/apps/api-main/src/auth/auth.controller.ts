@@ -22,6 +22,7 @@ import {
 import { ServiceName } from '@app/shared-constants';
 import { RegisterDto, LoginDto, RefreshTokenDto, ActivateAccountDto } from '@app/shared-dto';
 import { JwtAuthGuard } from '@app/shared-guards';
+import { convertRpcError } from '@app/shared-exceptions';
 import { firstValueFrom } from 'rxjs';
 
 @ApiTags('Authentication')
@@ -83,7 +84,8 @@ export class AuthController {
         `Registration failed for ${registerDto.email}: ${error.message}`,
         error.stack,
       );
-      throw error;
+      // Chuyển đổi RPC error thành RpcException để exception filter xử lý đúng
+      throw convertRpcError(error);
     }
   }
 
@@ -138,7 +140,8 @@ export class AuthController {
       
       return result;
     } catch (error) {
-      throw error;
+      // Chuyển đổi RPC error thành RpcException để exception filter xử lý đúng
+      throw convertRpcError(error);
     }
   }
 
@@ -173,9 +176,14 @@ export class AuthController {
   async getMe(@Request() req: any) {
     this.logger.debug(`Get user profile: ${req.user.id}`);
     
-    return firstValueFrom(
-      this.authClient.send({ cmd: 'get-me' }, { userId: req.user.id }),
-    );
+    try {
+      return await firstValueFrom(
+        this.authClient.send({ cmd: 'get-me' }, { userId: req.user.id }),
+      );
+    } catch (error) {
+      // Chuyển đổi RPC error thành RpcException để exception filter xử lý đúng
+      throw convertRpcError(error);
+    }
   }
 
   @Post('refresh-token')
@@ -212,16 +220,21 @@ export class AuthController {
     @Request() req: any,
   ) {
     const userAgent = req.headers['user-agent'] || 'unknown';
-    return firstValueFrom(
-      this.authClient.send(
-        { cmd: 'refresh-token' },
-        {
-          ...refreshTokenDto,
-          ipAddress: ip,
-          userAgent: userAgent || 'unknown',
-        },
-      ),
-    );
+    try {
+      return await firstValueFrom(
+        this.authClient.send(
+          { cmd: 'refresh-token' },
+          {
+            ...refreshTokenDto,
+            ipAddress: ip,
+            userAgent: userAgent || 'unknown',
+          },
+        ),
+      );
+    } catch (error) {
+      // Chuyển đổi RPC error thành RpcException để exception filter xử lý đúng
+      throw convertRpcError(error);
+    }
   }
 
   @Post('logout')
@@ -255,7 +268,8 @@ export class AuthController {
       return result;
     } catch (error) {
       this.logger.error(`Logout failed for user ${req.user.id}`, error.stack);
-      throw error;
+      // Chuyển đổi RPC error thành RpcException để exception filter xử lý đúng
+      throw convertRpcError(error);
     }
   }
 
@@ -265,9 +279,14 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Activate user account' })
   async activateAccount(@Body() dto: ActivateAccountDto) {
-    return firstValueFrom(
-      this.authClient.send({ cmd: 'activate-account' }, dto),
-    );
+    try {
+      return await firstValueFrom(
+        this.authClient.send({ cmd: 'activate-account' }, dto),
+      );
+    } catch (error) {
+      // Chuyển đổi RPC error thành RpcException để exception filter xử lý đúng
+      throw convertRpcError(error);
+    }
   }
 }
 
