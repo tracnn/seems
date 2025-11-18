@@ -7,7 +7,7 @@ import { UserOrganization } from './user-organization.entity';
  * User Entity - Master entity for IAM Service
  * This is the single source of truth for user data
  */
-@Entity('USERS')
+@Entity('IAM_USERS')
 export class User extends BaseEntity {
   @Column({
     name: 'USERNAME',

@@ -1,7 +1,7 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/common';
 
-@Entity('USERS')
+@Entity('AUTH_USERS')
 export class User extends BaseEntity {
   @Column({
     name: 'USERNAME',

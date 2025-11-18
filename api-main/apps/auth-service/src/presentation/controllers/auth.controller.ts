@@ -51,7 +51,7 @@ export class AuthController {
     const result = await this.commandBus.execute(command);
 
     return {
-      statusCode: HttpStatus.OK,
+      statusCode: HttpStatus.CREATED,
       message: 'Đăng nhập thành công',
       data: result,
     };

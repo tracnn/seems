@@ -5,7 +5,7 @@ import { RolePermission } from './role-permission.entity';
 /**
  * Permission Entity - Represents granular permissions
  */
-@Entity('PERMISSIONS')
+@Entity('IAM_PERMISSIONS')
 export class Permission extends BaseEntity {
   @Column({
     name: 'NAME',

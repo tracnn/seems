@@ -38,16 +38,6 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand> {
     } catch (error) {
       this.logger.error(`Registration failed: ${error.message}`);
       
-      // Map IAM Service errors to Auth Service errors
-      if (error.message?.includes('already exists')) {
-        throw new BadRequestException({
-          statusCode: 400,
-          error: 'Bad Request',
-          message: ERROR_MESSAGES[ErrorCode.USERNAME_ALREADY_EXISTS] || 'Username or email already exists',
-          code: ErrorCode.USERNAME_ALREADY_EXISTS,
-        });
-      }
-      
       throw new BadRequestException({
         statusCode: 400,
         error: 'Bad Request',

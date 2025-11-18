@@ -6,7 +6,7 @@ import { RolePermission } from './role-permission.entity';
 /**
  * Role Entity - Represents user roles in the system
  */
-@Entity('ROLES')
+@Entity('IAM_ROLES')
 export class Role extends BaseEntity {
   @Column({
     name: 'NAME',

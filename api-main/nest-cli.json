@@ -109,6 +109,15 @@
         "tsConfigPath": "libs/shared-guards/tsconfig.lib.json"
       }
     },
+    "shared-rmq": {
+      "type": "library",
+      "root": "libs/shared-rmq",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared-rmq/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared-rmq/tsconfig.lib.json"
+      }
+    },
     "shared-types": {
       "type": "library",
       "root": "libs/shared-types",

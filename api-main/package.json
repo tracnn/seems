@@ -103,6 +103,7 @@
       "^@app/shared-dto(|/.*)$": "<rootDir>/libs/shared-dto/src/$1",
       "^@app/shared-exceptions(|/.*)$": "<rootDir>/libs/shared-exceptions/src/$1",
       "^@app/shared-guards(|/.*)$": "<rootDir>/libs/shared-guards/src/$1",
+      "^@app/shared-rmq(|/.*)$": "<rootDir>/libs/shared-rmq/src/$1",
       "^@app/shared-types(|/.*)$": "<rootDir>/libs/shared-types/src/$1",
       "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1"
     }

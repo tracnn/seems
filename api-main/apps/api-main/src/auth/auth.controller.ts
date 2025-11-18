@@ -10,6 +10,7 @@ import {
   Inject,
   Ip,
   Headers,
+  Logger,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import {
@@ -22,17 +23,15 @@ import { ServiceEnum } from '@app/utils/service.enum';
 import { RegisterDto, LoginDto, RefreshTokenDto, ActivateAccountDto } from '@app/shared-dto';
 import { JwtAuthGuard } from '@app/shared-guards';
 import { firstValueFrom } from 'rxjs';
-import { WinstonLoggerService } from '@app/logger';
 
 @ApiTags('Authentication')
 @Controller('api/v1/auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
   constructor(
     @Inject(ServiceEnum.AUTH_SERVICE)
     private readonly authClient: ClientProxy,
-    private readonly logger: WinstonLoggerService,
   ) {
-    this.logger.setContext(AuthController.name);
   }
 
   @Get('health')
@@ -89,7 +88,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Đăng nhập' })
   @ApiResponse({
     status: 200,
@@ -245,7 +244,7 @@ export class AuthController {
     description: 'Token không hợp lệ hoặc đã hết hạn',
   })
   async logout(@Request() req: any) {
-    this.logger.logAuth('LOGOUT', req.user.id);
+    this.logger.log('LOGOUT', req.user.id);
     
     try {
       const result = await firstValueFrom(

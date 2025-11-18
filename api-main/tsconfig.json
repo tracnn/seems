@@ -64,6 +64,12 @@
       "@app/shared-guards/*": [
         "libs/shared-guards/src/*"
       ],
+      "@app/shared-rmq": [
+        "libs/shared-rmq/src"
+      ],
+      "@app/shared-rmq/*": [
+        "libs/shared-rmq/src/*"
+      ],
       "@app/shared-types": [
         "libs/shared-types/src"
       ],

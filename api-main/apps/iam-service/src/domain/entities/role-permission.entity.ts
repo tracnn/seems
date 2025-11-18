@@ -6,7 +6,7 @@ import { Permission } from './permission.entity';
 /**
  * RolePermission Entity - Many-to-many relationship between Role and Permission
  */
-@Entity('ROLE_PERMISSIONS')
+@Entity('IAM_ROLE_PERMISSIONS')
 export class RolePermission extends BaseEntity {
   @Column({
     name: 'ROLE_ID',

@@ -7,7 +7,7 @@ import { Organization } from './organization.entity';
  * UserOrganization Entity - Many-to-many relationship between User and Organization
  * A user can belong to multiple organizations with different roles
  */
-@Entity('USER_ORGANIZATIONS')
+@Entity('IAM_USER_ORGANIZATIONS')
 export class UserOrganization extends BaseEntity {
   @Column({
     name: 'USER_ID',

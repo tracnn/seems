@@ -5,7 +5,7 @@ import { UserOrganization } from './user-organization.entity';
 /**
  * Organization Entity - Represents organizational structure
  */
-@Entity('ORGANIZATIONS')
+@Entity('IAM_ORGANIZATIONS')
 export class Organization extends BaseEntity {
   @Column({
     name: 'NAME',

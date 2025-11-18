@@ -2,7 +2,7 @@ import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '@app/common';
 import { User } from './user.entity';
 
-@Entity('REFRESH_TOKENS')
+@Entity('AUTH_REFRESH_TOKENS')
 export class RefreshToken extends BaseEntity {
   @Column({
     name: 'USER_ID',
