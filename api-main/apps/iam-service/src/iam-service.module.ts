@@ -17,6 +17,7 @@ import { DeleteUserHandler } from './application/use-cases/commands/users/delete
 import { AssignRolesHandler } from './application/use-cases/commands/users/assign-roles/assign-roles.handler';
 import { AssignOrganizationsHandler } from './application/use-cases/commands/users/assign-organizations/assign-organizations.handler';
 import { RemoveOrganizationsHandler } from './application/use-cases/commands/users/remove-organizations/remove-organizations.handler';
+import { ActivateAccountHandler } from './application/use-cases/commands/users/activate-account/activate-account.handler';
 
 // Application - Command Handlers - Roles
 import { CreateRoleHandler } from './application/use-cases/commands/roles/create-role/create-role.handler';
@@ -65,6 +66,7 @@ const CommandHandlers = [
   AssignRolesHandler,
   AssignOrganizationsHandler,
   RemoveOrganizationsHandler,
+  ActivateAccountHandler,
   // Role Commands
   CreateRoleHandler,
   UpdateRoleHandler,

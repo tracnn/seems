@@ -15,6 +15,7 @@ import { DeleteUserCommand } from '../../application/use-cases/commands/users/de
 import { AssignRolesCommand } from '../../application/use-cases/commands/users/assign-roles/assign-roles.command';
 import { AssignOrganizationsCommand } from '../../application/use-cases/commands/users/assign-organizations/assign-organizations.command';
 import { RemoveOrganizationsCommand } from '../../application/use-cases/commands/users/remove-organizations/remove-organizations.command';
+import { ActivateAccountCommand } from '../../application/use-cases/commands/users/activate-account/activate-account.command';
 
 // Queries
 import { GetUserByIdQuery } from '../../application/use-cases/queries/users/get-user-by-id/get-user-by-id.query';
@@ -60,7 +61,9 @@ export class UsersController {
       this.logger.error(`Failed to create user: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 400,
-        message: error.message || 'Failed to create user',
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to create user',
+        ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }
@@ -93,7 +96,9 @@ export class UsersController {
       this.logger.error(`Failed to get users: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 500,
-        message: error.message || 'Failed to get users',
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to get users',
+        ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }
@@ -116,7 +121,9 @@ export class UsersController {
       this.logger.error(`Failed to get user: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 404,
-        message: error.message || 'User not found',
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'User not found',
+        ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }
@@ -139,7 +146,9 @@ export class UsersController {
       this.logger.error(`Failed to update user: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 400,
-        message: error.message || 'Failed to update user',
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to update user',
+        ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }
@@ -162,7 +171,9 @@ export class UsersController {
       this.logger.error(`Failed to delete user: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 400,
-        message: error.message || 'Failed to delete user',
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to delete user',
+        ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }
@@ -190,7 +201,9 @@ export class UsersController {
       this.logger.error(`Failed to assign roles: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 400,
-        message: error.message || 'Failed to assign roles',
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to assign roles',
+        ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }
@@ -213,7 +226,9 @@ export class UsersController {
       this.logger.error(`Failed to get user permissions: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 500,
-        message: error.message || 'Failed to get user permissions',
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to get user permissions',
+        ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }
@@ -242,7 +257,9 @@ export class UsersController {
       this.logger.error(`Failed to assign organizations: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 400,
-        message: error.message || 'Failed to assign organizations',
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to assign organizations',
+        ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }
@@ -268,7 +285,84 @@ export class UsersController {
       this.logger.error(`Failed to remove organizations: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 400,
-        message: error.message || 'Failed to remove organizations',
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to remove organizations',
+        ...(error.metadata && { metadata: error.metadata }),
+      });
+    }
+  }
+
+  /**
+   * Register new user (alias for createUser)
+   * Pattern: { cmd: 'register' }
+   */
+  @MessagePattern({ cmd: 'register' })
+  async register(@Payload() data: CreateUserDto & { createdBy?: string }) {
+    try {
+      this.logger.log(`Registering user: ${data.username}`);
+      
+      const command = new CreateUserCommand(
+        data.username,
+        data.email,
+        data.password,
+        data.firstName,
+        data.lastName,
+        data.phone,
+        data.createdBy || 'system',
+      );
+      
+      const user = await this.commandBus.execute(command);
+      this.logger.log(`User registered successfully: ${user.id}`);
+      
+      // Không trả về password
+      const { password, ...userWithoutPassword } = user;
+      return {
+        statusCode: 201,
+        message: 'Đăng ký thành công',
+        data: userWithoutPassword,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to register user: ${error.message}`);
+      throw new RpcException({
+        statusCode: error.status || 400,
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to register user',
+        ...(error.metadata && { metadata: error.metadata }),
+      });
+    }
+  }
+
+  /**
+   * Activate user account
+   * Pattern: { cmd: 'activate-account' }
+   */
+  @MessagePattern({ cmd: 'activate-account' })
+  async activateAccount(@Payload() data: { userId: string; activatedBy?: string }) {
+    try {
+      this.logger.log(`Activating account for user: ${data.userId}`);
+      
+      const command = new ActivateAccountCommand(
+        data.userId,
+        data.activatedBy,
+      );
+      
+      const user = await this.commandBus.execute(command);
+      this.logger.log(`Account activated successfully: ${data.userId}`);
+      
+      // Không trả về password
+      const { password, ...userWithoutPassword } = user;
+      return {
+        statusCode: 200,
+        message: 'Kích hoạt tài khoản thành công',
+        data: userWithoutPassword,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to activate account: ${error.message}`);
+      throw new RpcException({
+        statusCode: error.status || 400,
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'Failed to activate account',
+        ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }

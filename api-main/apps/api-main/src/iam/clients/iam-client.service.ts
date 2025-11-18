@@ -471,5 +471,49 @@ export class IamClientService implements OnModuleInit {
       throw error;
     }
   }
+
+  /**
+   * Register new user
+   * Pattern: { cmd: 'register' }
+   */
+  async register(data: {
+    username: string;
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    createdBy?: string;
+  }): Promise<any> {
+    try {
+      this.logger.log(`📤 Registering user: ${data.username}`);
+      const result = await firstValueFrom(
+        this.iamClient.send({ cmd: 'register' }, data).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ User registered: ${result.data?.id || 'unknown'}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to register user: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Activate user account
+   * Pattern: { cmd: 'activate-account' }
+   */
+  async activateAccount(data: { userId: string; activatedBy?: string }): Promise<any> {
+    try {
+      this.logger.log(`📤 Activating account for user: ${data.userId}`);
+      const result = await firstValueFrom(
+        this.iamClient.send({ cmd: 'activate-account' }, data).pipe(timeout(5000)),
+      );
+      this.logger.log(`✅ Account activated for user: ${data.userId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to activate account: ${error.message}`);
+      throw error;
+    }
+  }
 }
 

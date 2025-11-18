@@ -10,7 +10,7 @@ export class ActivateAccountDto {
     description: 'ID của user cần kích hoạt',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @IsUUID('4', { message: 'userId phải là UUID hợp lệ' })
+  @IsUUID()
   @IsString()
   userId: string;
 
@@ -19,7 +19,7 @@ export class ActivateAccountDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsOptional()
-  @IsUUID('4', { message: 'activatedBy phải là UUID hợp lệ' })
+  @IsUUID()
   @IsString()
   activatedBy?: string;
 }

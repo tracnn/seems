@@ -11,11 +11,9 @@ import { JwtStrategy } from './infrastructure/config/jwt.strategy';
 import databaseConfig from './infrastructure/config/database.config';
 
 // Application - Command Handlers
-import { RegisterHandler } from './application/use-cases/commands/register/register.handler';
 import { LoginHandler } from './application/use-cases/commands/login/login.handler';
 import { RefreshTokenHandler } from './application/use-cases/commands/refresh-token/refresh-token.handler';
 import { LogoutHandler } from './application/use-cases/commands/logout/logout.handler';
-import { ActivateAccountHandler } from './application/use-cases/commands/activate-account/activate-account.handler';
 
 // Application - Query Handlers
 import { GetUserHandler } from './application/use-cases/queries/get-user/get-user.handler';
@@ -30,11 +28,9 @@ import { ServiceName } from '@app/shared-constants';
 import { IamClientService } from './infrastructure/clients/iam-client.service';
 
 const CommandHandlers = [
-  RegisterHandler,
   LoginHandler,
   RefreshTokenHandler,
   LogoutHandler,
-  ActivateAccountHandler,
 ];
 const QueryHandlers = [GetUserHandler];
 

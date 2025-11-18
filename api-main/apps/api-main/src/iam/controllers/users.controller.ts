@@ -20,6 +20,8 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { UserFilterDto } from '../dtos/user-filter.dto';
 import { AssignRolesDto } from '../dtos/assign-roles.dto';
+import { RegisterDto, ActivateAccountDto } from '@app/shared-dto';
+import { convertRpcError } from '@app/shared-exceptions';
 
 /**
  * IAM Users Controller - API Gateway
@@ -31,6 +33,69 @@ export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
   constructor(private readonly iamClient: IamClientService) {}
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiResponse({
+    status: 201,
+    description: 'Register successfully',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: 'Register successfully',
+        data: {
+          id: '123e4567-e89b-12d3-a456-426614174000',
+          username: 'john.doe',
+          email: 'john.doe@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          isActive: 1,
+          isEmailVerified: 0,
+          createdAt: '2024-01-01T00:00:00.000Z',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Username or email already exists',
+  })
+  async register(@Body() registerDto: RegisterDto) {
+    this.logger.log(`Registration attempt for email: ${registerDto.email}`);
+    
+    try {
+      const result = await this.iamClient.register(registerDto);
+      
+      this.logger.log(`User registered successfully: ${registerDto.email}`);
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `Registration failed for ${registerDto.email}: ${error.message}`,
+        error.stack,
+      );
+      throw convertRpcError(error);
+    }
+  }
+
+  @Post('activate-account')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Activate user account' })
+  @ApiResponse({
+    status: 200,
+    description: 'Account activated successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  async activateAccount(@Body() dto: ActivateAccountDto) {
+    try {
+      return await this.iamClient.activateAccount(dto);
+    } catch (error) {
+      throw convertRpcError(error);
+    }
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)
