@@ -30,11 +30,11 @@
     },
     "catalog-service": {
       "type": "application",
-      "root": "apps/catalog-service",
+      "root": "apps/catatog-service",
       "entryFile": "main",
-      "sourceRoot": "apps/catalog-service/src",
+      "sourceRoot": "apps/catatog-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/catalog-service/tsconfig.app.json"
+        "tsConfigPath": "apps/catatog-service/tsconfig.app.json"
       }
     },
     "common": {
