@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { CatalogServiceModule } from '../src/catatog-service.module';
+import { CatalogServiceModule } from '../src/catalog-service.module';
 
 describe('CatalogServiceController (e2e)', () => {
   let app: INestApplication;

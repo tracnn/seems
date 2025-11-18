@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { CatalogServiceModule } from './catatog-service.module';
+import { CatalogServiceModule } from './catalog-service.module';
 import { WinstonLoggerService } from '@app/logger';
 import { RpcExceptionFilter } from './presentation/filters/rpc-exception.filter';
 import { LogServiceName } from '@app/shared-constants';

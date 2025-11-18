@@ -1,8 +1,8 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
-import { CatalogServiceController } from './catatog-service.controller';
-import { CatalogServiceService } from './catatog-service.service';
+import { CatalogServiceController } from './catalog-service.controller';
+import { CatalogServiceService } from './catalog-service.service';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 import { LogServiceName } from '@app/shared-constants';
 

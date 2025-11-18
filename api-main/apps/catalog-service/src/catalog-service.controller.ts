@@ -1,7 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { CatalogServiceService } from './catatog-service.service';
+import { CatalogServiceService } from './catalog-service.service';
 
 /**
  * Catalog Service Controller - TCP Microservice
