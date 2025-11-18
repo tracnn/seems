@@ -69,7 +69,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         } else if (info.message === 'No auth token') {
           this.logger.error('No authentication token', { info });
           errorCode = ErrorCode.AUTH_SERVICE_0006;
-          errorDescription = 'No authentication token provided. Please include a valid JWT token in the Authorization header';
+          errorDescription = ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0006] || 'The provided token is invalid or malformed';
         }
       }
 
