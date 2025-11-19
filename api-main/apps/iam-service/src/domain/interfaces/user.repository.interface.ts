@@ -1,4 +1,5 @@
 import { User } from '../entities/user.entity';
+import { GetUsersDto } from '../../application/dtos/user/get-users.dto';
 
 export interface IUserRepository {
   findById(id: string): Promise<User | null>;
@@ -10,12 +11,7 @@ export interface IUserRepository {
   update(id: string, user: Partial<User>): Promise<User>;
   delete(id: string): Promise<void>;
   softDelete(id: string, deletedBy: string): Promise<void>;
-  findAll(options?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    isActive?: boolean;
-  }): Promise<{ data: User[]; total: number }>;
+  findAll(dto: GetUsersDto): Promise<any>;
   activateUser(id: string): Promise<User>;
   updateLastLogin(id: string): Promise<void>;
   updatePassword(id: string, hashedPassword: string, updatedBy: string): Promise<void>;

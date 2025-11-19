@@ -2,6 +2,7 @@ import { Injectable, Logger, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 import { ServiceName } from '@app/shared-constants';
+import { GetUsersDto } from '../dtos/get-users.dto';
 
 /**
  * IAM Service Client for API Gateway
@@ -70,19 +71,12 @@ export class IamClientService implements OnModuleInit {
     }
   }
 
-  async getUsers(filters: {
-    page?: number;
-    limit?: number;
-    sortBy?: string;
-    sortOrder?: 'ASC' | 'DESC';
-    search?: string;
-    isActive?: boolean;
-  }): Promise<any> {
+  async getUsers(query: GetUsersDto): Promise<any> {
     try {
-      this.logger.log(`📤 Fetching users list`);
+      this.logger.log(`📤 Fetching users list, page: ${query.page}, limit: ${query.limit}`);
       
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.list', filters).pipe(
+        this.iamClient.send('iam.user.list', query).pipe(
           timeout(5000),
         ),
       );

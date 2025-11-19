@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, IsNull } from 'typeorm';
 import { User } from '../../../../domain/entities/user.entity';
 import { IUserRepository } from '../../../../domain/interfaces/user.repository.interface';
+import { GetUsersDto } from '../../../../application/dtos/user/get-users.dto';
+import { UserResponseDto } from '../../../../application/dtos/user/user-response.dto';
+import { PaginationResponseDto } from '@app/shared-dto';
+import { buildPagination } from '@app/utils';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -73,40 +77,53 @@ export class UserRepository implements IUserRepository {
     );
   }
 
-  async findAll(options?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    isActive?: boolean;
-  }): Promise<{ data: User[]; total: number }> {
-    const page = options?.page || 1;
-    const limit = options?.limit || 10;
+  async findAll(dto: GetUsersDto): Promise<any> {
+    const page = dto.page || 1;
+    const limit = dto.limit || 10;
     const skip = (page - 1) * limit;
 
     const queryBuilder = this.repository
       .createQueryBuilder('user')
       .where('user.deletedAt IS NULL');
 
-    if (options?.search) {
+    if (dto.search) {
       queryBuilder.andWhere(
         '(user.username LIKE :search OR user.email LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search)',
-        { search: `%${options.search}%` },
+        { search: `%${dto.search}%` },
       );
     }
 
-    if (options?.isActive !== undefined) {
+    if (dto.isActive !== undefined) {
       queryBuilder.andWhere('user.isActive = :isActive', {
-        isActive: options.isActive,
+        isActive: dto.isActive,
       });
     }
 
+    console.log(dto);
+
     const [data, total] = await queryBuilder
+      .select([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.firstName',
+        'user.lastName',
+        'user.phone',
+        'user.avatarUrl',
+        'user.isEmailVerified',
+        'user.isActive',
+        'user.lastLoginAt',
+        'user.createdAt',
+        'user.updatedAt',
+        'user.createdBy',
+        'user.updatedBy',
+      ])
       .skip(skip)
       .take(limit)
       .orderBy('user.createdAt', 'DESC')
       .getManyAndCount();
 
-    return { data, total };
+    return { results: data, pagination: buildPagination(page, limit, total) };
   }
 
   async activateUser(id: string): Promise<User> {

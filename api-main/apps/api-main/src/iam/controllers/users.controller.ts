@@ -18,10 +18,10 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { IamClientService } from '../clients/iam-client.service';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
-import { UserFilterDto } from '../dtos/user-filter.dto';
 import { AssignRolesDto } from '../dtos/assign-roles.dto';
 import { RegisterDto, ActivateAccountDto } from '@app/shared-dto';
 import { convertRpcError } from '@app/shared-exceptions';
+import { GetUsersDto } from '../dtos/get-users.dto';
 
 /**
  * IAM Users Controller - API Gateway
@@ -118,11 +118,9 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get users list with pagination' })
-  @ApiResponse({ status: 200, description: 'List of users' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getUsers(@Query() filter: UserFilterDto) {
-    this.logger.log(`HTTP → Getting users list, page: ${filter.page}, limit: ${filter.limit}`);
-    return await this.iamClient.getUsers(filter);
+  async getUsers(@Query() query: GetUsersDto) {
+    this.logger.log(`HTTP → Getting users list, page: ${query.page}, limit: ${query.limit}`);
+    return await this.iamClient.getUsers(query);
   }
 
   @Get(':id')

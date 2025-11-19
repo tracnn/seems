@@ -1,6 +1,6 @@
-import { UserFilterDto } from '../../../../dtos/user/user-filter.dto';
+import { GetUsersDto } from '../../../../dtos/user/get-users.dto';
 
 export class GetUsersQuery {
-  constructor(public readonly filter: UserFilterDto) {}
+  constructor(public readonly dto: GetUsersDto) {}
 }
 

@@ -21,6 +21,7 @@ import { ActivateAccountCommand } from '../../application/use-cases/commands/use
 import { GetUserByIdQuery } from '../../application/use-cases/queries/users/get-user-by-id/get-user-by-id.query';
 import { GetUsersQuery } from '../../application/use-cases/queries/users/get-users/get-users.query';
 import { GetUserPermissionsQuery } from '../../application/use-cases/queries/users/get-user-permissions/get-user-permissions.query';
+import { GetUsersDto } from '../../application/dtos/user/get-users.dto';
 
 /**
  * IAM Users Controller - TCP Microservice
@@ -73,22 +74,13 @@ export class UsersController {
    * Pattern: iam.user.list
    */
   @MessagePattern('iam.user.list')
-  async getUsers(@Payload() filter: any) {
+  async getUsers(@Payload() query: GetUsersDto) {
     try {
       // Safely extract and validate filter params
-      const validFilter = {
-        page: filter?.page || 1,
-        limit: filter?.limit || 10,
-        search: filter?.search,
-        isActive: filter?.isActive,
-        sortBy: filter?.sortBy || 'createdAt',
-        sortOrder: filter?.sortOrder || 'DESC',
-      };
+      this.logger.log(`Getting users list, page: ${query.page}, limit: ${query.limit}`);
       
-      this.logger.log(`Getting users list, page: ${validFilter.page}, limit: ${validFilter.limit}`);
-      
-      const query = new GetUsersQuery(validFilter);
-      const result = await this.queryBus.execute(query);
+      const queryObject = new GetUsersQuery(query);
+      const result = await this.queryBus.execute(queryObject);
       
       this.logger.log(`Found ${result.total} users`);
       return result;
