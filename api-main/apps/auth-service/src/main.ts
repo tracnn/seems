@@ -40,7 +40,7 @@ async function bootstrap() {
   logger.log('Starting auth-service...');
   logger.log(`Transport: TCP`);
   logger.log(`Host: ${process.env.AUTH_SERVICE_HOST ?? '0.0.0.0'}`);
-  logger.log(`Port: ${process.env.AUTH_SERVICE_PORT ?? 3001}`);
+  logger.log(`Port: ${process.env.AUTH_SERVICE_PORT ?? 4001}`);
 
   await app.listen();
 

@@ -13,7 +13,7 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: process.env.CATALOG_SERVICE_HOST ?? '0.0.0.0',
-        port: Number(process.env.CATALOG_SERVICE_PORT ?? 3002),
+        port: Number(process.env.CATALOG_SERVICE_PORT ?? 4002),
       },
     },
   );
@@ -40,7 +40,7 @@ async function bootstrap() {
   app.useGlobalFilters(new RpcExceptionFilter());
 
   const host = process.env.CATALOG_SERVICE_HOST ?? '0.0.0.0';
-  const port = process.env.CATALOG_SERVICE_PORT ?? 3002;
+  const port = process.env.CATALOG_SERVICE_PORT ?? 4002;
 
   logger.log('🚀 Starting Catalog Service (Pure Microservice)...');
   logger.log(`📡 Transport: TCP`);

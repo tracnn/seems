@@ -65,13 +65,16 @@ async function bootstrap() {
   }
 
   const port = process.env.API_MAIN_PORT ?? 4000;
-  const host = '0.0.0.0';
+  const host =  process.env.API_MAIN_HOST ?? '0.0.0.0';
   
   await app.listen(port, host);
-  
+
   logger.log(`🚀 API Gateway is running on: ${await app.getUrl()}`);
   logger.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
   logger.log(`📊 Log Level: ${process.env.LOG_LEVEL || 'info'}`);
+  logger.log(`📡 Transport: TCP`);
+  logger.log(`🌐 Host: ${host}`);
+  logger.log(`🔌 Port: ${port}`);
 }
 
 bootstrap().catch((error) => {
