@@ -1,5 +1,10 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ErrorCode } from '@app/shared-constants';
+import {
+  ErrorCode,
+  ERROR_DESCRIPTIONS,
+  getErrorMessage,
+  getErrorStatusCode,
+} from '@app/shared-constants';
 
 /**
  * Base Exception Class
@@ -74,6 +79,52 @@ export class BaseException extends HttpException {
    */
   getMetadata(): Record<string, any> | undefined {
     return this.metadata;
+  }
+
+  /**
+   * Create BaseException with automatic message loading from errors.json
+   * 
+   * This is a convenience method that automatically loads error message
+   * and status code from errors.json file (if available).
+   * 
+   * @example
+   * ```typescript
+   * // Auto-load from JSON (recommended)
+   * throw BaseException.fromErrorCode(
+   *   ErrorCode.AUTH_SERVICE_0001,
+   *   { userId: command.userId }
+   * );
+   * 
+   * // Traditional way (still works)
+   * throw new BaseException(
+   *   ErrorCode.AUTH_SERVICE_0001,
+   *   ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0001],
+   *   HttpStatus.UNAUTHORIZED,
+   *   { userId: command.userId }
+   * );
+   * ```
+   */
+  static fromErrorCode(
+    errorCode: ErrorCode,
+    metadata?: Record<string, any>,
+    language: string = 'en',
+  ): BaseException {
+    // Try to get message from JSON first, fallback to ERROR_DESCRIPTIONS
+    let errorDescription: string;
+    let statusCode: HttpStatus;
+
+    try {
+      // Try to get from JSON
+      errorDescription = getErrorMessage(errorCode, language);
+      statusCode = getErrorStatusCode(errorCode) as HttpStatus;
+    } catch (error) {
+      // Fallback to ERROR_DESCRIPTIONS
+      errorDescription =
+        ERROR_DESCRIPTIONS[errorCode] || `Error ${errorCode}`;
+      statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+    return new BaseException(errorCode, errorDescription, statusCode, metadata);
   }
 }
 

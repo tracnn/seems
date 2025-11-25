@@ -16,7 +16,6 @@ export class AuthController {
 
   @MessagePattern({ cmd: 'login' })
   async login(data: any) {
-    // Data từ TCP message pattern bao gồm: usernameOrEmail, password, ipAddress, userAgent
     const command = new LoginCommand(
       data.usernameOrEmail,
       data.password,

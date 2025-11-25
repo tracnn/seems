@@ -11,6 +11,9 @@ export * from './catalog-service.errors';
 export * from './api-main.errors';
 export * from './common.errors';
 
+// Export ErrorMessagesService
+export { ErrorMessagesService } from './error-messages.service';
+
 // Re-export as unified ErrorCode enum
 import { AuthServiceErrorCode } from './auth-service.errors';
 import { IamServiceErrorCode } from './iam-service.errors';
@@ -78,33 +81,101 @@ export enum ErrorCode {
   DATABASE_ERROR = CommonErrorCode.DATABASE_ERROR,
 }
 
-// Re-export all error descriptions
+// Re-export all error descriptions (for backward compatibility)
 import { AUTH_SERVICE_ERROR_DESCRIPTIONS } from './auth-service.errors';
 import { IAM_SERVICE_ERROR_DESCRIPTIONS } from './iam-service.errors';
 import { CATALOG_SERVICE_ERROR_DESCRIPTIONS } from './catalog-service.errors';
 import { API_MAIN_ERROR_DESCRIPTIONS } from './api-main.errors';
 import { COMMON_ERROR_DESCRIPTIONS } from './common.errors';
 
+// Import ErrorMessagesService to load from JSON
+import { ErrorMessagesService } from './error-messages.service';
+
+// Initialize service (singleton instance)
+let errorMessagesServiceInstance: ErrorMessagesService | null = null;
+
+/**
+ * Get or create ErrorMessagesService instance
+ */
+function getErrorMessagesService(): ErrorMessagesService {
+  if (!errorMessagesServiceInstance) {
+    errorMessagesServiceInstance = new ErrorMessagesService();
+  }
+  return errorMessagesServiceInstance;
+}
+
 /**
  * Unified ERROR_DESCRIPTIONS
  * 
- * Combines all service-specific error descriptions into a single map
+ * Loads error messages from errors.json file (if available),
+ * falls back to hardcoded descriptions for backward compatibility.
+ * 
+ * Priority:
+ * 1. Load from errors.json (English) - if file exists and error code found
+ * 2. Fallback to hardcoded descriptions - for backward compatibility
+ * 
  * Frontend sẽ sử dụng errorCode để map với translation keys
  */
-export const ERROR_DESCRIPTIONS: Partial<Record<ErrorCode, string>> = {
-  // AUTH_SERVICE
-  ...AUTH_SERVICE_ERROR_DESCRIPTIONS,
-  
-  // IAM_SERVICE
-  ...IAM_SERVICE_ERROR_DESCRIPTIONS,
-  
-  // CATALOG_SERVICE
-  ...CATALOG_SERVICE_ERROR_DESCRIPTIONS,
-  
-  // API_MAIN
-  ...API_MAIN_ERROR_DESCRIPTIONS,
-  
-  // Common (Legacy)
-  ...COMMON_ERROR_DESCRIPTIONS,
-};
+export const ERROR_DESCRIPTIONS: Partial<Record<ErrorCode, string>> = (() => {
+  // Start with hardcoded descriptions as base (for backward compatibility)
+  const result: Partial<Record<ErrorCode, string>> = {
+    ...AUTH_SERVICE_ERROR_DESCRIPTIONS,
+    ...IAM_SERVICE_ERROR_DESCRIPTIONS,
+    ...CATALOG_SERVICE_ERROR_DESCRIPTIONS,
+    ...API_MAIN_ERROR_DESCRIPTIONS,
+    ...COMMON_ERROR_DESCRIPTIONS,
+  };
+
+  // Try to load from errors.json and override with JSON values
+  try {
+    const service = getErrorMessagesService();
+    const jsonErrors = service.getAllErrors('en');
+    
+    // Override with JSON values where available
+    // JSON uses format "AUTH_SERVICE.0001", ErrorCode enum uses "AUTH_SERVICE.0001" as value
+    Object.keys(jsonErrors).forEach((jsonKey) => {
+      // Find matching ErrorCode enum entry
+      const matchingCode = Object.values(ErrorCode).find(
+        (code) => String(code) === jsonKey,
+      );
+      
+      if (matchingCode) {
+        result[matchingCode] = jsonErrors[jsonKey];
+      }
+    });
+  } catch (error) {
+    // If loading from JSON fails, continue with hardcoded fallback
+    console.warn('Failed to load errors from JSON, using hardcoded fallback:', error);
+  }
+
+  return result;
+})();
+
+/**
+ * Helper function to get error message from JSON with language support
+ * 
+ * @param errorCode - Error code
+ * @param language - Language code (default: 'en')
+ * @returns Error message in requested language
+ */
+export function getErrorMessage(
+  errorCode: ErrorCode | string,
+  language: string = 'en',
+): string {
+  const service = getErrorMessagesService();
+  const code = typeof errorCode === 'string' ? errorCode : String(errorCode);
+  return service.getMessage(code, language);
+}
+
+/**
+ * Helper function to get error status code from JSON
+ * 
+ * @param errorCode - Error code
+ * @returns HTTP status code
+ */
+export function getErrorStatusCode(errorCode: ErrorCode | string): number {
+  const service = getErrorMessagesService();
+  const code = typeof errorCode === 'string' ? errorCode : String(errorCode);
+  return service.getStatusCode(code);
+}
 

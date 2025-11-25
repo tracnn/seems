@@ -45,51 +45,12 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Login' })
-  @ApiResponse({
-    status: 200,
-    description: 'Login successfully',
-    schema: {
-      example: {
-        statusCode: 200,
-        message: 'Login successfully',
-        data: {
-          accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-          refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-          expiresIn: 900,
-          tokenType: 'Bearer',
-          user: {
-            id: '123e4567-e89b-12d3-a456-426614174000',
-            username: 'john.doe',
-            email: 'john.doe@example.com',
-            firstName: 'John',
-            lastName: 'Doe',
-          },
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Username or password is incorrect',
-  })
-  async login(
-    @Body() loginDto: LoginDto,
-    @Ip() ip: string,
-    @Request() req: any,
-  ) {
+  async login(@Body() loginDto: LoginDto, @Ip() ip: string, @Request() req: any) {
     const userAgent = req.headers['user-agent'] || 'unknown';
     
     try {
-      const result = await firstValueFrom(
-        this.authClient.send(
-          { cmd: 'login' },
-          {
-            ...loginDto,
-            ipAddress: ip,
-            userAgent: userAgent || 'unknown',
-          },
-        ),
-      );
+      const result = await firstValueFrom(this.authClient.send(
+        { cmd: 'login' }, { ...loginDto, ipAddress: ip, userAgent: userAgent || 'unknown' }));
       
       return result;
     } catch (error) {

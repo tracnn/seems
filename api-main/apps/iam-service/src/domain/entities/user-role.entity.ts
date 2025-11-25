@@ -6,7 +6,7 @@ import { Role } from './role.entity';
 /**
  * UserRole Entity - Many-to-many relationship between User and Role
  */
-@Entity('USER_ROLES')
+@Entity('IAM_USER_ROLES')
 export class UserRole extends BaseEntity {
   @Column({
     name: 'USER_ID',

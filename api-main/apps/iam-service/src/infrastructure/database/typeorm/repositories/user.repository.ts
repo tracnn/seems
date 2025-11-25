@@ -99,8 +99,6 @@ export class UserRepository implements IUserRepository {
       });
     }
 
-    console.log(dto);
-
     const [data, total] = await queryBuilder
       .select([
         'user.id',
