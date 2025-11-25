@@ -40,32 +40,7 @@ export class UsersController {
   constructor(private readonly iamClient: IamClientService) {}
 
   @Post('register')
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({
-    status: 201,
-    description: 'Register successfully',
-    schema: {
-      example: {
-        statusCode: 201,
-        message: 'Register successfully',
-        data: {
-          id: '123e4567-e89b-12d3-a456-426614174000',
-          username: 'john.doe',
-          email: 'john.doe@example.com',
-          firstName: 'John',
-          lastName: 'Doe',
-          isActive: 1,
-          isEmailVerified: 0,
-          createdAt: '2024-01-01T00:00:00.000Z',
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Username or email already exists',
-  })
   async register(@Body() registerDto: RegisterDto) {
     this.logger.log(`Registration attempt for email: ${registerDto.email}`);
 

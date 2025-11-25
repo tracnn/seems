@@ -14,7 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { IamModule } from './iam/iam.module';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ErrorService } from '@app/shared-exceptions';
 
 @Module({
@@ -26,12 +26,6 @@ import { ErrorService } from '@app/shared-exceptions';
       envFilePath: '.env',
     }),
     LoggerModule.forRoot(LogServiceName.API_MAIN),
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60,
-        limit: 10,
-      },
-    ]),
     AuthModule,
     IamModule, // IAM Module includes IAM_SERVICE TCP client
     ClientsModule.register([
@@ -52,10 +46,6 @@ import { ErrorService } from '@app/shared-exceptions';
       useFactory: () => new ErrorService('api-main'),
     },
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
   ],
   exports: [CqrsModule, ErrorService],
 })

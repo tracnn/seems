@@ -25,11 +25,7 @@ export class AuthController {
 
     const result = await this.commandBus.execute(command);
 
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Đăng nhập thành công',
-      ...result,
-    };
+    return result;
   }
 
   @MessagePattern({ cmd: 'get-me' })
@@ -37,11 +33,7 @@ export class AuthController {
     const query = new GetUserQuery(data.userId);
     const user = await this.queryBus.execute(query);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Lấy thông tin người dùng thành công',
-      ...user,
-    };
+    return user;
   }
 
   @MessagePattern({ cmd: 'refresh-token' })
@@ -55,11 +47,7 @@ export class AuthController {
 
     const result = await this.commandBus.execute(command);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Làm mới token thành công',
-      ...result,
-    };
+    return result;
   }
 
   @MessagePattern({ cmd: 'logout' })
@@ -68,10 +56,7 @@ export class AuthController {
 
     await this.commandBus.execute(command);
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Đăng xuất thành công',
-    };
+    return 'Logout successfully';
   }
 
   @MessagePattern({ cmd: 'health' })

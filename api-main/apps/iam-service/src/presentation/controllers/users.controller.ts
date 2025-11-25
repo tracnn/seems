@@ -1,4 +1,4 @@
-import { Controller, Logger } from '@nestjs/common';
+import { Controller, HttpStatus, Logger } from '@nestjs/common';
 import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
@@ -58,7 +58,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error(`Failed to create user: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 400,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription || error.message || 'Failed to create user',
@@ -81,7 +81,7 @@ export class UsersController {
         `Failed to find user by username or email: ${error.message}`,
       );
       throw new RpcException({
-        statusCode: error.status || 404,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription || error.message || 'User not found',
@@ -110,7 +110,6 @@ export class UsersController {
     } catch (error) {
       this.logger.error(`Failed to get users: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 500,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription || error.message || 'Failed to get users',
@@ -136,7 +135,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error(`Failed to get user: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 404,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription || error.message || 'User not found',
@@ -173,7 +172,6 @@ export class UsersController {
     } catch (error) {
       this.logger.error(`Failed to update user: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 400,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription || error.message || 'Failed to update user',
@@ -202,7 +200,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error(`Failed to delete user: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 400,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription || error.message || 'Failed to delete user',
@@ -241,7 +239,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error(`Failed to assign roles: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 400,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription || error.message || 'Failed to assign roles',
@@ -267,7 +265,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error(`Failed to get user permissions: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 500,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription ||
@@ -310,7 +308,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error(`Failed to assign organizations: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 400,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription ||
@@ -345,7 +343,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error(`Failed to remove organizations: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 400,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription ||
@@ -380,15 +378,11 @@ export class UsersController {
 
       // Không trả về password
       const { password, ...userWithoutPassword } = user;
-      return {
-        statusCode: 201,
-        message: 'Đăng ký thành công',
-        data: userWithoutPassword,
-      };
+      return userWithoutPassword;
     } catch (error) {
       this.logger.error(`Failed to register user: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 400,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription || error.message || 'Failed to register user',
@@ -415,15 +409,11 @@ export class UsersController {
 
       // Không trả về password
       const { password, ...userWithoutPassword } = user;
-      return {
-        statusCode: 200,
-        message: 'Kích hoạt tài khoản thành công',
-        data: userWithoutPassword,
-      };
+      return userWithoutPassword;
     } catch (error) {
       this.logger.error(`Failed to activate account: ${error.message}`);
       throw new RpcException({
-        statusCode: error.status || 400,
+        statusCode: HttpStatus.BAD_REQUEST,
         errorCode: error.errorCode || null,
         errorDescription:
           error.errorDescription ||

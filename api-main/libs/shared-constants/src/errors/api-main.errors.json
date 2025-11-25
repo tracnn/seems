@@ -6,13 +6,11 @@
     "API_MAIN.0001": {
       "en": "The provided input data failed validation",
       "vi": "Dữ liệu đầu vào không vượt qua kiểm tra",
-      "statusCode": 400,
       "category": "validation"
     },
     "API_MAIN.0002": {
       "en": "One or more required fields are missing",
       "vi": "Thiếu một hoặc nhiều trường bắt buộc",
-      "statusCode": 400,
       "category": "validation"
     }
   }
