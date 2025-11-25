@@ -39,13 +39,11 @@ export class IamClientService implements OnModuleInit {
   }): Promise<any> {
     try {
       this.logger.log(`📤 Creating user: ${data.username}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.create', data).pipe(
-          timeout(5000),
-        ),
+        this.iamClient.send('iam.user.create', data).pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ User created: ${result.id}`);
       return result;
     } catch (error) {
@@ -57,13 +55,13 @@ export class IamClientService implements OnModuleInit {
   async getUserById(userId: string): Promise<any> {
     try {
       this.logger.log(`📤 Fetching user: ${userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.findById', { userId }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.findById', { userId })
+          .pipe(timeout(5000)),
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get user: ${error.message}`);
@@ -73,14 +71,14 @@ export class IamClientService implements OnModuleInit {
 
   async getUsers(query: GetUsersDto): Promise<any> {
     try {
-      this.logger.log(`📤 Fetching users list, page: ${query.page}, limit: ${query.limit}`);
-      
-      const result = await firstValueFrom(
-        this.iamClient.send('iam.user.list', query).pipe(
-          timeout(5000),
-        ),
+      this.logger.log(
+        `📤 Fetching users list, page: ${query.page}, limit: ${query.limit}`,
       );
-      
+
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.user.list', query).pipe(timeout(5000)),
+      );
+
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get users: ${error.message}`);
@@ -88,16 +86,20 @@ export class IamClientService implements OnModuleInit {
     }
   }
 
-  async updateUser(userId: string, updates: any, updatedBy?: string): Promise<any> {
+  async updateUser(
+    userId: string,
+    updates: any,
+    updatedBy?: string,
+  ): Promise<any> {
     try {
       this.logger.log(`📤 Updating user: ${userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.update', { userId, updates, updatedBy }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.update', { userId, updates, updatedBy })
+          .pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ User updated: ${result.id}`);
       return result;
     } catch (error) {
@@ -109,13 +111,13 @@ export class IamClientService implements OnModuleInit {
   async deleteUser(userId: string, deletedBy?: string): Promise<any> {
     try {
       this.logger.log(`📤 Deleting user: ${userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.delete', { userId, deletedBy }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.delete', { userId, deletedBy })
+          .pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ User deleted: ${userId}`);
       return result;
     } catch (error) {
@@ -135,13 +137,11 @@ export class IamClientService implements OnModuleInit {
   }): Promise<any> {
     try {
       this.logger.log(`📤 Assigning roles to user: ${data.userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.assignRoles', data).pipe(
-          timeout(5000),
-        ),
+        this.iamClient.send('iam.user.assignRoles', data).pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ Roles assigned to user: ${data.userId}`);
       return result;
     } catch (error) {
@@ -153,13 +153,13 @@ export class IamClientService implements OnModuleInit {
   async getUserPermissions(userId: string): Promise<string[]> {
     try {
       this.logger.log(`📤 Fetching permissions for user: ${userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.getPermissions', { userId }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.getPermissions', { userId })
+          .pipe(timeout(5000)),
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get user permissions: ${error.message}`);
@@ -177,13 +177,11 @@ export class IamClientService implements OnModuleInit {
   }): Promise<any> {
     try {
       this.logger.log(`📤 Creating role: ${data.name}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.role.create', data).pipe(
-          timeout(5000),
-        ),
+        this.iamClient.send('iam.role.create', data).pipe(timeout(5000)),
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to create role: ${error.message}`);
@@ -194,11 +192,9 @@ export class IamClientService implements OnModuleInit {
   async getRoles(filters?: any): Promise<any> {
     try {
       const result = await firstValueFrom(
-        this.iamClient.send('iam.role.list', filters || {}).pipe(
-          timeout(5000),
-        ),
+        this.iamClient.send('iam.role.list', filters || {}).pipe(timeout(5000)),
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get roles: ${error.message}`);
@@ -209,11 +205,11 @@ export class IamClientService implements OnModuleInit {
   async getRoleById(roleId: string): Promise<any> {
     try {
       const result = await firstValueFrom(
-        this.iamClient.send('iam.role.findById', { roleId }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.role.findById', { roleId })
+          .pipe(timeout(5000)),
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get role: ${error.message}`);
@@ -227,11 +223,11 @@ export class IamClientService implements OnModuleInit {
   async getPermissions(filters?: any): Promise<any> {
     try {
       const result = await firstValueFrom(
-        this.iamClient.send('iam.permission.list', filters || {}).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.permission.list', filters || {})
+          .pipe(timeout(5000)),
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get permissions: ${error.message}`);
@@ -242,13 +238,13 @@ export class IamClientService implements OnModuleInit {
   async getPermissionById(permissionId: string): Promise<any> {
     try {
       this.logger.log(`📤 Getting permission by ID: ${permissionId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.permission.findById', { permissionId }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.permission.findById', { permissionId })
+          .pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ Permission found: ${result.id}`);
       return result;
     } catch (error) {
@@ -263,11 +259,11 @@ export class IamClientService implements OnModuleInit {
   async getOrganizations(filters?: any): Promise<any> {
     try {
       const result = await firstValueFrom(
-        this.iamClient.send('iam.organization.list', filters || {}).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.organization.list', filters || {})
+          .pipe(timeout(5000)),
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get organizations: ${error.message}`);
@@ -278,11 +274,11 @@ export class IamClientService implements OnModuleInit {
   async getOrganizationById(organizationId: string): Promise<any> {
     try {
       const result = await firstValueFrom(
-        this.iamClient.send('iam.organization.findById', { organizationId }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.organization.findById', { organizationId })
+          .pipe(timeout(5000)),
       );
-      
+
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get organization: ${error.message}`);
@@ -299,7 +295,9 @@ export class IamClientService implements OnModuleInit {
     try {
       this.logger.log(`📤 Updating role: ${roleId}`);
       const result = await firstValueFrom(
-        this.iamClient.send('iam.role.update', { roleId, ...data }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.role.update', { roleId, ...data })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Role updated: ${roleId}`);
       return result;
@@ -313,7 +311,9 @@ export class IamClientService implements OnModuleInit {
     try {
       this.logger.log(`📤 Deleting role: ${roleId}`);
       const result = await firstValueFrom(
-        this.iamClient.send('iam.role.delete', { roleId, deletedBy }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.role.delete', { roleId, deletedBy })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Role deleted: ${roleId}`);
       return result;
@@ -323,11 +323,23 @@ export class IamClientService implements OnModuleInit {
     }
   }
 
-  async assignPermissionsToRole(roleId: string, permissionIds: string[], assignedBy?: string): Promise<any> {
+  async assignPermissionsToRole(
+    roleId: string,
+    permissionIds: string[],
+    assignedBy?: string,
+  ): Promise<any> {
     try {
-      this.logger.log(`📤 Assigning ${permissionIds.length} permissions to role: ${roleId}`);
+      this.logger.log(
+        `📤 Assigning ${permissionIds.length} permissions to role: ${roleId}`,
+      );
       const result = await firstValueFrom(
-        this.iamClient.send('iam.role.assignPermissions', { roleId, permissionIds, assignedBy }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.role.assignPermissions', {
+            roleId,
+            permissionIds,
+            assignedBy,
+          })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Permissions assigned to role: ${roleId}`);
       return result;
@@ -337,11 +349,18 @@ export class IamClientService implements OnModuleInit {
     }
   }
 
-  async removePermissionsFromRole(roleId: string, permissionIds: string[]): Promise<any> {
+  async removePermissionsFromRole(
+    roleId: string,
+    permissionIds: string[],
+  ): Promise<any> {
     try {
-      this.logger.log(`📤 Removing ${permissionIds.length} permissions from role: ${roleId}`);
+      this.logger.log(
+        `📤 Removing ${permissionIds.length} permissions from role: ${roleId}`,
+      );
       const result = await firstValueFrom(
-        this.iamClient.send('iam.role.removePermissions', { roleId, permissionIds }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.role.removePermissions', { roleId, permissionIds })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Permissions removed from role: ${roleId}`);
       return result;
@@ -370,7 +389,9 @@ export class IamClientService implements OnModuleInit {
     try {
       this.logger.log(`📤 Updating permission: ${permissionId}`);
       const result = await firstValueFrom(
-        this.iamClient.send('iam.permission.update', { permissionId, ...data }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.permission.update', { permissionId, ...data })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Permission updated: ${permissionId}`);
       return result;
@@ -380,11 +401,16 @@ export class IamClientService implements OnModuleInit {
     }
   }
 
-  async deletePermission(permissionId: string, deletedBy: string): Promise<any> {
+  async deletePermission(
+    permissionId: string,
+    deletedBy: string,
+  ): Promise<any> {
     try {
       this.logger.log(`📤 Deleting permission: ${permissionId}`);
       const result = await firstValueFrom(
-        this.iamClient.send('iam.permission.delete', { permissionId, deletedBy }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.permission.delete', { permissionId, deletedBy })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Permission deleted: ${permissionId}`);
       return result;
@@ -399,7 +425,9 @@ export class IamClientService implements OnModuleInit {
     try {
       this.logger.log(`📤 Creating organization: ${data.name}`);
       const result = await firstValueFrom(
-        this.iamClient.send('iam.organization.create', data).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.organization.create', data)
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Organization created: ${result.id}`);
       return result;
@@ -413,7 +441,9 @@ export class IamClientService implements OnModuleInit {
     try {
       this.logger.log(`📤 Updating organization: ${organizationId}`);
       const result = await firstValueFrom(
-        this.iamClient.send('iam.organization.update', { organizationId, ...data }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.organization.update', { organizationId, ...data })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Organization updated: ${organizationId}`);
       return result;
@@ -423,11 +453,16 @@ export class IamClientService implements OnModuleInit {
     }
   }
 
-  async deleteOrganization(organizationId: string, deletedBy: string): Promise<any> {
+  async deleteOrganization(
+    organizationId: string,
+    deletedBy: string,
+  ): Promise<any> {
     try {
       this.logger.log(`📤 Deleting organization: ${organizationId}`);
       const result = await firstValueFrom(
-        this.iamClient.send('iam.organization.delete', { organizationId, deletedBy }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.organization.delete', { organizationId, deletedBy })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Organization deleted: ${organizationId}`);
       return result;
@@ -438,11 +473,18 @@ export class IamClientService implements OnModuleInit {
   }
 
   // User Organization Operations
-  async assignOrganizationsToUser(userId: string, organizations: any[]): Promise<any> {
+  async assignOrganizationsToUser(
+    userId: string,
+    organizations: any[],
+  ): Promise<any> {
     try {
-      this.logger.log(`📤 Assigning ${organizations.length} organizations to user: ${userId}`);
+      this.logger.log(
+        `📤 Assigning ${organizations.length} organizations to user: ${userId}`,
+      );
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.assignOrganizations', { userId, organizations }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.user.assignOrganizations', { userId, organizations })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Organizations assigned to user: ${userId}`);
       return result;
@@ -452,11 +494,18 @@ export class IamClientService implements OnModuleInit {
     }
   }
 
-  async removeOrganizationsFromUser(userId: string, organizationIds: string[]): Promise<any> {
+  async removeOrganizationsFromUser(
+    userId: string,
+    organizationIds: string[],
+  ): Promise<any> {
     try {
-      this.logger.log(`📤 Removing ${organizationIds.length} organizations from user: ${userId}`);
+      this.logger.log(
+        `📤 Removing ${organizationIds.length} organizations from user: ${userId}`,
+      );
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.removeOrganizations', { userId, organizationIds }).pipe(timeout(5000)),
+        this.iamClient
+          .send('iam.user.removeOrganizations', { userId, organizationIds })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Organizations removed from user: ${userId}`);
       return result;
@@ -496,11 +545,16 @@ export class IamClientService implements OnModuleInit {
    * Activate user account
    * Pattern: { cmd: 'activate-account' }
    */
-  async activateAccount(data: { userId: string; activatedBy?: string }): Promise<any> {
+  async activateAccount(data: {
+    userId: string;
+    activatedBy?: string;
+  }): Promise<any> {
     try {
       this.logger.log(`📤 Activating account for user: ${data.userId}`);
       const result = await firstValueFrom(
-        this.iamClient.send({ cmd: 'activate-account' }, data).pipe(timeout(5000)),
+        this.iamClient
+          .send({ cmd: 'activate-account' }, data)
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ Account activated for user: ${data.userId}`);
       return result;
@@ -510,4 +564,3 @@ export class IamClientService implements OnModuleInit {
     }
   }
 }
-

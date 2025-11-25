@@ -6,7 +6,7 @@ import { CatalogServiceService } from './catalog-service.service';
 /**
  * Catalog Service Controller - TCP Microservice
  * Handles catalog operations via message patterns
- * 
+ *
  * Message Patterns:
  * - catalog.hello - Test endpoint
  */

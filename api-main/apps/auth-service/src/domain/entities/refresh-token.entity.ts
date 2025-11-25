@@ -41,4 +41,3 @@ export class RefreshToken extends BaseEntity {
   })
   userAgent: string;
 }
-

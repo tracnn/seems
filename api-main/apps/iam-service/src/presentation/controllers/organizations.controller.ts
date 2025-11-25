@@ -32,11 +32,13 @@ export class OrganizationsController {
   async getOrganizations(@Payload() filters?: any) {
     try {
       this.logger.log('Getting organizations list');
-      
+
       const query = new GetOrganizationsQuery(filters || {});
       const result = await this.queryBus.execute(query);
-      
-      this.logger.log(`Found ${result.length || result.data?.length || 0} organizations`);
+
+      this.logger.log(
+        `Found ${result.length || result.data?.length || 0} organizations`,
+      );
       return result;
     } catch (error) {
       this.logger.error(`Failed to get organizations: ${error.message}`);
@@ -55,10 +57,10 @@ export class OrganizationsController {
   async getOrganizationById(@Payload() data: { organizationId: string }) {
     try {
       this.logger.log(`Getting organization by ID: ${data.organizationId}`);
-      
+
       const query = new GetOrganizationByIdQuery(data.organizationId);
       const organization = await this.queryBus.execute(query);
-      
+
       this.logger.log(`Organization found: ${organization.name}`);
       return organization;
     } catch (error) {
@@ -78,7 +80,7 @@ export class OrganizationsController {
   async createOrganization(@Payload() data: any) {
     try {
       this.logger.log(`Creating organization: ${data.name}`);
-      
+
       const command = new CreateOrganizationCommand(
         data.name,
         data.code,
@@ -90,7 +92,7 @@ export class OrganizationsController {
         data.website,
         data.createdBy || 'system',
       );
-      
+
       const organization = await this.commandBus.execute(command);
       this.logger.log(`Organization created successfully: ${organization.id}`);
       return organization;
@@ -111,7 +113,7 @@ export class OrganizationsController {
   async updateOrganization(@Payload() data: any) {
     try {
       this.logger.log(`Updating organization: ${data.organizationId}`);
-      
+
       const command = new UpdateOrganizationCommand(
         data.organizationId,
         data.name,
@@ -125,7 +127,7 @@ export class OrganizationsController {
         data.isActive,
         data.updatedBy || 'system',
       );
-      
+
       const organization = await this.commandBus.execute(command);
       this.logger.log(`Organization updated successfully: ${organization.id}`);
       return organization;
@@ -143,17 +145,21 @@ export class OrganizationsController {
    * Pattern: iam.organization.delete
    */
   @MessagePattern('iam.organization.delete')
-  async deleteOrganization(@Payload() data: { organizationId: string; deletedBy?: string }) {
+  async deleteOrganization(
+    @Payload() data: { organizationId: string; deletedBy?: string },
+  ) {
     try {
       this.logger.log(`Deleting organization: ${data.organizationId}`);
-      
+
       const command = new DeleteOrganizationCommand(
         data.organizationId,
         data.deletedBy || 'system',
       );
-      
+
       await this.commandBus.execute(command);
-      this.logger.log(`Organization deleted successfully: ${data.organizationId}`);
+      this.logger.log(
+        `Organization deleted successfully: ${data.organizationId}`,
+      );
       return { success: true, message: 'Organization deleted successfully' };
     } catch (error) {
       this.logger.error(`Failed to delete organization: ${error.message}`);

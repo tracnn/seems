@@ -9,4 +9,3 @@ export class CreateUserCommand {
     public readonly createdBy?: string,
   ) {}
 }
-

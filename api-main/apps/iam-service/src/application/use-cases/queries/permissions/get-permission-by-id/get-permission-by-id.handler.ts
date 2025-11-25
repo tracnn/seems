@@ -5,7 +5,9 @@ import type { IPermissionRepository } from '../../../../../domain/interfaces/per
 
 @Injectable()
 @QueryHandler(GetPermissionByIdQuery)
-export class GetPermissionByIdHandler implements IQueryHandler<GetPermissionByIdQuery> {
+export class GetPermissionByIdHandler
+  implements IQueryHandler<GetPermissionByIdQuery>
+{
   private readonly logger = new Logger(GetPermissionByIdHandler.name);
 
   constructor(
@@ -15,15 +17,18 @@ export class GetPermissionByIdHandler implements IQueryHandler<GetPermissionById
 
   async execute(query: GetPermissionByIdQuery): Promise<any> {
     this.logger.log(`Getting permission by ID: ${query.permissionId}`);
-    
-    const permission = await this.permissionRepository.findById(query.permissionId);
-    
+
+    const permission = await this.permissionRepository.findById(
+      query.permissionId,
+    );
+
     if (!permission) {
-      throw new NotFoundException(`Permission with ID ${query.permissionId} not found`);
+      throw new NotFoundException(
+        `Permission with ID ${query.permissionId} not found`,
+      );
     }
-    
+
     this.logger.log(`Permission found: ${permission.name}`);
     return permission;
   }
 }
-

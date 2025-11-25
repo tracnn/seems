@@ -23,11 +23,7 @@ const QueryHandlers: any[] = [];
     // DatabaseModule sẽ được thêm sau khi có entities
   ],
   controllers: [CatalogServiceController],
-  providers: [
-    CatalogServiceService,
-    ...CommandHandlers,
-    ...QueryHandlers,
-  ],
+  providers: [CatalogServiceService, ...CommandHandlers, ...QueryHandlers],
 })
 export class CatalogServiceModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

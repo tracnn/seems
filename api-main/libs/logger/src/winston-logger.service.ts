@@ -6,7 +6,7 @@ import { ILogger } from './interfaces/logger.interface';
 /**
  * Winston Logger Service
  * Implement NestJS LoggerService để có thể thay thế logger mặc định
- * 
+ *
  * Scope.DEFAULT: Singleton instance, nhưng mỗi class có thể set context riêng
  * => Lightweight và đủ dùng cho logging
  */
@@ -32,7 +32,7 @@ export class WinstonLoggerService implements LoggerService, ILogger {
    */
   log(message: any, context?: string): void {
     const ctx = context || this.context;
-    
+
     if (typeof message === 'object') {
       this.logger.info(message.message || 'Object log', {
         context: ctx,
@@ -120,7 +120,12 @@ export class WinstonLoggerService implements LoggerService, ILogger {
   /**
    * Helper method: Log HTTP request
    */
-  logRequest(method: string, url: string, statusCode?: number, responseTime?: number): void {
+  logRequest(
+    method: string,
+    url: string,
+    statusCode?: number,
+    responseTime?: number,
+  ): void {
     this.log({
       message: `${method} ${url}`,
       method,
@@ -157,4 +162,3 @@ export class WinstonLoggerService implements LoggerService, ILogger {
     });
   }
 }
-

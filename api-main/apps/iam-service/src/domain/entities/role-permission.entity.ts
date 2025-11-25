@@ -35,12 +35,11 @@ export class RolePermission extends BaseEntity {
   grantedAt: Date;
 
   // Relationships
-  @ManyToOne(() => Role, role => role.rolePermissions)
+  @ManyToOne(() => Role, (role) => role.rolePermissions)
   @JoinColumn({ name: 'ROLE_ID' })
   role: Role;
 
-  @ManyToOne(() => Permission, permission => permission.rolePermissions)
+  @ManyToOne(() => Permission, (permission) => permission.rolePermissions)
   @JoinColumn({ name: 'PERMISSION_ID' })
   permission: Permission;
 }
-

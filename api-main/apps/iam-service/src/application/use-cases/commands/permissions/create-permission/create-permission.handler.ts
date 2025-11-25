@@ -6,7 +6,9 @@ import { Permission } from '../../../../../domain/entities/permission.entity';
 
 @Injectable()
 @CommandHandler(CreatePermissionCommand)
-export class CreatePermissionHandler implements ICommandHandler<CreatePermissionCommand> {
+export class CreatePermissionHandler
+  implements ICommandHandler<CreatePermissionCommand>
+{
   private readonly logger = new Logger(CreatePermissionHandler.name);
 
   constructor(
@@ -18,9 +20,13 @@ export class CreatePermissionHandler implements ICommandHandler<CreatePermission
     this.logger.log(`Creating permission: ${command.name} (${command.code})`);
 
     // Check if code already exists
-    const existingPermission = await this.permissionRepository.findByCode(command.code);
+    const existingPermission = await this.permissionRepository.findByCode(
+      command.code,
+    );
     if (existingPermission) {
-      throw new ConflictException(`Permission with code ${command.code} already exists`);
+      throw new ConflictException(
+        `Permission with code ${command.code} already exists`,
+      );
     }
 
     const permission = await this.permissionRepository.create({
@@ -36,4 +42,3 @@ export class CreatePermissionHandler implements ICommandHandler<CreatePermission
     return permission;
   }
 }
-

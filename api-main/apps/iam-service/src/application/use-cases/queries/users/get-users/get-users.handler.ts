@@ -18,4 +18,3 @@ export class GetUsersHandler implements IQueryHandler<GetUsersQuery> {
     return result;
   }
 }
-

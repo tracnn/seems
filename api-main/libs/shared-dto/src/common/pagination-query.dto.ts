@@ -15,14 +15,14 @@ import { Type, Transform } from 'class-transformer';
 /**
  * Base DTO cho pagination và query list
  * Sử dụng cho cả HTTP endpoints (@Query) và Microservice (@Payload)
- * 
+ *
  * @example
  * // HTTP Controller
  * @Get()
  * async getList(@Query() query: PaginationQueryDto) {
  *   return this.service.getList(query);
  * }
- * 
+ *
  * @example
  * // Microservice Controller
  * @MessagePattern('entity.list')
@@ -92,11 +92,11 @@ export class PaginationQueryDto {
     if (rawValue === undefined || rawValue === null || rawValue === '') {
       return undefined;
     }
-    
+
     if (typeof rawValue === 'boolean') {
       return rawValue;
     }
-    
+
     if (typeof rawValue === 'string') {
       const lowerValue = rawValue.toLowerCase().trim();
       if (lowerValue === 'true' || lowerValue === '1') {
@@ -106,11 +106,11 @@ export class PaginationQueryDto {
         return false;
       }
     }
-    
+
     if (typeof rawValue === 'number') {
       return rawValue === 1;
     }
-    
+
     return undefined;
   })
   isActive?: boolean;

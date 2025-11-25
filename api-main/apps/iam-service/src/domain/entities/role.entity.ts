@@ -37,10 +37,9 @@ export class Role extends BaseEntity {
   level: number;
 
   // Relationships
-  @OneToMany(() => UserRole, userRole => userRole.role)
+  @OneToMany(() => UserRole, (userRole) => userRole.role)
   userRoles: UserRole[];
 
-  @OneToMany(() => RolePermission, rolePermission => rolePermission.role)
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
   rolePermissions: RolePermission[];
 }
-

@@ -8,4 +8,3 @@ export interface IRefreshTokenRepository {
   revokeAllByUserId(userId: string): Promise<void>;
   deleteExpired(): Promise<void>;
 }
-

@@ -70,4 +70,3 @@ export class AuthResponseDto {
   })
   user: UserResponseDto;
 }
-

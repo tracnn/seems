@@ -5,7 +5,9 @@ import type { IOrganizationRepository } from '../../../../../domain/interfaces/o
 
 @Injectable()
 @CommandHandler(DeleteOrganizationCommand)
-export class DeleteOrganizationHandler implements ICommandHandler<DeleteOrganizationCommand> {
+export class DeleteOrganizationHandler
+  implements ICommandHandler<DeleteOrganizationCommand>
+{
   private readonly logger = new Logger(DeleteOrganizationHandler.name);
 
   constructor(
@@ -17,14 +19,22 @@ export class DeleteOrganizationHandler implements ICommandHandler<DeleteOrganiza
     this.logger.log(`Soft deleting organization: ${command.organizationId}`);
 
     // Check if organization exists
-    const existingOrg = await this.organizationRepository.findById(command.organizationId);
+    const existingOrg = await this.organizationRepository.findById(
+      command.organizationId,
+    );
     if (!existingOrg) {
-      throw new NotFoundException(`Organization with ID ${command.organizationId} not found`);
+      throw new NotFoundException(
+        `Organization with ID ${command.organizationId} not found`,
+      );
     }
 
-    await this.organizationRepository.softDelete(command.organizationId, command.deletedBy);
-    
-    this.logger.log(`Organization soft deleted successfully: ${command.organizationId}`);
+    await this.organizationRepository.softDelete(
+      command.organizationId,
+      command.deletedBy,
+    );
+
+    this.logger.log(
+      `Organization soft deleted successfully: ${command.organizationId}`,
+    );
   }
 }
-

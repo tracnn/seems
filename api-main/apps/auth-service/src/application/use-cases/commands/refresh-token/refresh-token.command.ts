@@ -5,4 +5,3 @@ export class RefreshTokenCommand {
     public readonly userAgent?: string,
   ) {}
 }
-

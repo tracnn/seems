@@ -66,4 +66,3 @@ export class UserOrganization extends BaseEntity {
   @JoinColumn({ name: 'ORGANIZATION_ID' })
   organization: Organization;
 }
-

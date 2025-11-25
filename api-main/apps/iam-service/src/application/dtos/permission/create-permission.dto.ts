@@ -8,7 +8,10 @@ export class CreatePermissionDto {
   @MaxLength(100)
   name: string;
 
-  @ApiProperty({ example: 'user:create', description: 'Permission code (resource:action)' })
+  @ApiProperty({
+    example: 'user:create',
+    description: 'Permission code (resource:action)',
+  })
   @IsString()
   @MinLength(3)
   @MaxLength(100)
@@ -27,4 +30,3 @@ export class CreatePermissionDto {
   @IsOptional()
   description?: string;
 }
-

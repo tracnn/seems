@@ -1,7 +1,8 @@
-import { 
-  Injectable, 
-  CanActivate, 
-  ExecutionContext
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  HttpStatus,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { BaseException } from '@app/shared-exceptions';
@@ -23,7 +24,7 @@ export interface JwtPayload {
  * - Kiểm tra user có role phù hợp để truy cập endpoint
  * - Phải sử dụng sau JwtAuthGuard để đảm bảo user đã được authenticate
  * - Sử dụng với decorator @Roles() để chỉ định roles yêu cầu
- * 
+ *
  * @example
  * ```typescript
  * @UseGuards(JwtAuthGuard, RolesGuard)
@@ -56,17 +57,21 @@ export class RolesGuard implements CanActivate {
 
     // Kiểm tra user có tồn tại và có roles không
     if (!user || !user.roles || user.roles.length === 0) {
-      throw BaseException.fromErrorCode('IAM_SERVICE.0600');
+      throw new BaseException(
+        'IAM_SERVICE.0600',
+        'User does not have required roles',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     // Kiểm tra user có ít nhất một trong các roles yêu cầu
-    const hasRole = requiredRoles.some((role) => 
-      user.roles?.includes(role)
-    );
+    const hasRole = requiredRoles.some((role) => user.roles?.includes(role));
 
     if (!hasRole) {
-      throw BaseException.fromErrorCode(
+      throw new BaseException(
         'IAM_SERVICE.0600',
+        'User does not have required roles',
+        HttpStatus.FORBIDDEN,
         { requiredRoles },
       );
     }
@@ -74,4 +79,3 @@ export class RolesGuard implements CanActivate {
     return true;
   }
 }
-

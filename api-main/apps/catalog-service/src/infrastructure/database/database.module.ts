@@ -5,9 +5,9 @@ import databaseConfig from '../config/database.config';
 
 /**
  * Database Module for Catalog Service
- * 
+ *
  * TODO: Import entities và repositories khi đã tạo
- * 
+ *
  * Example:
  * import { Catalog } from '../../domain/entities/catalog.entity';
  * import { CatalogRepository } from './typeorm/repositories/catalog.repository';
@@ -46,4 +46,3 @@ import databaseConfig from '../config/database.config';
   ],
 })
 export class DatabaseModule {}
-

@@ -27,7 +27,6 @@ export default registerAs(
       poolPingInterval: 60,
       stmtCacheSize: 30,
       enableConnectionValidation: true,
-    }
+    },
   }),
 );
-

@@ -3,7 +3,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 /**
  * Database Configuration for Catalog Service
- * 
+ *
  * TODO: Import entities khi đã tạo
  * import { Catalog } from '../../domain/entities/catalog.entity';
  */
@@ -34,4 +34,3 @@ export default registerAs(
     },
   }),
 );
-

@@ -49,13 +49,15 @@ export const createWinstonConfig = (serviceName: string) => {
   const transports: winston.transport[] = [
     // Console transport - luôn bật để xem logs
     new winston.transports.Console({
-      format:
-        process.env.NODE_ENV === 'production' ? logFormat : consoleFormat,
+      format: process.env.NODE_ENV === 'production' ? logFormat : consoleFormat,
     }),
   ];
 
   // Chỉ ghi file logs trong production hoặc khi LOG_TO_FILE=true
-  if (process.env.NODE_ENV === 'production' || process.env.LOG_TO_FILE === 'true') {
+  if (
+    process.env.NODE_ENV === 'production' ||
+    process.env.LOG_TO_FILE === 'true'
+  ) {
     transports.push(
       // Info log file
       new winston.transports.File({
@@ -113,15 +115,20 @@ export const createWinstonConfig = (serviceName: string) => {
             winston.format((info) => {
               // Thêm properties vào log entry
               info.environment = process.env.NODE_ENV || 'development';
-              info.application = process.env.APP_NAME ||'qhis-plus-backend';
+              info.application = process.env.APP_NAME || 'qhis-plus-backend';
               return info;
             })(),
           ),
         }),
       );
-      console.log(`[${serviceName}] Seq logging enabled: ${process.env.SEQ_SERVER_URL}`);
+      console.log(
+        `[${serviceName}] Seq logging enabled: ${process.env.SEQ_SERVER_URL}`,
+      );
     } catch (error) {
-      console.warn(`[${serviceName}] Failed to initialize Seq transport:`, error);
+      console.warn(
+        `[${serviceName}] Failed to initialize Seq transport:`,
+        error,
+      );
     }
   }
 
@@ -131,7 +138,8 @@ export const createWinstonConfig = (serviceName: string) => {
     transports,
     // Handle uncaught exceptions
     exceptionHandlers:
-      process.env.NODE_ENV === 'production' || process.env.LOG_TO_FILE === 'true'
+      process.env.NODE_ENV === 'production' ||
+      process.env.LOG_TO_FILE === 'true'
         ? [
             new winston.transports.File({
               filename: `logs/${serviceName}/exceptions.log`,
@@ -142,7 +150,8 @@ export const createWinstonConfig = (serviceName: string) => {
         : [],
     // Handle unhandled promise rejections
     rejectionHandlers:
-      process.env.NODE_ENV === 'production' || process.env.LOG_TO_FILE === 'true'
+      process.env.NODE_ENV === 'production' ||
+      process.env.LOG_TO_FILE === 'true'
         ? [
             new winston.transports.File({
               filename: `logs/${serviceName}/rejections.log`,
@@ -154,4 +163,3 @@ export const createWinstonConfig = (serviceName: string) => {
     exitOnError: false,
   };
 };
-

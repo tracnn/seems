@@ -5,14 +5,19 @@ import type { IUserRepository } from '../../../../../domain/interfaces/user.repo
 import { User } from '../../../../../domain/entities/user.entity';
 
 @QueryHandler(FindByUsernameOrEmailQuery)
-export class FindByUsernameOrEmailHandler implements IQueryHandler<FindByUsernameOrEmailQuery> {
+export class FindByUsernameOrEmailHandler
+  implements IQueryHandler<FindByUsernameOrEmailQuery>
+{
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
   ) {}
 
   async execute(query: FindByUsernameOrEmailQuery): Promise<User> {
-    const user = await this.userRepository.findByUsernameOrEmail(query.usernameOrEmail, query.usernameOrEmail);
+    const user = await this.userRepository.findByUsernameOrEmail(
+      query.usernameOrEmail,
+      query.usernameOrEmail,
+    );
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -21,4 +26,3 @@ export class FindByUsernameOrEmailHandler implements IQueryHandler<FindByUsernam
     return user;
   }
 }
-

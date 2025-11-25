@@ -6,7 +6,9 @@ import type { IUserOrganizationRepository } from '../../../../../domain/interfac
 
 @Injectable()
 @CommandHandler(RemoveOrganizationsCommand)
-export class RemoveOrganizationsHandler implements ICommandHandler<RemoveOrganizationsCommand> {
+export class RemoveOrganizationsHandler
+  implements ICommandHandler<RemoveOrganizationsCommand>
+{
   private readonly logger = new Logger(RemoveOrganizationsHandler.name);
 
   constructor(
@@ -17,7 +19,9 @@ export class RemoveOrganizationsHandler implements ICommandHandler<RemoveOrganiz
   ) {}
 
   async execute(command: RemoveOrganizationsCommand): Promise<void> {
-    this.logger.log(`Removing ${command.organizationIds.length} organizations from user: ${command.userId}`);
+    this.logger.log(
+      `Removing ${command.organizationIds.length} organizations from user: ${command.userId}`,
+    );
 
     // Verify user exists
     const user = await this.userRepository.findById(command.userId);
@@ -33,7 +37,8 @@ export class RemoveOrganizationsHandler implements ICommandHandler<RemoveOrganiz
       );
     }
 
-    this.logger.log(`Organizations removed successfully from user: ${command.userId}`);
+    this.logger.log(
+      `Organizations removed successfully from user: ${command.userId}`,
+    );
   }
 }
-

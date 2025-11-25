@@ -14,6 +14,9 @@ export interface IUserRepository {
   findAll(dto: GetUsersDto): Promise<any>;
   activateUser(id: string): Promise<User>;
   updateLastLogin(id: string): Promise<void>;
-  updatePassword(id: string, hashedPassword: string, updatedBy: string): Promise<void>;
+  updatePassword(
+    id: string,
+    hashedPassword: string,
+    updatedBy: string,
+  ): Promise<void>;
 }
-

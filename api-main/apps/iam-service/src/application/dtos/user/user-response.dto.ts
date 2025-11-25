@@ -47,4 +47,3 @@ export class UserResponseDto {
   @ApiProperty()
   updatedBy: string;
 }
-

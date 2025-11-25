@@ -6,4 +6,3 @@ export * from './activate-account.dto';
 
 // Auth response DTOs
 export * from './responses/auth-response.dto';
-

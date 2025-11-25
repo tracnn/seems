@@ -32,11 +32,13 @@ export class PermissionsController {
   async getPermissions(@Payload() filters?: any) {
     try {
       this.logger.log('Getting permissions list');
-      
+
       const query = new GetPermissionsQuery(filters || {});
       const result = await this.queryBus.execute(query);
-      
-      this.logger.log(`Found ${result.length || result.data?.length || 0} permissions`);
+
+      this.logger.log(
+        `Found ${result.length || result.data?.length || 0} permissions`,
+      );
       return result;
     } catch (error) {
       this.logger.error(`Failed to get permissions: ${error.message}`);
@@ -55,10 +57,10 @@ export class PermissionsController {
   async getPermissionById(@Payload() data: { permissionId: string }) {
     try {
       this.logger.log(`Getting permission by ID: ${data.permissionId}`);
-      
+
       const query = new GetPermissionByIdQuery(data.permissionId);
       const permission = await this.queryBus.execute(query);
-      
+
       this.logger.log(`Permission found: ${permission.name}`);
       return permission;
     } catch (error) {
@@ -78,7 +80,7 @@ export class PermissionsController {
   async createPermission(@Payload() data: any) {
     try {
       this.logger.log(`Creating permission: ${data.name}`);
-      
+
       const command = new CreatePermissionCommand(
         data.name,
         data.code,
@@ -87,7 +89,7 @@ export class PermissionsController {
         data.description,
         data.createdBy || 'system',
       );
-      
+
       const permission = await this.commandBus.execute(command);
       this.logger.log(`Permission created successfully: ${permission.id}`);
       return permission;
@@ -108,7 +110,7 @@ export class PermissionsController {
   async updatePermission(@Payload() data: any) {
     try {
       this.logger.log(`Updating permission: ${data.permissionId}`);
-      
+
       const command = new UpdatePermissionCommand(
         data.permissionId,
         data.name,
@@ -118,7 +120,7 @@ export class PermissionsController {
         data.description,
         data.updatedBy || 'system',
       );
-      
+
       const permission = await this.commandBus.execute(command);
       this.logger.log(`Permission updated successfully: ${permission.id}`);
       return permission;
@@ -136,15 +138,17 @@ export class PermissionsController {
    * Pattern: iam.permission.delete
    */
   @MessagePattern('iam.permission.delete')
-  async deletePermission(@Payload() data: { permissionId: string; deletedBy?: string }) {
+  async deletePermission(
+    @Payload() data: { permissionId: string; deletedBy?: string },
+  ) {
     try {
       this.logger.log(`Deleting permission: ${data.permissionId}`);
-      
+
       const command = new DeletePermissionCommand(
         data.permissionId,
         data.deletedBy || 'system',
       );
-      
+
       await this.commandBus.execute(command);
       this.logger.log(`Permission deleted successfully: ${data.permissionId}`);
       return { success: true, message: 'Permission deleted successfully' };
@@ -157,4 +161,3 @@ export class PermissionsController {
     }
   }
 }
-

@@ -7,7 +7,9 @@ import type { IUserOrganizationRepository } from '../../../../../domain/interfac
 
 @Injectable()
 @CommandHandler(AssignOrganizationsCommand)
-export class AssignOrganizationsHandler implements ICommandHandler<AssignOrganizationsCommand> {
+export class AssignOrganizationsHandler
+  implements ICommandHandler<AssignOrganizationsCommand>
+{
   private readonly logger = new Logger(AssignOrganizationsHandler.name);
 
   constructor(
@@ -20,7 +22,9 @@ export class AssignOrganizationsHandler implements ICommandHandler<AssignOrganiz
   ) {}
 
   async execute(command: AssignOrganizationsCommand): Promise<void> {
-    this.logger.log(`Assigning ${command.organizations.length} organizations to user: ${command.userId}`);
+    this.logger.log(
+      `Assigning ${command.organizations.length} organizations to user: ${command.userId}`,
+    );
 
     // Verify user exists
     const user = await this.userRepository.findById(command.userId);
@@ -30,23 +34,30 @@ export class AssignOrganizationsHandler implements ICommandHandler<AssignOrganiz
 
     // Verify all organizations exist
     for (const org of command.organizations) {
-      const organization = await this.organizationRepository.findById(org.organizationId);
+      const organization = await this.organizationRepository.findById(
+        org.organizationId,
+      );
       if (!organization) {
-        throw new NotFoundException(`Organization with ID ${org.organizationId} not found`);
+        throw new NotFoundException(
+          `Organization with ID ${org.organizationId} not found`,
+        );
       }
     }
 
     // Assign organizations using bulk method
-    const userOrganizations = command.organizations.map(org => ({
+    const userOrganizations = command.organizations.map((org) => ({
       userId: command.userId,
       organizationId: org.organizationId,
       role: org.role,
       isPrimary: org.isPrimary || false,
     }));
 
-    await this.userOrganizationRepository.bulkAssignUsersToOrganization(userOrganizations);
+    await this.userOrganizationRepository.bulkAssignUsersToOrganization(
+      userOrganizations,
+    );
 
-    this.logger.log(`Organizations assigned successfully to user: ${command.userId}`);
+    this.logger.log(
+      `Organizations assigned successfully to user: ${command.userId}`,
+    );
   }
 }
-

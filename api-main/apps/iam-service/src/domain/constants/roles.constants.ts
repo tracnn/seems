@@ -54,4 +54,3 @@ export const DEFAULT_ROLES = [
     ],
   },
 ];
-

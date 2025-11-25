@@ -25,4 +25,3 @@ import { RefreshTokenRepository } from './typeorm/repositories/refresh-token.rep
   exports: [RefreshTokenRepository, TypeOrmModule],
 })
 export class DatabaseModule {}
-

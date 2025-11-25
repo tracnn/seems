@@ -5,7 +5,9 @@ import type { IOrganizationRepository } from '../../../../../domain/interfaces/o
 
 @Injectable()
 @QueryHandler(GetOrganizationsQuery)
-export class GetOrganizationsHandler implements IQueryHandler<GetOrganizationsQuery> {
+export class GetOrganizationsHandler
+  implements IQueryHandler<GetOrganizationsQuery>
+{
   private readonly logger = new Logger(GetOrganizationsHandler.name);
 
   constructor(
@@ -15,11 +17,10 @@ export class GetOrganizationsHandler implements IQueryHandler<GetOrganizationsQu
 
   async execute(query: GetOrganizationsQuery): Promise<any> {
     this.logger.log('Getting organizations list');
-    
+
     const result = await this.organizationRepository.findAll();
-    
+
     this.logger.log(`Found ${result.data.length} organizations`);
     return result.data; // Return array
   }
 }
-

@@ -15,15 +15,14 @@ export class GetRoleByIdHandler implements IQueryHandler<GetRoleByIdQuery> {
 
   async execute(query: GetRoleByIdQuery): Promise<any> {
     this.logger.log(`Getting role by ID: ${query.roleId}`);
-    
+
     const role = await this.roleRepository.findById(query.roleId);
-    
+
     if (!role) {
       throw new NotFoundException(`Role with ID ${query.roleId} not found`);
     }
-    
+
     this.logger.log(`Role found: ${role.name}`);
     return role;
   }
 }
-

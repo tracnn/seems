@@ -34,7 +34,10 @@ export class PermissionRepository implements IPermissionRepository {
     return await this.repository.save(newPermission);
   }
 
-  async update(id: string, permission: Partial<Permission>): Promise<Permission> {
+  async update(
+    id: string,
+    permission: Partial<Permission>,
+  ): Promise<Permission> {
     await this.repository.update({ id }, permission);
     const updated = await this.findById(id);
     if (!updated) {
@@ -119,8 +122,7 @@ export class PermissionRepository implements IPermissionRepository {
   }
 
   async bulkCreate(permissions: Partial<Permission>[]): Promise<Permission[]> {
-    const entities = permissions.map(p => this.repository.create(p));
+    const entities = permissions.map((p) => this.repository.create(p));
     return await this.repository.save(entities);
   }
 }
-

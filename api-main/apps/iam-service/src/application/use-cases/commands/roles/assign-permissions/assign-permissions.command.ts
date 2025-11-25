@@ -5,4 +5,3 @@ export class AssignPermissionsCommand {
     public readonly assignedBy?: string,
   ) {}
 }
-

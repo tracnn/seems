@@ -22,16 +22,16 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     let existingUser = await this.userRepository.findByUsername(
       command.username,
     );
-    
+
     if (!existingUser) {
       existingUser = await this.userRepository.findByEmail(command.email);
     }
 
     if (existingUser) {
-      throw BaseException.fromErrorCode(
-        'IAM_SERVICE.0002',
-        { username: command.username, email: command.email },
-      );
+      throw BaseException.fromErrorCode('IAM_SERVICE.0002', {
+        username: command.username,
+        email: command.email,
+      });
     }
 
     // Hash password
@@ -54,4 +54,3 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     return user;
   }
 }
-

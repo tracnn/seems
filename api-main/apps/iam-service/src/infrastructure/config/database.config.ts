@@ -13,12 +13,24 @@ export default registerAs(
   (): TypeOrmModuleOptions => ({
     type: 'oracle',
     host: process.env.DB_IAM_HOST || process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_IAM_PORT || process.env.DB_PORT || '1521', 10),
+    port: parseInt(
+      process.env.DB_IAM_PORT || process.env.DB_PORT || '1521',
+      10,
+    ),
     username: process.env.DB_IAM_USERNAME || process.env.DB_USERNAME || '',
     password: process.env.DB_IAM_PASSWORD || process.env.DB_PASSWORD || '',
-    serviceName: process.env.DB_IAM_SERVICE_NAME || process.env.DB_SERVICE_NAME || 'XE',
+    serviceName:
+      process.env.DB_IAM_SERVICE_NAME || process.env.DB_SERVICE_NAME || 'XE',
     // Import entities trực tiếp
-    entities: [User, Role, Permission, UserRole, RolePermission, Organization, UserOrganization],
+    entities: [
+      User,
+      Role,
+      Permission,
+      UserRole,
+      RolePermission,
+      Organization,
+      UserOrganization,
+    ],
     synchronize: process.env.NODE_ENV === 'development',
     logging: process.env.NODE_ENV === 'development',
     autoLoadEntities: true,
@@ -32,7 +44,6 @@ export default registerAs(
       poolPingInterval: 60,
       stmtCacheSize: 30,
       enableConnectionValidation: true,
-    }
+    },
   }),
 );
-

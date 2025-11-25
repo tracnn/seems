@@ -1,4 +1,8 @@
-import { Module, NestModule, MiddlewareConsumer, OnModuleInit } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UtilsModule } from '@app/utils';
@@ -11,22 +15,23 @@ import { IamModule } from './iam/iam.module';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { BaseException } from '@app/shared-exceptions';
-import { ApiMainErrorLoader } from './config/error-loader';
+import { ErrorService } from '@app/shared-exceptions';
 
 @Module({
   imports: [
     UtilsModule,
     CqrsModule,
-    ConfigModule.forRoot({ 
-      isGlobal: true, 
+    ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath: '.env',
     }),
     LoggerModule.forRoot(LogServiceName.API_MAIN),
-    ThrottlerModule.forRoot([{
-      ttl: 60,
-      limit: 10,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60,
+        limit: 10,
+      },
+    ]),
     AuthModule,
     IamModule, // IAM Module includes IAM_SERVICE TCP client
     ClientsModule.register([
@@ -42,20 +47,19 @@ import { ApiMainErrorLoader } from './config/error-loader';
   ],
   controllers: [AppController],
   providers: [
+    {
+      provide: ErrorService,
+      useFactory: () => new ErrorService('api-main'),
+    },
     AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
   ],
-  exports: [CqrsModule],
+  exports: [CqrsModule, ErrorService],
 })
-export class AppModule implements NestModule, OnModuleInit {
-  onModuleInit() {
-    // Setup error loader cho api-main
-    BaseException.setErrorLoader(new ApiMainErrorLoader());
-  }
-
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HttpLoggerMiddleware).forRoutes('*');
   }

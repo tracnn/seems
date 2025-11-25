@@ -7,7 +7,9 @@ import type { IRolePermissionRepository } from '../../../../../domain/interfaces
 
 @Injectable()
 @CommandHandler(AssignPermissionsCommand)
-export class AssignPermissionsHandler implements ICommandHandler<AssignPermissionsCommand> {
+export class AssignPermissionsHandler
+  implements ICommandHandler<AssignPermissionsCommand>
+{
   private readonly logger = new Logger(AssignPermissionsHandler.name);
 
   constructor(
@@ -20,7 +22,9 @@ export class AssignPermissionsHandler implements ICommandHandler<AssignPermissio
   ) {}
 
   async execute(command: AssignPermissionsCommand): Promise<void> {
-    this.logger.log(`Assigning ${command.permissionIds.length} permissions to role: ${command.roleId}`);
+    this.logger.log(
+      `Assigning ${command.permissionIds.length} permissions to role: ${command.roleId}`,
+    );
 
     // Verify role exists
     const role = await this.roleRepository.findById(command.roleId);
@@ -32,12 +36,14 @@ export class AssignPermissionsHandler implements ICommandHandler<AssignPermissio
     for (const permissionId of command.permissionIds) {
       const permission = await this.permissionRepository.findById(permissionId);
       if (!permission) {
-        throw new NotFoundException(`Permission with ID ${permissionId} not found`);
+        throw new NotFoundException(
+          `Permission with ID ${permissionId} not found`,
+        );
       }
     }
 
     // Assign permissions using bulk method
-    const rolePermissions = command.permissionIds.map(permissionId => ({
+    const rolePermissions = command.permissionIds.map((permissionId) => ({
       roleId: command.roleId,
       permissionId,
       assignedBy: command.assignedBy || 'system',
@@ -45,7 +51,8 @@ export class AssignPermissionsHandler implements ICommandHandler<AssignPermissio
 
     await this.rolePermissionRepository.bulkAssignPermissions(rolePermissions);
 
-    this.logger.log(`Permissions assigned successfully to role: ${command.roleId}`);
+    this.logger.log(
+      `Permissions assigned successfully to role: ${command.roleId}`,
+    );
   }
 }
-

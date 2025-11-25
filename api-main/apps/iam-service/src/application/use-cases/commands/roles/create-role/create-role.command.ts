@@ -7,4 +7,3 @@ export class CreateRoleCommand {
     public readonly createdBy?: string,
   ) {}
 }
-

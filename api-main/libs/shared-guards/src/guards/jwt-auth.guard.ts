@@ -1,7 +1,4 @@
-import { 
-  Injectable, 
-  ExecutionContext
-} from '@nestjs/common';
+import { Injectable, ExecutionContext, HttpStatus } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { BaseException } from '@app/shared-exceptions';
@@ -11,7 +8,7 @@ import { BaseException } from '@app/shared-exceptions';
  * - Kiểm tra JWT token trong request headers
  * - Tự động skip nếu endpoint được đánh dấu @Public()
  * - Sử dụng passport-jwt strategy để validate token
- * 
+ *
  * @example
  * ```typescript
  * @UseGuards(JwtAuthGuard)
@@ -32,7 +29,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * Skip authentication nếu endpoint được đánh dấu @Public()
    */
   canActivate(context: ExecutionContext) {
-    // Kiểm tra decorator @Public() 
+    // Kiểm tra decorator @Public()
     const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
       context.getHandler(),
       context.getClass(),
@@ -51,20 +48,27 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * Xử lý response từ JWT strategy
    * Chuẩn hóa error format theo quy chuẩn project
    */
-  handleRequest(err: any, user: any, info: any) {
+  handleRequest<TUser = any>(
+    err: any,
+    user: any,
+    info: any,
+    context: ExecutionContext,
+    status?: any,
+  ): TUser {
     if (err || !user) {
       // Nếu đã là BaseException, throw trực tiếp
       if (err instanceof BaseException) {
         throw err;
       }
-      
-      // Nếu không, tạo BaseException mới
-      throw BaseException.fromErrorCode(
+
+      // Tạo BaseException với hard-coded error (shared guard không biết service-specific errors)
+      throw new BaseException(
         'AUTH_SERVICE.0006',
+        'The provided token is invalid or malformed',
+        HttpStatus.UNAUTHORIZED,
         { info },
       );
     }
     return user;
   }
 }
-

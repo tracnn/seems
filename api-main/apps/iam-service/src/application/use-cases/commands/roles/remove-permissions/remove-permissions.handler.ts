@@ -6,7 +6,9 @@ import type { IRolePermissionRepository } from '../../../../../domain/interfaces
 
 @Injectable()
 @CommandHandler(RemovePermissionsCommand)
-export class RemovePermissionsHandler implements ICommandHandler<RemovePermissionsCommand> {
+export class RemovePermissionsHandler
+  implements ICommandHandler<RemovePermissionsCommand>
+{
   private readonly logger = new Logger(RemovePermissionsHandler.name);
 
   constructor(
@@ -17,7 +19,9 @@ export class RemovePermissionsHandler implements ICommandHandler<RemovePermissio
   ) {}
 
   async execute(command: RemovePermissionsCommand): Promise<void> {
-    this.logger.log(`Removing ${command.permissionIds.length} permissions from role: ${command.roleId}`);
+    this.logger.log(
+      `Removing ${command.permissionIds.length} permissions from role: ${command.roleId}`,
+    );
 
     // Verify role exists
     const role = await this.roleRepository.findById(command.roleId);
@@ -33,7 +37,8 @@ export class RemovePermissionsHandler implements ICommandHandler<RemovePermissio
       );
     }
 
-    this.logger.log(`Permissions removed successfully from role: ${command.roleId}`);
+    this.logger.log(
+      `Permissions removed successfully from role: ${command.roleId}`,
+    );
   }
 }
-

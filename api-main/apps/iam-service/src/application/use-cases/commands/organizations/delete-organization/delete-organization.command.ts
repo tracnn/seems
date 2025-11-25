@@ -4,4 +4,3 @@ export class DeleteOrganizationCommand {
     public readonly deletedBy: string,
   ) {}
 }
-

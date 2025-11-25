@@ -1,5 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Injectable, Inject, Logger, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Logger,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { UpdateRoleCommand } from './update-role.command';
 import type { IRoleRepository } from '../../../../../domain/interfaces/role.repository.interface';
 import { Role } from '../../../../../domain/entities/role.entity';
@@ -27,7 +33,9 @@ export class UpdateRoleHandler implements ICommandHandler<UpdateRoleCommand> {
     if (command.code && command.code !== existingRole.code) {
       const roleWithCode = await this.roleRepository.findByCode(command.code);
       if (roleWithCode) {
-        throw new ConflictException(`Role with code ${command.code} already exists`);
+        throw new ConflictException(
+          `Role with code ${command.code} already exists`,
+        );
       }
     }
 
@@ -38,13 +46,16 @@ export class UpdateRoleHandler implements ICommandHandler<UpdateRoleCommand> {
 
     if (command.name) updateData.name = command.name;
     if (command.code) updateData.code = command.code;
-    if (command.description !== undefined) updateData.description = command.description;
+    if (command.description !== undefined)
+      updateData.description = command.description;
     if (command.level !== undefined) updateData.level = command.level;
 
-    const updatedRole = await this.roleRepository.update(command.roleId, updateData);
-    
+    const updatedRole = await this.roleRepository.update(
+      command.roleId,
+      updateData,
+    );
+
     this.logger.log(`Role updated successfully: ${updatedRole.id}`);
     return updatedRole;
   }
 }
-

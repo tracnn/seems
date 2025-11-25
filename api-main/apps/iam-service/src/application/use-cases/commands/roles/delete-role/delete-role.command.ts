@@ -4,4 +4,3 @@ export class DeleteRoleCommand {
     public readonly deletedBy: string,
   ) {}
 }
-

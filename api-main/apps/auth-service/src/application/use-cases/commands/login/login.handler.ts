@@ -7,14 +7,15 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { AuthResponseDto } from '@app/shared-dto';
-// ErrorCode giờ là string constant, không cần import từ shared-constants nữa
-import { BaseException } from '@app/shared-exceptions';
+import { ErrorService } from '@app/shared-exceptions';
+import { AuthServiceErrorCodes } from '@app/shared-constants';
 
 @Injectable()
 @CommandHandler(LoginCommand)
 export class LoginHandler implements ICommandHandler<LoginCommand> {
   private readonly logger = new Logger(LoginHandler.name);
   constructor(
+    private readonly errorService: ErrorService,
     private readonly iamClient: IamClientService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly jwtService: JwtService,
@@ -29,33 +30,43 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
 
     if (!user) {
       this.logger.error('User not found', { usernameOrEmail });
-      throw BaseException.fromErrorCode('AUTH_SERVICE.0001');
+      this.errorService.throw(AuthServiceErrorCodes.INVALID_CREDENTIALS);
     }
 
     // Kiểm tra password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw BaseException.fromErrorCode('AUTH_SERVICE.0001');
+      this.errorService.throw(AuthServiceErrorCodes.INVALID_CREDENTIALS);
     }
 
     // Kiểm tra user active
     if (!user.isActive) {
       this.logger.error('User inactive', { userId: user.id });
-      throw BaseException.fromErrorCode('AUTH_SERVICE.0013');
+      this.errorService.throw(AuthServiceErrorCodes.USER_DEACTIVATED);
     }
 
     // Tạo access token
-    const payload = { sub: user.id, username: user.username, email: user.email };
+    const payload = {
+      sub: user.id,
+      username: user.username,
+      email: user.email,
+    };
     const accessToken = this.jwtService.sign(payload);
 
     // Tạo refresh token using different secret
     const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('REFRESH_TOKEN_SECRET') || 'refresh-token-secret',
-      expiresIn: Number(this.configService.get<number>('REFRESH_TOKEN_EXPIRES_IN')) || 7 * 24 * 60 * 60 * 1000,
+      secret:
+        this.configService.get<string>('REFRESH_TOKEN_SECRET') ||
+        'refresh-token-secret',
+      expiresIn:
+        Number(this.configService.get<number>('REFRESH_TOKEN_EXPIRES_IN')) ||
+        7 * 24 * 60 * 60 * 1000,
     });
 
     // Lưu refresh token vào database
-    const expiresIn = Number(this.configService.get<number>('REFRESH_TOKEN_EXPIRES_IN')) || 7 * 24 * 60 * 60 * 1000; // 7 days
+    const expiresIn =
+      Number(this.configService.get<number>('REFRESH_TOKEN_EXPIRES_IN')) ||
+      7 * 24 * 60 * 60 * 1000; // 7 days
     await this.refreshTokenRepository.create({
       userId: user.id,
       token: refreshToken,
@@ -71,7 +82,8 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     return {
       accessToken,
       refreshToken,
-      expiresIn: Number(this.configService.get<number>('JWT_EXPIRES_IN')) || 15 * 60, // 15 minutes in seconds
+      expiresIn:
+        Number(this.configService.get<number>('JWT_EXPIRES_IN')) || 15 * 60, // 15 minutes in seconds
       tokenType: 'Bearer',
       user: {
         id: user.id,
@@ -83,4 +95,3 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     };
   }
 }
-

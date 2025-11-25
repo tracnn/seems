@@ -4,4 +4,3 @@ export class DeletePermissionCommand {
     public readonly deletedBy: string,
   ) {}
 }
-

@@ -5,9 +5,9 @@ import { WinstonLoggerService } from './winston-logger.service';
 
 /**
  * Logger Module cho toàn bộ monorepo
- * 
+ *
  * Cách sử dụng trong service:
- * 
+ *
  * @Module({
  *   imports: [
  *     LoggerModule.forRoot('auth-service'),

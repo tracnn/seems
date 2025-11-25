@@ -5,7 +5,9 @@ import type { IPermissionRepository } from '../../../../../domain/interfaces/per
 
 @Injectable()
 @CommandHandler(DeletePermissionCommand)
-export class DeletePermissionHandler implements ICommandHandler<DeletePermissionCommand> {
+export class DeletePermissionHandler
+  implements ICommandHandler<DeletePermissionCommand>
+{
   private readonly logger = new Logger(DeletePermissionHandler.name);
 
   constructor(
@@ -17,14 +19,22 @@ export class DeletePermissionHandler implements ICommandHandler<DeletePermission
     this.logger.log(`Soft deleting permission: ${command.permissionId}`);
 
     // Check if permission exists
-    const existingPermission = await this.permissionRepository.findById(command.permissionId);
+    const existingPermission = await this.permissionRepository.findById(
+      command.permissionId,
+    );
     if (!existingPermission) {
-      throw new NotFoundException(`Permission with ID ${command.permissionId} not found`);
+      throw new NotFoundException(
+        `Permission with ID ${command.permissionId} not found`,
+      );
     }
 
-    await this.permissionRepository.softDelete(command.permissionId, command.deletedBy);
-    
-    this.logger.log(`Permission soft deleted successfully: ${command.permissionId}`);
+    await this.permissionRepository.softDelete(
+      command.permissionId,
+      command.deletedBy,
+    );
+
+    this.logger.log(
+      `Permission soft deleted successfully: ${command.permissionId}`,
+    );
   }
 }
-

@@ -1,5 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Inject,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { AssignRolesCommand } from './assign-roles.command';
 import type { IUserRepository } from '../../../../../domain/interfaces/user.repository.interface';
 import type { IRoleRepository } from '../../../../../domain/interfaces/role.repository.interface';
@@ -29,19 +34,23 @@ export class AssignRolesHandler implements ICommandHandler<AssignRolesCommand> {
     }
 
     // Validate all roles exist
-    const rolePromises = command.roleIds.map(roleId => this.roleRepository.findById(roleId));
+    const rolePromises = command.roleIds.map((roleId) =>
+      this.roleRepository.findById(roleId),
+    );
     const roles = await Promise.all(rolePromises);
 
     const notFoundRoles = command.roleIds.filter((_, index) => !roles[index]);
     if (notFoundRoles.length > 0) {
-      throw new BadRequestException(`Roles not found: ${notFoundRoles.join(', ')}`);
+      throw new BadRequestException(
+        `Roles not found: ${notFoundRoles.join(', ')}`,
+      );
     }
 
     // Remove existing roles
     await this.userRoleRepository.removeAllUserRoles(command.userId);
 
     // Assign new roles
-    const userRoles = command.roleIds.map(roleId => ({
+    const userRoles = command.roleIds.map((roleId) => ({
       userId: command.userId,
       roleId,
       assignedBy: command.assignedBy,
@@ -56,4 +65,3 @@ export class AssignRolesHandler implements ICommandHandler<AssignRolesCommand> {
     return result;
   }
 }
-

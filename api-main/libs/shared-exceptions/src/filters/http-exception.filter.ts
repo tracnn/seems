@@ -12,7 +12,7 @@ import { BaseException } from '../base/base.exception';
 
 /**
  * Shared HTTP Exception Filter
- * 
+ *
  * Handles all HTTP exceptions and formats response with errorCode for frontend i18n
  * Can be used in both API Gateway and HTTP services
  */
@@ -54,17 +54,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
       this.logger.error(
         `${request.method} ${request.url} - Status: ${status} - ErrorCode: ${exception.errorCode}`,
       );
-    } 
+    }
     // Handle RpcException - từ microservices
     else if (exception instanceof RpcException) {
       const rpcError = exception.getError() as any;
-      
+
       status = rpcError.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
-      
+
       errorResponse = {
         statusCode: status,
         errorCode: rpcError.errorCode || null,
-        errorDescription: rpcError.errorDescription || rpcError.message || 'An error occurred in microservice',
+        errorDescription:
+          rpcError.errorDescription ||
+          rpcError.message ||
+          'An error occurred in microservice',
         ...(rpcError.metadata && { metadata: rpcError.metadata }),
         timestamp: new Date().toISOString(),
         path: request.url,
@@ -101,10 +104,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         };
       }
 
-      this.logger.error(
-        `${request.method} ${request.url} - Status: ${status}`,
-      );
-    } 
+      this.logger.error(`${request.method} ${request.url} - Status: ${status}`);
+    }
     // Handle Error objects from firstValueFrom (RPC errors from microservices)
     else if (exception instanceof Error) {
       // Kiểm tra xem có phải là RPC error từ microservice không
@@ -113,10 +114,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       // - { response: { statusCode, errorCode, errorDescription, ... } }
       // - Trực tiếp có statusCode, errorCode, errorDescription
       const errorAny = exception as any;
-      
+
       // Tìm RPC error data trong các vị trí có thể
       let rpcError: any = null;
-      
+
       if (errorAny.error && typeof errorAny.error === 'object') {
         rpcError = errorAny.error;
       } else if (errorAny.response && typeof errorAny.response === 'object') {
@@ -125,15 +126,18 @@ export class HttpExceptionFilter implements ExceptionFilter {
         // Error object có trực tiếp statusCode hoặc errorCode
         rpcError = errorAny;
       }
-      
+
       if (rpcError && (rpcError.statusCode || rpcError.errorCode)) {
         // Đây là RPC error từ microservice
         status = rpcError.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
-        
+
         errorResponse = {
           statusCode: status,
           errorCode: rpcError.errorCode || null,
-          errorDescription: rpcError.errorDescription || rpcError.message || 'An error occurred in microservice',
+          errorDescription:
+            rpcError.errorDescription ||
+            rpcError.message ||
+            'An error occurred in microservice',
           ...(rpcError.metadata && { metadata: rpcError.metadata }),
           timestamp: new Date().toISOString(),
           path: request.url,
@@ -158,7 +162,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
           exception.stack,
           'HttpExceptionFilter',
         );
-        
+
         errorResponse.message = exception.message;
         errorResponse.errorCode = null; // Unknown error, không có errorCode
       }
@@ -167,4 +171,3 @@ export class HttpExceptionFilter implements ExceptionFilter {
     response.status(status).json(errorResponse);
   }
 }
-

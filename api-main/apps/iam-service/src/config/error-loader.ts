@@ -31,10 +31,15 @@ export class IamServiceErrorLoader implements ErrorLoader {
     this.defaultLanguage = config.defaultLanguage;
   }
 
-  getMessage(errorCode: string, language: string = this.defaultLanguage): string {
+  getMessage(
+    errorCode: string,
+    language: string = this.defaultLanguage,
+  ): string {
     const error = this.errors[errorCode];
     if (!error) return `Error ${errorCode}`;
-    return String(error[language as keyof ErrorMessage] || error.en || `Error ${errorCode}`);
+    return String(
+      error[language as keyof ErrorMessage] || error.en || `Error ${errorCode}`,
+    );
   }
 
   getStatusCode(errorCode: string): number {

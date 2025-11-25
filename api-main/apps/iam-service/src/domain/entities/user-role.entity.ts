@@ -42,12 +42,11 @@ export class UserRole extends BaseEntity {
   expiresAt: Date;
 
   // Relationships
-  @ManyToOne(() => User, user => user.userRoles)
+  @ManyToOne(() => User, (user) => user.userRoles)
   @JoinColumn({ name: 'USER_ID' })
   user: User;
 
-  @ManyToOne(() => Role, role => role.userRoles)
+  @ManyToOne(() => Role, (role) => role.userRoles)
   @JoinColumn({ name: 'ROLE_ID' })
   role: Role;
 }
-

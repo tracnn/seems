@@ -1,7 +1,7 @@
 /**
  * Domain Interfaces
  * Định nghĩa các repository interfaces
- * 
+ *
  * Example:
  * export interface ICatalogRepository {
  *   findById(id: string): Promise<Catalog | null>;
@@ -11,4 +11,3 @@
  *   delete(id: string): Promise<void>;
  * }
  */
-

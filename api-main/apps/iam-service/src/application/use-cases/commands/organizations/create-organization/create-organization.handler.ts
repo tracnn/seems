@@ -1,12 +1,20 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Injectable, Inject, Logger, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Logger,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateOrganizationCommand } from './create-organization.command';
 import type { IOrganizationRepository } from '../../../../../domain/interfaces/organization.repository.interface';
 import { Organization } from '../../../../../domain/entities/organization.entity';
 
 @Injectable()
 @CommandHandler(CreateOrganizationCommand)
-export class CreateOrganizationHandler implements ICommandHandler<CreateOrganizationCommand> {
+export class CreateOrganizationHandler
+  implements ICommandHandler<CreateOrganizationCommand>
+{
   private readonly logger = new Logger(CreateOrganizationHandler.name);
 
   constructor(
@@ -18,17 +26,25 @@ export class CreateOrganizationHandler implements ICommandHandler<CreateOrganiza
     this.logger.log(`Creating organization: ${command.name} (${command.code})`);
 
     // Check if code already exists
-    const existingOrg = await this.organizationRepository.findByCode(command.code);
+    const existingOrg = await this.organizationRepository.findByCode(
+      command.code,
+    );
     if (existingOrg) {
-      throw new ConflictException(`Organization with code ${command.code} already exists`);
+      throw new ConflictException(
+        `Organization with code ${command.code} already exists`,
+      );
     }
 
     // Validate parentId if provided
     let validParentId: string | undefined = command.parentId;
     if (command.parentId) {
-      const parentOrg = await this.organizationRepository.findById(command.parentId);
+      const parentOrg = await this.organizationRepository.findById(
+        command.parentId,
+      );
       if (!parentOrg) {
-        throw new NotFoundException(`Parent organization with ID ${command.parentId} not found`);
+        throw new NotFoundException(
+          `Parent organization with ID ${command.parentId} not found`,
+        );
       }
       validParentId = command.parentId;
     }
@@ -49,4 +65,3 @@ export class CreateOrganizationHandler implements ICommandHandler<CreateOrganiza
     return organization;
   }
 }
-

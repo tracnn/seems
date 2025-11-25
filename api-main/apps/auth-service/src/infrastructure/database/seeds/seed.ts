@@ -11,28 +11,28 @@ import { Logger } from '@nestjs/common';
  */
 async function seed() {
   const logger = new Logger('Auth-Seed');
-  
+
   logger.log('Starting Auth Service seed...');
-  
+
   const app = await NestFactory.createApplicationContext(AuthServiceModule);
-  
+
   try {
     const iamClient = app.get(IamClientService);
-    
+
     // Wait for IAM connection
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Check if user already exists in IAM Service
     const existingUser = await iamClient.getUserByEmail('john.doe@example.com');
-    
+
     if (existingUser) {
       logger.warn('User john.doe@example.com already exists. Skipping...');
     } else {
       logger.log('Creating test user via IAM Service...');
-      
+
       // Hash password
       const hashedPassword = await bcrypt.hash('password123', 10);
-      
+
       // Create test user via IAM Service (TCP)
       const user = await iamClient.createUser({
         username: 'john.doe',
@@ -42,13 +42,13 @@ async function seed() {
         lastName: 'Doe',
         createdBy: 'seed-script',
       });
-      
+
       logger.log(`✅ User created successfully: ${user.id}`);
       logger.log(`📧 Email: ${user.email}`);
       logger.log(`👤 Username: ${user.username}`);
       logger.log(`🔑 Password: password123`);
     }
-    
+
     logger.log('✅ Seed completed successfully!');
   } catch (error) {
     logger.error('❌ Seed failed:', error.message);

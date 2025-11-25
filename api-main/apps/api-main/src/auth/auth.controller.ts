@@ -32,26 +32,31 @@ export class AuthController {
   constructor(
     @Inject(ServiceName.AUTH_SERVICE)
     private readonly authClient: ClientProxy,
-  ) {
-  }
+  ) {}
 
   @Get('health')
   async healthCheck() {
-    return firstValueFrom(
-      this.authClient.send({ cmd: 'health' }, {}),
-    );
+    return firstValueFrom(this.authClient.send({ cmd: 'health' }, {}));
   }
 
   @Post('login')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Login' })
-  async login(@Body() loginDto: LoginDto, @Ip() ip: string, @Request() req: any) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Ip() ip: string,
+    @Request() req: any,
+  ) {
     const userAgent = req.headers['user-agent'] || 'unknown';
-    
+
     try {
-      const result = await firstValueFrom(this.authClient.send(
-        { cmd: 'login' }, { ...loginDto, ipAddress: ip, userAgent: userAgent || 'unknown' }));
-      
+      const result = await firstValueFrom(
+        this.authClient.send(
+          { cmd: 'login' },
+          { ...loginDto, ipAddress: ip, userAgent: userAgent || 'unknown' },
+        ),
+      );
+
       return result;
     } catch (error) {
       // Chuyển đổi RPC error thành RpcException để exception filter xử lý đúng
@@ -89,7 +94,7 @@ export class AuthController {
   })
   async getMe(@Request() req: any) {
     this.logger.debug(`Get user profile: ${req.user.id}`);
-    
+
     try {
       return await firstValueFrom(
         this.authClient.send({ cmd: 'get-me' }, { userId: req.user.id }),
@@ -172,12 +177,12 @@ export class AuthController {
   })
   async logout(@Request() req: any) {
     this.logger.log('LOGOUT', req.user.id);
-    
+
     try {
       const result = await firstValueFrom(
         this.authClient.send({ cmd: 'logout' }, { userId: req.user.id }),
       );
-      
+
       this.logger.log(`User logged out: ${req.user.id}`);
       return result;
     } catch (error) {
@@ -186,6 +191,4 @@ export class AuthController {
       throw convertRpcError(error);
     }
   }
-
 }
-

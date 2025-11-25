@@ -102,4 +102,3 @@ import { UserOrganizationRepository } from './typeorm/repositories/user-organiza
   ],
 })
 export class DatabaseModule {}
-

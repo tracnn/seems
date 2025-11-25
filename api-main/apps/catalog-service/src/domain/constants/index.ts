@@ -9,4 +9,3 @@ export enum CatalogStatus {
   INACTIVE = 'INACTIVE',
   DRAFT = 'DRAFT',
 }
-

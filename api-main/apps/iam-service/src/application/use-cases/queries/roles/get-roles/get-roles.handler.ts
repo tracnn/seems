@@ -15,11 +15,12 @@ export class GetRolesHandler implements IQueryHandler<GetRolesQuery> {
 
   async execute(query: GetRolesQuery): Promise<any> {
     this.logger.log('Getting roles list');
-    
+
     const result = await this.roleRepository.findAll();
-    
-    this.logger.log(`Found ${result.data.length} roles (total: ${result.total})`);
+
+    this.logger.log(
+      `Found ${result.data.length} roles (total: ${result.total})`,
+    );
     return result.data; // Return array of roles
   }
 }
-

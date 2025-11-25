@@ -8,4 +8,3 @@ export class UpdateRoleCommand {
     public readonly updatedBy?: string,
   ) {}
 }
-

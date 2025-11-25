@@ -41,7 +41,7 @@ export class UsersController {
   async createUser(@Payload() data: CreateUserDto & { createdBy?: string }) {
     try {
       this.logger.log(`Creating user: ${data.username}`);
-      
+
       const command = new CreateUserCommand(
         data.username,
         data.email,
@@ -51,7 +51,7 @@ export class UsersController {
         data.phone,
         data.createdBy || 'system',
       );
-      
+
       const user = await this.commandBus.execute(command);
       this.logger.log(`User created successfully: ${user.id}`);
       return user;
@@ -60,7 +60,8 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 400,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to create user',
+        errorDescription:
+          error.errorDescription || error.message || 'Failed to create user',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -69,16 +70,21 @@ export class UsersController {
   @MessagePattern('iam.user.findByUsernameOrEmail')
   async findByUsernameOrEmail(@Payload() data: { usernameOrEmail: string }) {
     try {
-      this.logger.log(`Finding user by username or email: ${data.usernameOrEmail}`);
+      this.logger.log(
+        `Finding user by username or email: ${data.usernameOrEmail}`,
+      );
       const query = new FindByUsernameOrEmailQuery(data.usernameOrEmail);
       const user = await this.queryBus.execute(query);
       return user;
     } catch (error) {
-      this.logger.error(`Failed to find user by username or email: ${error.message}`);
+      this.logger.error(
+        `Failed to find user by username or email: ${error.message}`,
+      );
       throw new RpcException({
         statusCode: error.status || 404,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'User not found',
+        errorDescription:
+          error.errorDescription || error.message || 'User not found',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -92,11 +98,13 @@ export class UsersController {
   async getUsers(@Payload() query: GetUsersDto) {
     try {
       // Safely extract and validate filter params
-      this.logger.log(`Getting users list, page: ${query.page}, limit: ${query.limit}`);
-      
+      this.logger.log(
+        `Getting users list, page: ${query.page}, limit: ${query.limit}`,
+      );
+
       const queryObject = new GetUsersQuery(query);
       const result = await this.queryBus.execute(queryObject);
-      
+
       this.logger.log(`Found ${result.total} users`);
       return result;
     } catch (error) {
@@ -104,7 +112,8 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 500,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to get users',
+        errorDescription:
+          error.errorDescription || error.message || 'Failed to get users',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -118,10 +127,10 @@ export class UsersController {
   async getUserById(@Payload() data: { userId: string }) {
     try {
       this.logger.log(`Getting user by ID: ${data.userId}`);
-      
+
       const query = new GetUserByIdQuery(data.userId);
       const user = await this.queryBus.execute(query);
-      
+
       this.logger.log(`User found: ${user.username}`);
       return user;
     } catch (error) {
@@ -129,7 +138,8 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 404,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'User not found',
+        errorDescription:
+          error.errorDescription || error.message || 'User not found',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -140,13 +150,24 @@ export class UsersController {
    * Pattern: iam.user.update
    */
   @MessagePattern('iam.user.update')
-  async updateUser(@Payload() data: { userId: string; updates: UpdateUserDto; updatedBy?: string }) {
+  async updateUser(
+    @Payload()
+    data: {
+      userId: string;
+      updates: UpdateUserDto;
+      updatedBy?: string;
+    },
+  ) {
     try {
       this.logger.log(`Updating user: ${data.userId}`);
-      
-      const command = new UpdateUserCommand(data.userId, data.updates, data.updatedBy || 'system');
+
+      const command = new UpdateUserCommand(
+        data.userId,
+        data.updates,
+        data.updatedBy || 'system',
+      );
       const user = await this.commandBus.execute(command);
-      
+
       this.logger.log(`User updated successfully: ${user.id}`);
       return user;
     } catch (error) {
@@ -154,7 +175,8 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 400,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to update user',
+        errorDescription:
+          error.errorDescription || error.message || 'Failed to update user',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -168,10 +190,13 @@ export class UsersController {
   async deleteUser(@Payload() data: { userId: string; deletedBy?: string }) {
     try {
       this.logger.log(`Deleting user: ${data.userId}`);
-      
-      const command = new DeleteUserCommand(data.userId, data.deletedBy || 'system');
+
+      const command = new DeleteUserCommand(
+        data.userId,
+        data.deletedBy || 'system',
+      );
       await this.commandBus.execute(command);
-      
+
       this.logger.log(`User deleted successfully: ${data.userId}`);
       return { success: true, message: 'User deleted successfully' };
     } catch (error) {
@@ -179,7 +204,8 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 400,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to delete user',
+        errorDescription:
+          error.errorDescription || error.message || 'Failed to delete user',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -190,17 +216,25 @@ export class UsersController {
    * Pattern: iam.user.assignRoles
    */
   @MessagePattern('iam.user.assignRoles')
-  async assignRoles(@Payload() data: { userId: string; roleIds: string[]; assignedBy?: string; expiresAt?: string }) {
+  async assignRoles(
+    @Payload()
+    data: {
+      userId: string;
+      roleIds: string[];
+      assignedBy?: string;
+      expiresAt?: string;
+    },
+  ) {
     try {
       this.logger.log(`Assigning roles to user: ${data.userId}`);
-      
+
       const command = new AssignRolesCommand(
         data.userId,
         data.roleIds,
         data.assignedBy || 'system',
         data.expiresAt,
       );
-      
+
       const result = await this.commandBus.execute(command);
       this.logger.log(`Roles assigned successfully to user: ${data.userId}`);
       return result;
@@ -209,7 +243,8 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 400,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to assign roles',
+        errorDescription:
+          error.errorDescription || error.message || 'Failed to assign roles',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -223,10 +258,10 @@ export class UsersController {
   async getUserPermissions(@Payload() data: { userId: string }) {
     try {
       this.logger.log(`Getting permissions for user: ${data.userId}`);
-      
+
       const query = new GetUserPermissionsQuery(data.userId);
       const permissions = await this.queryBus.execute(query);
-      
+
       this.logger.log(`Found ${permissions.length} permissions for user`);
       return permissions;
     } catch (error) {
@@ -234,7 +269,10 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 500,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to get user permissions',
+        errorDescription:
+          error.errorDescription ||
+          error.message ||
+          'Failed to get user permissions',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -245,27 +283,39 @@ export class UsersController {
    * Pattern: iam.user.assignOrganizations
    */
   @MessagePattern('iam.user.assignOrganizations')
-  async assignOrganizations(@Payload() data: { 
-    userId: string; 
-    organizations: Array<{ organizationId: string; role?: string; isPrimary?: boolean }> 
-  }) {
+  async assignOrganizations(
+    @Payload()
+    data: {
+      userId: string;
+      organizations: Array<{
+        organizationId: string;
+        role?: string;
+        isPrimary?: boolean;
+      }>;
+    },
+  ) {
     try {
       this.logger.log(`Assigning organizations to user: ${data.userId}`);
-      
+
       const command = new AssignOrganizationsCommand(
         data.userId,
         data.organizations,
       );
-      
+
       await this.commandBus.execute(command);
-      this.logger.log(`Organizations assigned successfully to user: ${data.userId}`);
+      this.logger.log(
+        `Organizations assigned successfully to user: ${data.userId}`,
+      );
       return { success: true, message: 'Organizations assigned successfully' };
     } catch (error) {
       this.logger.error(`Failed to assign organizations: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 400,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to assign organizations',
+        errorDescription:
+          error.errorDescription ||
+          error.message ||
+          'Failed to assign organizations',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -276,24 +326,31 @@ export class UsersController {
    * Pattern: iam.user.removeOrganizations
    */
   @MessagePattern('iam.user.removeOrganizations')
-  async removeOrganizations(@Payload() data: { userId: string; organizationIds: string[] }) {
+  async removeOrganizations(
+    @Payload() data: { userId: string; organizationIds: string[] },
+  ) {
     try {
       this.logger.log(`Removing organizations from user: ${data.userId}`);
-      
+
       const command = new RemoveOrganizationsCommand(
         data.userId,
         data.organizationIds,
       );
-      
+
       await this.commandBus.execute(command);
-      this.logger.log(`Organizations removed successfully from user: ${data.userId}`);
+      this.logger.log(
+        `Organizations removed successfully from user: ${data.userId}`,
+      );
       return { success: true, message: 'Organizations removed successfully' };
     } catch (error) {
       this.logger.error(`Failed to remove organizations: ${error.message}`);
       throw new RpcException({
         statusCode: error.status || 400,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to remove organizations',
+        errorDescription:
+          error.errorDescription ||
+          error.message ||
+          'Failed to remove organizations',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -307,7 +364,7 @@ export class UsersController {
   async register(@Payload() data: CreateUserDto & { createdBy?: string }) {
     try {
       this.logger.log(`Registering user: ${data.username}`);
-      
+
       const command = new CreateUserCommand(
         data.username,
         data.email,
@@ -317,10 +374,10 @@ export class UsersController {
         data.phone,
         data.createdBy || 'system',
       );
-      
+
       const user = await this.commandBus.execute(command);
       this.logger.log(`User registered successfully: ${user.id}`);
-      
+
       // Không trả về password
       const { password, ...userWithoutPassword } = user;
       return {
@@ -333,7 +390,8 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 400,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to register user',
+        errorDescription:
+          error.errorDescription || error.message || 'Failed to register user',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
@@ -344,18 +402,17 @@ export class UsersController {
    * Pattern: { cmd: 'activate-account' }
    */
   @MessagePattern({ cmd: 'activate-account' })
-  async activateAccount(@Payload() data: { userId: string; activatedBy?: string }) {
+  async activateAccount(
+    @Payload() data: { userId: string; activatedBy?: string },
+  ) {
     try {
       this.logger.log(`Activating account for user: ${data.userId}`);
-      
-      const command = new ActivateAccountCommand(
-        data.userId,
-        data.activatedBy,
-      );
-      
+
+      const command = new ActivateAccountCommand(data.userId, data.activatedBy);
+
       const user = await this.commandBus.execute(command);
       this.logger.log(`Account activated successfully: ${data.userId}`);
-      
+
       // Không trả về password
       const { password, ...userWithoutPassword } = user;
       return {
@@ -368,10 +425,12 @@ export class UsersController {
       throw new RpcException({
         statusCode: error.status || 400,
         errorCode: error.errorCode || null,
-        errorDescription: error.errorDescription || error.message || 'Failed to activate account',
+        errorDescription:
+          error.errorDescription ||
+          error.message ||
+          'Failed to activate account',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
   }
 }
-

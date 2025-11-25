@@ -5,7 +5,7 @@ import { WinstonLoggerService } from './winston-logger.service';
 /**
  * HTTP Logger Middleware
  * Ghi log tất cả HTTP requests/responses
- * 
+ *
  * Middleware này có thể được sử dụng bởi tất cả các services để log HTTP traffic
  */
 @Injectable()
@@ -71,4 +71,3 @@ export class HttpLoggerMiddleware implements NestMiddleware {
     next();
   }
 }
-

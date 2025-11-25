@@ -11,13 +11,15 @@ import { BaseException } from '../base/base.exception';
 
 /**
  * Shared RPC Exception Filter
- * 
+ *
  * Handles exceptions in TCP message patterns
  * Supports BaseException with errorCode and errorDescription for frontend i18n
  * Can be used in all microservices
  */
 @Catch()
-export class RpcExceptionFilter implements NestRpcExceptionFilter<RpcException> {
+export class RpcExceptionFilter
+  implements NestRpcExceptionFilter<RpcException>
+{
   private readonly logger = new Logger(RpcExceptionFilter.name);
 
   catch(exception: any, host: ArgumentsHost): Observable<any> {
@@ -38,12 +40,15 @@ export class RpcExceptionFilter implements NestRpcExceptionFilter<RpcException> 
       });
 
       // Trả về errorCode và errorDescription cho frontend
-      return throwError(() => new RpcException({
-        statusCode: status,
-        errorCode: exception.errorCode,
-        errorDescription: exception.errorDescription,
-        ...(exception.metadata && { metadata: exception.metadata }),
-      }));
+      return throwError(
+        () =>
+          new RpcException({
+            statusCode: status,
+            errorCode: exception.errorCode,
+            errorDescription: exception.errorDescription,
+            ...(exception.metadata && { metadata: exception.metadata }),
+          }),
+      );
     }
 
     // Handle HttpException
@@ -58,12 +63,17 @@ export class RpcExceptionFilter implements NestRpcExceptionFilter<RpcException> 
         stack: exception.stack,
       });
 
-      return throwError(() => new RpcException({
-        statusCode: status,
-        errorCode: exceptionResponse.errorCode || null,
-        errorDescription: exceptionResponse.errorDescription || null,
-        ...(exceptionResponse.metadata && { metadata: exceptionResponse.metadata }),
-      }));
+      return throwError(
+        () =>
+          new RpcException({
+            statusCode: status,
+            errorCode: exceptionResponse.errorCode || null,
+            errorDescription: exceptionResponse.errorDescription || null,
+            ...(exceptionResponse.metadata && {
+              metadata: exceptionResponse.metadata,
+            }),
+          }),
+      );
     }
 
     // Handle RpcException
@@ -82,12 +92,14 @@ export class RpcExceptionFilter implements NestRpcExceptionFilter<RpcException> 
       data,
     });
 
-    return throwError(() => new RpcException({
-      statusCode: exception.status || 500,
-      errorCode: null, // Unknown error, không có errorCode
-      errorDescription: 'An unexpected error occurred',
-      error: exception.name || 'Error',
-    }));
+    return throwError(
+      () =>
+        new RpcException({
+          statusCode: exception.status || 500,
+          errorCode: null, // Unknown error, không có errorCode
+          errorDescription: 'An unexpected error occurred',
+          error: exception.name || 'Error',
+        }),
+    );
   }
 }
-

@@ -32,7 +32,10 @@ export class UserRoleRepository implements IUserRoleRepository {
     });
   }
 
-  async findByUserAndRole(userId: string, roleId: string): Promise<UserRole | null> {
+  async findByUserAndRole(
+    userId: string,
+    roleId: string,
+  ): Promise<UserRole | null> {
     return await this.repository.findOne({
       where: { userId, roleId, deletedAt: IsNull() },
     });
@@ -56,8 +59,7 @@ export class UserRoleRepository implements IUserRoleRepository {
   }
 
   async bulkAssignRoles(userRoles: Partial<UserRole>[]): Promise<UserRole[]> {
-    const entities = userRoles.map(ur => this.repository.create(ur));
+    const entities = userRoles.map((ur) => this.repository.create(ur));
     return await this.repository.save(entities);
   }
 }
-

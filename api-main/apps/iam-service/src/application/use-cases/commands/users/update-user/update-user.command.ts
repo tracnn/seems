@@ -7,4 +7,3 @@ export class UpdateUserCommand {
     public readonly updatedBy: string,
   ) {}
 }
-

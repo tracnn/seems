@@ -9,4 +9,3 @@ export class UpdatePermissionCommand {
     public readonly updatedBy?: string,
   ) {}
 }
-

@@ -6,4 +6,3 @@ export class AssignRolesCommand {
     public readonly expiresAt?: string,
   ) {}
 }
-

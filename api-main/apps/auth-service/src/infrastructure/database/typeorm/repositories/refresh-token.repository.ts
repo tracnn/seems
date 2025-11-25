@@ -49,4 +49,3 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
     });
   }
 }
-

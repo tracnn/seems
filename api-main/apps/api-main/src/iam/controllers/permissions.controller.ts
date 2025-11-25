@@ -11,7 +11,13 @@ import {
   Request,
   Logger,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { IamClientService } from '../clients/iam-client.service';
@@ -22,22 +28,37 @@ class CreatePermissionDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: 'PATIENT_CREATE', description: 'Permission code (unique)' })
+  @ApiProperty({
+    example: 'PATIENT_CREATE',
+    description: 'Permission code (unique)',
+  })
   @IsString()
   @IsNotEmpty()
   code: string;
 
-  @ApiProperty({ example: 'patient', description: 'Resource name', required: false })
+  @ApiProperty({
+    example: 'patient',
+    description: 'Resource name',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   resource?: string;
 
-  @ApiProperty({ example: 'create', description: 'Action name', required: false })
+  @ApiProperty({
+    example: 'create',
+    description: 'Action name',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   action?: string;
 
-  @ApiProperty({ example: 'Permission to create patient records', description: 'Description', required: false })
+  @ApiProperty({
+    example: 'Permission to create patient records',
+    description: 'Description',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   description?: string;
@@ -88,9 +109,12 @@ export class PermissionsController {
   @ApiResponse({ status: 201, description: 'Permission created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request - validation failed' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async createPermission(@Body() dto: CreatePermissionDto, @Request() req: any) {
+  async createPermission(
+    @Body() dto: CreatePermissionDto,
+    @Request() req: any,
+  ) {
     this.logger.log(`HTTP → Creating permission: ${dto.name}`);
-    
+
     const currentUser = req.user;
     return await this.iamClient.createPermission({
       ...dto,
@@ -137,7 +161,7 @@ export class PermissionsController {
     @Request() req: any,
   ) {
     this.logger.log(`HTTP → Updating permission: ${id}`);
-    
+
     const currentUser = req.user;
     return await this.iamClient.updatePermission(id, {
       ...dto,
@@ -154,8 +178,11 @@ export class PermissionsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async deletePermission(@Param('id') id: string, @Request() req: any) {
     this.logger.log(`HTTP → Deleting permission: ${id}`);
-    
+
     const currentUser = req.user;
-    return await this.iamClient.deletePermission(id, currentUser?.id || 'api-gateway');
+    return await this.iamClient.deletePermission(
+      id,
+      currentUser?.id || 'api-gateway',
+    );
   }
 }

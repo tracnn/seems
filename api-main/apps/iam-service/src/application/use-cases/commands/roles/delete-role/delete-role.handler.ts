@@ -23,8 +23,7 @@ export class DeleteRoleHandler implements ICommandHandler<DeleteRoleCommand> {
     }
 
     await this.roleRepository.softDelete(command.roleId, command.deletedBy);
-    
+
     this.logger.log(`Role soft deleted successfully: ${command.roleId}`);
   }
 }
-

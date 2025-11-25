@@ -24,7 +24,12 @@ export class UserRepository implements IUserRepository {
   async findByIdWithPermissions(id: string): Promise<User | null> {
     return await this.repository.findOne({
       where: { id, deletedAt: IsNull() },
-      relations: ['userRoles', 'userRoles.role', 'userRoles.role.rolePermissions', 'userRoles.role.rolePermissions.permission'],
+      relations: [
+        'userRoles',
+        'userRoles.role',
+        'userRoles.role.rolePermissions',
+        'userRoles.role.rolePermissions.permission',
+      ],
     });
   }
 
@@ -44,7 +49,10 @@ export class UserRepository implements IUserRepository {
     return await this.repository
       .createQueryBuilder('user')
       .where('user.deletedAt IS NULL')
-      .andWhere('(user.username = :usernameOrEmail OR user.email = :usernameOrEmail)', { usernameOrEmail })
+      .andWhere(
+        '(user.username = :usernameOrEmail OR user.email = :usernameOrEmail)',
+        { usernameOrEmail },
+      )
       .getOne();
   }
 
@@ -140,13 +148,14 @@ export class UserRepository implements IUserRepository {
   }
 
   async updateLastLogin(id: string): Promise<void> {
-    await this.repository.update(
-      { id },
-      { lastLoginAt: new Date() },
-    );
+    await this.repository.update({ id }, { lastLoginAt: new Date() });
   }
 
-  async updatePassword(id: string, hashedPassword: string, updatedBy: string): Promise<void> {
+  async updatePassword(
+    id: string,
+    hashedPassword: string,
+    updatedBy: string,
+  ): Promise<void> {
     await this.repository.update(
       { id },
       {
@@ -157,4 +166,3 @@ export class UserRepository implements IUserRepository {
     );
   }
 }
-

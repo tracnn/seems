@@ -4,4 +4,3 @@ export class RemovePermissionsCommand {
     public readonly permissionIds: string[],
   ) {}
 }
-

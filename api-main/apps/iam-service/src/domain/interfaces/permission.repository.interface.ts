@@ -19,4 +19,3 @@ export interface IPermissionRepository {
   findByCodes(codes: string[]): Promise<Permission[]>;
   bulkCreate(permissions: Partial<Permission>[]): Promise<Permission[]>;
 }
-

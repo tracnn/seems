@@ -37,7 +37,7 @@ export class RolesController {
   async createRole(@Payload() data: CreateRoleDto & { createdBy?: string }) {
     try {
       this.logger.log(`Creating role: ${data.name}`);
-      
+
       const command = new CreateRoleCommand(
         data.name,
         data.code,
@@ -45,7 +45,7 @@ export class RolesController {
         data.level,
         data.createdBy || 'system',
       );
-      
+
       const role = await this.commandBus.execute(command);
       this.logger.log(`Role created successfully: ${role.id}`);
       return role;
@@ -66,10 +66,10 @@ export class RolesController {
   async getRoles(@Payload() filters?: any) {
     try {
       this.logger.log(`Getting roles list`);
-      
+
       const query = new GetRolesQuery(filters || {});
       const result = await this.queryBus.execute(query);
-      
+
       this.logger.log(`Found ${result.length || result.total || 0} roles`);
       return result;
     } catch (error) {
@@ -89,10 +89,10 @@ export class RolesController {
   async getRoleById(@Payload() data: { roleId: string }) {
     try {
       this.logger.log(`Getting role by ID: ${data.roleId}`);
-      
+
       const query = new GetRoleByIdQuery(data.roleId);
       const role = await this.queryBus.execute(query);
-      
+
       this.logger.log(`Role found: ${role.name}`);
       return role;
     } catch (error) {
@@ -112,7 +112,7 @@ export class RolesController {
   async updateRole(@Payload() data: any) {
     try {
       this.logger.log(`Updating role: ${data.roleId}`);
-      
+
       const command = new UpdateRoleCommand(
         data.roleId,
         data.name,
@@ -121,7 +121,7 @@ export class RolesController {
         data.level,
         data.updatedBy || 'system',
       );
-      
+
       const role = await this.commandBus.execute(command);
       this.logger.log(`Role updated successfully: ${role.id}`);
       return role;
@@ -142,12 +142,12 @@ export class RolesController {
   async deleteRole(@Payload() data: { roleId: string; deletedBy?: string }) {
     try {
       this.logger.log(`Deleting role: ${data.roleId}`);
-      
+
       const command = new DeleteRoleCommand(
         data.roleId,
         data.deletedBy || 'system',
       );
-      
+
       await this.commandBus.execute(command);
       this.logger.log(`Role deleted successfully: ${data.roleId}`);
       return { success: true, message: 'Role deleted successfully' };
@@ -165,18 +165,27 @@ export class RolesController {
    * Pattern: iam.role.assignPermissions
    */
   @MessagePattern('iam.role.assignPermissions')
-  async assignPermissions(@Payload() data: { roleId: string; permissionIds: string[]; assignedBy?: string }) {
+  async assignPermissions(
+    @Payload()
+    data: {
+      roleId: string;
+      permissionIds: string[];
+      assignedBy?: string;
+    },
+  ) {
     try {
       this.logger.log(`Assigning permissions to role: ${data.roleId}`);
-      
+
       const command = new AssignPermissionsCommand(
         data.roleId,
         data.permissionIds,
         data.assignedBy || 'system',
       );
-      
+
       await this.commandBus.execute(command);
-      this.logger.log(`Permissions assigned successfully to role: ${data.roleId}`);
+      this.logger.log(
+        `Permissions assigned successfully to role: ${data.roleId}`,
+      );
       return { success: true, message: 'Permissions assigned successfully' };
     } catch (error) {
       this.logger.error(`Failed to assign permissions: ${error.message}`);
@@ -192,17 +201,21 @@ export class RolesController {
    * Pattern: iam.role.removePermissions
    */
   @MessagePattern('iam.role.removePermissions')
-  async removePermissions(@Payload() data: { roleId: string; permissionIds: string[] }) {
+  async removePermissions(
+    @Payload() data: { roleId: string; permissionIds: string[] },
+  ) {
     try {
       this.logger.log(`Removing permissions from role: ${data.roleId}`);
-      
+
       const command = new RemovePermissionsCommand(
         data.roleId,
         data.permissionIds,
       );
-      
+
       await this.commandBus.execute(command);
-      this.logger.log(`Permissions removed successfully from role: ${data.roleId}`);
+      this.logger.log(
+        `Permissions removed successfully from role: ${data.roleId}`,
+      );
       return { success: true, message: 'Permissions removed successfully' };
     } catch (error) {
       this.logger.error(`Failed to remove permissions: ${error.message}`);
@@ -213,4 +226,3 @@ export class RolesController {
     }
   }
 }
-

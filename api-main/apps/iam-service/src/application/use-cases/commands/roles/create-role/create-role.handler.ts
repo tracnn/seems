@@ -38,4 +38,3 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand> {
     return role;
   }
 }
-

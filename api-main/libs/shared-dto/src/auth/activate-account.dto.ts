@@ -23,4 +23,3 @@ export class ActivateAccountDto {
   @IsString()
   activatedBy?: string;
 }
-

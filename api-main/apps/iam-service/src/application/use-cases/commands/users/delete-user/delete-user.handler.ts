@@ -25,4 +25,3 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
     this.logger.log(`User deleted successfully: ${command.id}`);
   }
 }
-

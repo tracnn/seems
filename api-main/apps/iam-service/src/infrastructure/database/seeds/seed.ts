@@ -20,11 +20,22 @@ async function seed() {
   const dataSource = new DataSource({
     type: 'oracle',
     host: process.env.DB_IAM_HOST || process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_IAM_PORT || process.env.DB_PORT || '1521', 10),
+    port: parseInt(
+      process.env.DB_IAM_PORT || process.env.DB_PORT || '1521',
+      10,
+    ),
     username: process.env.DB_IAM_USERNAME || process.env.DB_USERNAME || '',
     password: process.env.DB_IAM_PASSWORD || process.env.DB_PASSWORD || '',
-    serviceName: process.env.DB_IAM_SERVICE_NAME || process.env.DB_SERVICE_NAME || 'XE',
-    entities: [Permission, Role, RolePermission, User, UserRole, UserOrganization],
+    serviceName:
+      process.env.DB_IAM_SERVICE_NAME || process.env.DB_SERVICE_NAME || 'XE',
+    entities: [
+      Permission,
+      Role,
+      RolePermission,
+      User,
+      UserRole,
+      UserOrganization,
+    ],
     synchronize: false,
   });
 
@@ -138,13 +149,15 @@ async function seed() {
           });
           await rolePermissionRepo.save(rolePermission);
         }
-        console.log(`  ✓ Assigned ${roleData.permissions.length} permissions to ${roleData.code}`);
+        console.log(
+          `  ✓ Assigned ${roleData.permissions.length} permissions to ${roleData.code}`,
+        );
       }
     }
 
     // 4. Create Super Admin User
     console.log('👤 Creating super admin user...');
-    
+
     const existingAdmin = await userRepo.findOne({
       where: { username: 'admin' },
     });
@@ -174,7 +187,9 @@ async function seed() {
           isActive: true,
         });
         await userRoleRepo.save(userRole);
-        console.log('  ✓ Created super admin user (username: admin, password: Admin@123)');
+        console.log(
+          '  ✓ Created super admin user (username: admin, password: Admin@123)',
+        );
       }
     } else {
       console.log('  ○ Admin user already exists');
@@ -184,11 +199,12 @@ async function seed() {
     console.log('\n📊 Summary:');
     console.log(`  - Permissions: ${permissionMap.size}`);
     console.log(`  - Roles: ${roleMap.size}`);
-    console.log(`  - Super Admin: ${existingAdmin ? 'Already exists' : 'Created'}`);
+    console.log(
+      `  - Super Admin: ${existingAdmin ? 'Already exists' : 'Created'}`,
+    );
     console.log('\n🔐 Login credentials:');
     console.log('  Username: admin');
     console.log('  Password: Admin@123');
-
   } catch (error) {
     console.error('❌ Seed failed:', error);
     throw error;
@@ -198,4 +214,3 @@ async function seed() {
 }
 
 seed().catch(console.error);
-

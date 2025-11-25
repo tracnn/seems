@@ -30,4 +30,3 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
     return updatedUser;
   }
 }
-

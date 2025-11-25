@@ -90,10 +90,9 @@ export class Organization extends BaseEntity {
   @JoinColumn({ name: 'PARENT_ID' })
   parent: Organization;
 
-  @OneToMany(() => Organization, org => org.parent)
+  @OneToMany(() => Organization, (org) => org.parent)
   children: Organization[];
 
-  @OneToMany(() => UserOrganization, userOrg => userOrg.organization)
+  @OneToMany(() => UserOrganization, (userOrg) => userOrg.organization)
   userOrganizations: UserOrganization[];
 }
-

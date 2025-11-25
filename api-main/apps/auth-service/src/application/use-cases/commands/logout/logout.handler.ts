@@ -17,4 +17,3 @@ export class LogoutHandler implements ICommandHandler<LogoutCommand> {
     await this.refreshTokenRepository.revokeAllByUserId(userId);
   }
 }
-

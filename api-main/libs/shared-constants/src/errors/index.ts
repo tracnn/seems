@@ -1,9 +1,16 @@
 /**
  * Errors Index
- * 
- * Deprecated: Mỗi service giờ tự quản lý errors.json riêng
- * File này chỉ giữ lại để tương thích với code cũ
+ *
+ * Tất cả error definitions được lưu trong shared-constants
+ * Mỗi service có 1 file errors.json riêng:
+ * - auth-service.errors.json
+ * - api-main.errors.json
+ * - iam-service.errors.json
+ * - catalog-service.errors.json
+ *
+ * ErrorService trong mỗi service sẽ load file tương ứng từ đây
  */
 
-// Không còn export ErrorCode enum
-// Mỗi service dùng string literal: 'AUTH_SERVICE.0001', 'IAM_SERVICE.0001', etc.
+// Export error code constants
+export * from './auth-service.error-codes';
+export * from './api-main.error-codes';

@@ -1,4 +1,9 @@
-import { Module, NestModule, MiddlewareConsumer, OnModuleInit } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';

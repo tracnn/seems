@@ -8,4 +8,3 @@ export class CreatePermissionCommand {
     public readonly createdBy?: string,
   ) {}
 }
-

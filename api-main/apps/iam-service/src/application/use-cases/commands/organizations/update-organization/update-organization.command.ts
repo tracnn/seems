@@ -13,4 +13,3 @@ export class UpdateOrganizationCommand {
     public readonly updatedBy?: string,
   ) {}
 }
-

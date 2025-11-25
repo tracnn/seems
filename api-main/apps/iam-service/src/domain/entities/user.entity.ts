@@ -71,10 +71,9 @@ export class User extends BaseEntity {
   lastLoginAt: Date;
 
   // Relationships
-  @OneToMany(() => UserRole, userRole => userRole.user)
+  @OneToMany(() => UserRole, (userRole) => userRole.user)
   userRoles: UserRole[];
 
-  @OneToMany(() => UserOrganization, userOrg => userOrg.user)
+  @OneToMany(() => UserOrganization, (userOrg) => userOrg.user)
   userOrganizations: UserOrganization[];
 }
-

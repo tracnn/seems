@@ -4,4 +4,3 @@ export class ActivateAccountCommand {
     public readonly activatedBy?: string, // ID của admin thực hiện hành động (optional)
   ) {}
 }
-

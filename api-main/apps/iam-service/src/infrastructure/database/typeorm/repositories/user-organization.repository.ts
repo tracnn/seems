@@ -26,7 +26,9 @@ export class UserOrganizationRepository implements IUserOrganizationRepository {
     });
   }
 
-  async findByOrganizationId(organizationId: string): Promise<UserOrganization[]> {
+  async findByOrganizationId(
+    organizationId: string,
+  ): Promise<UserOrganization[]> {
     return await this.repository.find({
       where: { organizationId, deletedAt: IsNull() },
       relations: ['user'],
@@ -34,20 +36,27 @@ export class UserOrganizationRepository implements IUserOrganizationRepository {
     });
   }
 
-  async findByUserAndOrganization(userId: string, organizationId: string): Promise<UserOrganization | null> {
+  async findByUserAndOrganization(
+    userId: string,
+    organizationId: string,
+  ): Promise<UserOrganization | null> {
     return await this.repository.findOne({
       where: { userId, organizationId, deletedAt: IsNull() },
     });
   }
 
-  async findPrimaryOrganization(userId: string): Promise<UserOrganization | null> {
+  async findPrimaryOrganization(
+    userId: string,
+  ): Promise<UserOrganization | null> {
     return await this.repository.findOne({
       where: { userId, isPrimary: true, deletedAt: IsNull() },
       relations: ['organization'],
     });
   }
 
-  async assignUserToOrganization(userOrganization: Partial<UserOrganization>): Promise<UserOrganization> {
+  async assignUserToOrganization(
+    userOrganization: Partial<UserOrganization>,
+  ): Promise<UserOrganization> {
     const newUserOrg = this.repository.create(userOrganization);
     return await this.repository.save(newUserOrg);
   }
@@ -56,7 +65,10 @@ export class UserOrganizationRepository implements IUserOrganizationRepository {
     await this.repository.delete({ id });
   }
 
-  async removeByUserAndOrganization(userId: string, organizationId: string): Promise<void> {
+  async removeByUserAndOrganization(
+    userId: string,
+    organizationId: string,
+  ): Promise<void> {
     await this.repository.delete({ userId, organizationId });
   }
 
@@ -64,12 +76,12 @@ export class UserOrganizationRepository implements IUserOrganizationRepository {
     await this.repository.delete({ userId });
   }
 
-  async setPrimaryOrganization(userId: string, organizationId: string): Promise<void> {
+  async setPrimaryOrganization(
+    userId: string,
+    organizationId: string,
+  ): Promise<void> {
     // Remove primary flag from all user's organizations
-    await this.repository.update(
-      { userId },
-      { isPrimary: false },
-    );
+    await this.repository.update({ userId }, { isPrimary: false });
 
     // Set new primary organization
     await this.repository.update(
@@ -78,8 +90,10 @@ export class UserOrganizationRepository implements IUserOrganizationRepository {
     );
   }
 
-  async bulkAssignUsersToOrganization(userOrganizations: Partial<UserOrganization>[]): Promise<UserOrganization[]> {
-    const entities = userOrganizations.map(uo => this.repository.create(uo));
+  async bulkAssignUsersToOrganization(
+    userOrganizations: Partial<UserOrganization>[],
+  ): Promise<UserOrganization[]> {
+    const entities = userOrganizations.map((uo) => this.repository.create(uo));
     return await this.repository.save(entities);
   }
 
@@ -89,11 +103,12 @@ export class UserOrganizationRepository implements IUserOrganizationRepository {
       .where('userOrg.userId = :userId', { userId })
       .andWhere('userOrg.deletedAt IS NULL')
       .andWhere('userOrg.isActive = :isActive', { isActive: true })
-      .andWhere('(userOrg.leftAt IS NULL OR userOrg.leftAt > :now)', { now: new Date() })
+      .andWhere('(userOrg.leftAt IS NULL OR userOrg.leftAt > :now)', {
+        now: new Date(),
+      })
       .leftJoinAndSelect('userOrg.organization', 'organization')
       .orderBy('userOrg.isPrimary', 'DESC')
       .addOrderBy('userOrg.joinedAt', 'DESC')
       .getMany();
   }
 }
-

@@ -6,7 +6,8 @@ import { RefreshTokenRepository } from '../../../../infrastructure/database/type
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthResponseDto } from '@app/shared-dto';
-import { BaseException } from '@app/shared-exceptions';
+import { BaseException, ErrorService } from '@app/shared-exceptions';
+import { AuthServiceErrorCodes } from '@app/shared-constants';
 
 @Injectable()
 @CommandHandler(RefreshTokenCommand)
@@ -14,6 +15,7 @@ export class RefreshTokenHandler
   implements ICommandHandler<RefreshTokenCommand>
 {
   constructor(
+    private readonly errorService: ErrorService,
     private readonly iamClient: IamClientService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly jwtService: JwtService,
@@ -28,17 +30,17 @@ export class RefreshTokenHandler
       await this.refreshTokenRepository.findByToken(refreshToken);
 
     if (!storedToken) {
-      throw BaseException.fromErrorCode('AUTH_SERVICE.0008');
+      this.errorService.throw(AuthServiceErrorCodes.REFRESH_TOKEN_NOT_FOUND);
     }
 
     // Kiểm tra token đã bị revoke chưa
     if (storedToken.isRevoked) {
-      throw BaseException.fromErrorCode('AUTH_SERVICE.0009');
+      this.errorService.throw(AuthServiceErrorCodes.REFRESH_TOKEN_REVOKED);
     }
 
     // Kiểm tra token đã hết hạn chưa
     if (new Date() > storedToken.expiresAt) {
-      throw BaseException.fromErrorCode('AUTH_SERVICE.0010');
+      this.errorService.throw(AuthServiceErrorCodes.REFRESH_TOKEN_EXPIRED);
     }
 
     // Verify JWT token
@@ -50,7 +52,7 @@ export class RefreshTokenHandler
       // Lấy thông tin user từ IAM Service
       const user = await this.iamClient.getUserById(payload.sub);
       if (!user || !user.isActive) {
-        throw BaseException.fromErrorCode('AUTH_SERVICE.0002');
+        this.errorService.throw(AuthServiceErrorCodes.USER_NOT_FOUND);
       }
 
       // Thu hồi refresh token cũ
@@ -64,12 +66,17 @@ export class RefreshTokenHandler
       };
       const newAccessToken = this.jwtService.sign(newPayload);
 
-      const expiresInRefreshToken = Number(this.configService.get<number>('REFRESH_TOKEN_EXPIRES_IN')) || 7 * 24 * 60 * 60 * 1000;
-      const expiresIn = Number(this.configService.get<number>('JWT_EXPIRES_IN')) || 3600;
+      const expiresInRefreshToken =
+        Number(this.configService.get<number>('REFRESH_TOKEN_EXPIRES_IN')) ||
+        7 * 24 * 60 * 60 * 1000;
+      const expiresIn =
+        Number(this.configService.get<number>('JWT_EXPIRES_IN')) || 3600;
 
       // Tạo refresh token mới
       const newRefreshToken = this.jwtService.sign(newPayload, {
-        secret: this.configService.get<string>('REFRESH_TOKEN_SECRET') || 'refresh-token-secret',
+        secret:
+          this.configService.get<string>('REFRESH_TOKEN_SECRET') ||
+          'refresh-token-secret',
         expiresIn: expiresInRefreshToken,
       });
 
@@ -101,9 +108,8 @@ export class RefreshTokenHandler
       if (error instanceof BaseException) {
         throw error;
       }
-      
-      throw BaseException.fromErrorCode('AUTH_SERVICE.0006');
+
+      this.errorService.throw(AuthServiceErrorCodes.INVALID_TOKEN);
     }
   }
 }
-

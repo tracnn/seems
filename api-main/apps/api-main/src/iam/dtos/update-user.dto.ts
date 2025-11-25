@@ -17,14 +17,19 @@ export class UpdateUserDto {
   @IsString()
   phone?: string;
 
-  @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg', description: 'Avatar URL' })
+  @ApiPropertyOptional({
+    example: 'https://example.com/avatar.jpg',
+    description: 'Avatar URL',
+  })
   @IsOptional()
   @IsString()
   avatarUrl?: string;
 
-  @ApiPropertyOptional({ example: 'john.updated@example.com', description: 'Email address' })
+  @ApiPropertyOptional({
+    example: 'john.updated@example.com',
+    description: 'Email address',
+  })
   @IsOptional()
   @IsEmail()
   email?: string;
 }
-

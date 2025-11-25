@@ -7,6 +7,7 @@ import { ServiceName } from '@app/shared-constants';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from '@app/shared-guards';
+import { ErrorService } from '@app/shared-exceptions';
 
 @Module({
   imports: [
@@ -19,9 +20,11 @@ import { JwtAuthGuard } from '@app/shared-guards';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService): JwtModuleOptions => ({
         secret:
-          configService.get<string>('JWT_SECRET') ?? 'your-default-secret-key-change-this',
+          configService.get<string>('JWT_SECRET') ??
+          'your-default-secret-key-change-this',
         signOptions: {
-          expiresIn: Number(configService.get<number>('JWT_EXPIRES_IN')) ?? 15 * 60,
+          expiresIn:
+            Number(configService.get<number>('JWT_EXPIRES_IN')) ?? 15 * 60,
         },
       }),
       inject: [ConfigService],
@@ -38,8 +41,14 @@ import { JwtAuthGuard } from '@app/shared-guards';
     ]),
   ],
   controllers: [AuthController],
-  providers: [JwtStrategy, JwtAuthGuard],
+  providers: [
+    {
+      provide: ErrorService,
+      useFactory: () => new ErrorService('api-main'),
+    },
+    JwtStrategy,
+    JwtAuthGuard,
+  ],
   exports: [JwtStrategy, JwtAuthGuard, PassportModule],
 })
 export class AuthModule {}
-

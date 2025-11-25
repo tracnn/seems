@@ -4,4 +4,3 @@ export class DeleteUserCommand {
     public readonly deletedBy: string,
   ) {}
 }
-

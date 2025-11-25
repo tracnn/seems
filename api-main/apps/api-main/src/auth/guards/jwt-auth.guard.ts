@@ -1,11 +1,11 @@
-import { 
-  Injectable, 
-  ExecutionContext,
-  Logger
-} from '@nestjs/common';
+import { Injectable, ExecutionContext, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { BaseException } from '@app/shared-exceptions';
+import { BaseException, ErrorService } from '@app/shared-exceptions';
+import {
+  AuthServiceErrorCodes,
+  AuthServiceErrorCode,
+} from '@app/shared-constants';
 
 /**
  * JWT Authentication Guard
@@ -15,7 +15,10 @@ import { BaseException } from '@app/shared-exceptions';
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   private readonly logger = new Logger(JwtAuthGuard.name);
-  constructor(private reflector: Reflector) {
+  constructor(
+    private readonly errorService: ErrorService,
+    private reflector: Reflector,
+  ) {
     super();
   }
 
@@ -24,7 +27,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * Skip authentication nếu endpoint được đánh dấu @Public()
    */
   canActivate(context: ExecutionContext) {
-    // Kiểm tra decorator @Public() 
+    // Kiểm tra decorator @Public()
     const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
       context.getHandler(),
       context.getClass(),
@@ -49,33 +52,32 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       if (err instanceof BaseException) {
         throw err;
       }
-      
+
       // Xác định loại lỗi cụ thể
-      let errorCode = 'AUTH_SERVICE.0006'; // Default: Invalid token
-      
+      let errorCode: AuthServiceErrorCode =
+        AuthServiceErrorCodes.INVALID_TOKEN; // Default: Invalid token
+
       // Kiểm tra loại lỗi từ passport
       if (info) {
         if (info.name === 'TokenExpiredError') {
           this.logger.error('Token expired', { info });
-          errorCode = 'AUTH_SERVICE.0007';
+          errorCode = AuthServiceErrorCodes.TOKEN_EXPIRED;
         } else if (info.name === 'JsonWebTokenError') {
           this.logger.error('Invalid token', { info });
-          errorCode = 'AUTH_SERVICE.0006';
+          errorCode = AuthServiceErrorCodes.INVALID_TOKEN;
         } else if (info.message === 'No auth token') {
           this.logger.error('No authentication token', { info });
-          errorCode = 'AUTH_SERVICE.0006';
+          errorCode = AuthServiceErrorCodes.INVALID_TOKEN;
         }
       }
 
       this.logger.error('JWT authentication error', { errorCode, info });
-      
+
       // Tạo BaseException với errorCode
-      throw BaseException.fromErrorCode(
-        errorCode,
-        { info: info?.message || info },
-      );
+      throw this.errorService.createException(errorCode, {
+        info: info?.message || info,
+      });
     }
     return user;
   }
 }
-

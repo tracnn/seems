@@ -4,7 +4,11 @@
  * Tests all IAM Service functionality via TCP
  */
 
-import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import * as dotenv from 'dotenv';
 
@@ -51,7 +55,10 @@ async function test(
 
     if (expectedSuccess) {
       console.log(`   ✅ PASS`);
-      console.log(`   Result:`, JSON.stringify(result, null, 2).substring(0, 200));
+      console.log(
+        `   Result:`,
+        JSON.stringify(result, null, 2).substring(0, 200),
+      );
       return result;
     } else {
       console.log(`   ❌ FAIL: Expected error but got success`);
@@ -89,7 +96,10 @@ async function runTests() {
     console.log('='.repeat(80));
 
     // Test 1: Get roles list
-    const rolesList = await test('Get roles list', 'iam.role.list', { page: 1, limit: 10 });
+    const rolesList = await test('Get roles list', 'iam.role.list', {
+      page: 1,
+      limit: 10,
+    });
 
     // Test 2: Create new role
     const newRole = await test('Create new role', 'iam.role.create', {
@@ -105,7 +115,9 @@ async function runTests() {
       console.log(`   📌 Created role ID: ${createdRoleId}`);
 
       // Test 3: Get role by ID
-      await test('Get role by ID', 'iam.role.findById', { roleId: createdRoleId });
+      await test('Get role by ID', 'iam.role.findById', {
+        roleId: createdRoleId,
+      });
     }
 
     // ================================================================
@@ -137,7 +149,9 @@ async function runTests() {
       console.log(`   📌 Created user ID: ${createdUserId}`);
 
       // Test 6: Get user by ID
-      await test('Get user by ID', 'iam.user.findById', { userId: createdUserId });
+      await test('Get user by ID', 'iam.user.findById', {
+        userId: createdUserId,
+      });
 
       // Test 7: Update user
       await test('Update user', 'iam.user.update', {
@@ -175,10 +189,14 @@ async function runTests() {
     console.log('='.repeat(80));
 
     // Test 11: Get permissions list
-    const permissionsList = await test('Get permissions list', 'iam.permission.list', {
-      page: 1,
-      limit: 10,
-    });
+    const permissionsList = await test(
+      'Get permissions list',
+      'iam.permission.list',
+      {
+        page: 1,
+        limit: 10,
+      },
+    );
 
     if (permissionsList && permissionsList.length > 0) {
       const firstPermission = permissionsList[0];
@@ -196,10 +214,14 @@ async function runTests() {
     console.log('='.repeat(80));
 
     // Test 13: Get organizations list
-    const orgsList = await test('Get organizations list', 'iam.organization.list', {
-      page: 1,
-      limit: 10,
-    });
+    const orgsList = await test(
+      'Get organizations list',
+      'iam.organization.list',
+      {
+        page: 1,
+        limit: 10,
+      },
+    );
 
     if (orgsList && orgsList.length > 0) {
       const firstOrg = orgsList[0];
@@ -281,4 +303,3 @@ runTests().catch((error) => {
   console.error('Fatal error:', error);
   process.exit(1);
 });
-

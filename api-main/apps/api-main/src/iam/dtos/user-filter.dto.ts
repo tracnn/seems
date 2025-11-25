@@ -1,5 +1,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsNumber, IsString, IsEnum, IsBoolean, Min, Max } from 'class-validator';
+import {
+  IsOptional,
+  IsNumber,
+  IsString,
+  IsEnum,
+  IsBoolean,
+  Min,
+  Max,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class UserFilterDto {
@@ -10,7 +18,11 @@ export class UserFilterDto {
   @Min(1)
   page?: number = 1;
 
-  @ApiPropertyOptional({ example: 10, description: 'Items per page', default: 10 })
+  @ApiPropertyOptional({
+    example: 10,
+    description: 'Items per page',
+    default: 10,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
@@ -23,20 +35,29 @@ export class UserFilterDto {
   @IsString()
   sortBy?: string = 'createdAt';
 
-  @ApiPropertyOptional({ example: 'DESC', enum: ['ASC', 'DESC'], description: 'Sort order' })
+  @ApiPropertyOptional({
+    example: 'DESC',
+    enum: ['ASC', 'DESC'],
+    description: 'Sort order',
+  })
   @IsOptional()
   @IsEnum(['ASC', 'DESC'])
   sortOrder?: 'ASC' | 'DESC' = 'DESC';
 
-  @ApiPropertyOptional({ example: 'john', description: 'Search by username or email' })
+  @ApiPropertyOptional({
+    example: 'john',
+    description: 'Search by username or email',
+  })
   @IsOptional()
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ example: true, description: 'Filter by active status' })
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Filter by active status',
+  })
   @IsOptional()
   @Type(() => Boolean)
   @IsBoolean()
   isActive?: boolean;
 }
-

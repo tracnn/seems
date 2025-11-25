@@ -13,7 +13,12 @@ import {
   Request,
   Logger,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { IamClientService } from '../clients/iam-client.service';
 import { CreateUserDto } from '../dtos/create-user.dto';
@@ -63,10 +68,10 @@ export class UsersController {
   })
   async register(@Body() registerDto: RegisterDto) {
     this.logger.log(`Registration attempt for email: ${registerDto.email}`);
-    
+
     try {
       const result = await this.iamClient.register(registerDto);
-      
+
       this.logger.log(`User registered successfully: ${registerDto.email}`);
       return result;
     } catch (error) {
@@ -106,7 +111,7 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async createUser(@Body() dto: CreateUserDto, @Request() req: any) {
     this.logger.log(`HTTP → Creating user: ${dto.username}`);
-    
+
     const currentUser = req.user;
     return await this.iamClient.createUser({
       ...dto,
@@ -119,7 +124,9 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get users list with pagination' })
   async getUsers(@Query() query: GetUsersDto) {
-    this.logger.log(`HTTP → Getting users list, page: ${query.page}, limit: ${query.limit}`);
+    this.logger.log(
+      `HTTP → Getting users list, page: ${query.page}, limit: ${query.limit}`,
+    );
     return await this.iamClient.getUsers(query);
   }
 
@@ -148,9 +155,13 @@ export class UsersController {
     @Request() req: any,
   ) {
     this.logger.log(`HTTP → Updating user: ${id}`);
-    
+
     const currentUser = req.user;
-    return await this.iamClient.updateUser(id, dto, currentUser?.id || 'api-gateway');
+    return await this.iamClient.updateUser(
+      id,
+      dto,
+      currentUser?.id || 'api-gateway',
+    );
   }
 
   @Delete(':id')
@@ -163,9 +174,12 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async deleteUser(@Param('id') id: string, @Request() req: any) {
     this.logger.log(`HTTP → Deleting user: ${id}`);
-    
+
     const currentUser = req.user;
-    return await this.iamClient.deleteUser(id, currentUser?.id || 'api-gateway');
+    return await this.iamClient.deleteUser(
+      id,
+      currentUser?.id || 'api-gateway',
+    );
   }
 
   @Post(':id/roles')
@@ -181,7 +195,7 @@ export class UsersController {
     @Request() req: any,
   ) {
     this.logger.log(`HTTP → Assigning roles to user: ${userId}`);
-    
+
     const currentUser = req.user;
     return await this.iamClient.assignRoles({
       userId,
@@ -207,24 +221,35 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Assign organizations to user' })
-  @ApiResponse({ status: 200, description: 'Organizations assigned successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Organizations assigned successfully',
+  })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async assignOrganizations(@Param('id') userId: string, @Body() dto: any) {
     this.logger.log(`HTTP → Assigning organizations to user: ${userId}`);
-    return await this.iamClient.assignOrganizationsToUser(userId, dto.organizations);
+    return await this.iamClient.assignOrganizationsToUser(
+      userId,
+      dto.organizations,
+    );
   }
 
   @Delete(':id/organizations')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Remove organizations from user' })
-  @ApiResponse({ status: 200, description: 'Organizations removed successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Organizations removed successfully',
+  })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async removeOrganizations(@Param('id') userId: string, @Body() dto: any) {
     this.logger.log(`HTTP → Removing organizations from user: ${userId}`);
-    return await this.iamClient.removeOrganizationsFromUser(userId, dto.organizationIds);
+    return await this.iamClient.removeOrganizationsFromUser(
+      userId,
+      dto.organizationIds,
+    );
   }
 }
-

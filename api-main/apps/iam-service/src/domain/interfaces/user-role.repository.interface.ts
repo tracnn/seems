@@ -11,4 +11,3 @@ export interface IUserRoleRepository {
   removeAllUserRoles(userId: string): Promise<void>;
   bulkAssignRoles(userRoles: Partial<UserRole>[]): Promise<UserRole[]>;
 }
-

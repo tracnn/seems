@@ -3,18 +3,6 @@
   "languages": ["en", "vi"],
   "defaultLanguage": "en",
   "errors": {
-    "AUTH_SERVICE.0006": {
-      "en": "The provided token is invalid or malformed",
-      "vi": "Token không hợp lệ hoặc bị lỗi định dạng",
-      "statusCode": 401,
-      "category": "authentication"
-    },
-    "AUTH_SERVICE.0007": {
-      "en": "The provided token has expired",
-      "vi": "Token đã hết hạn",
-      "statusCode": 401,
-      "category": "authentication"
-    },
     "API_MAIN.0001": {
       "en": "The provided input data failed validation",
       "vi": "Dữ liệu đầu vào không vượt qua kiểm tra",

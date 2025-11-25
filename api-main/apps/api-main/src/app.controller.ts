@@ -29,7 +29,7 @@ export class AppController {
   @ApiResponse({ status: 200, description: 'Service health status' })
   async healthCheck() {
     this.logger.debug('Health check endpoint called');
-    
+
     const healthData = {
       status: 'ok',
       timestamp: new Date().toISOString(),

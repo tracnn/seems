@@ -21,4 +21,3 @@ export class GetUserByIdHandler implements IQueryHandler<GetUserByIdQuery> {
     return user;
   }
 }
-

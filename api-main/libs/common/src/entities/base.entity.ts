@@ -34,10 +34,9 @@ export abstract class BaseEntity {
   @DeleteDateColumn({ name: 'DELETED_AT', nullable: true })
   deletedAt: Date | null;
 
-  @VersionColumn({name: 'VERSION'})
+  @VersionColumn({ name: 'VERSION' })
   version: number;
 
   @Column({ name: 'IS_ACTIVE', default: true })
   isActive: boolean;
 }
-

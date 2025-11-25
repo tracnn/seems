@@ -1,11 +1,14 @@
-import { Module, NestModule, MiddlewareConsumer, OnModuleInit } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { BaseException } from '@app/shared-exceptions';
-import { AuthServiceErrorLoader } from './config/error-loader';
+import { ErrorService } from '@app/shared-exceptions';
 
 // Infrastructure
 import { DatabaseModule } from './infrastructure/database/database.module';
@@ -29,11 +32,7 @@ import { ServiceName } from '@app/shared-constants';
 // Infrastructure Clients
 import { IamClientService } from './infrastructure/clients/iam-client.service';
 
-const CommandHandlers = [
-  LoginHandler,
-  RefreshTokenHandler,
-  LogoutHandler,
-];
+const CommandHandlers = [LoginHandler, RefreshTokenHandler, LogoutHandler];
 const QueryHandlers = [GetUserHandler];
 
 @Module({
@@ -69,18 +68,18 @@ const QueryHandlers = [GetUserHandler];
   ],
   controllers: [AuthController],
   providers: [
+    {
+      provide: ErrorService,
+      useFactory: () => new ErrorService('auth-service'),
+    },
     ...CommandHandlers,
     ...QueryHandlers,
     JwtStrategy,
     IamClientService,
   ],
+  exports: [ErrorService], // Export để các module khác có thể dùng
 })
-export class AuthServiceModule implements NestModule, OnModuleInit {
-  onModuleInit() {
-    // Setup error loader cho auth-service
-    BaseException.setErrorLoader(new AuthServiceErrorLoader());
-  }
-
+export class AuthServiceModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HttpLoggerMiddleware).forRoutes('*');
   }

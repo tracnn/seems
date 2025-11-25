@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSIONS_KEY } from '../decorators/require-permissions.decorator';
 
@@ -29,7 +34,7 @@ export class PermissionsGuard implements CanActivate {
     }
 
     // Check if user has any of the required permissions
-    const hasPermission = requiredPermissions.some(permission =>
+    const hasPermission = requiredPermissions.some((permission) =>
       user.permissions?.includes(permission),
     );
 
@@ -42,4 +47,3 @@ export class PermissionsGuard implements CanActivate {
     return true;
   }
 }
-

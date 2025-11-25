@@ -4,4 +4,3 @@ export class RemoveOrganizationsCommand {
     public readonly organizationIds: string[],
   ) {}
 }
-

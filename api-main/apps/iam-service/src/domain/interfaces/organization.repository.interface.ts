@@ -5,7 +5,10 @@ export interface IOrganizationRepository {
   findByCode(code: string): Promise<Organization | null>;
   findByName(name: string): Promise<Organization | null>;
   create(organization: Partial<Organization>): Promise<Organization>;
-  update(id: string, organization: Partial<Organization>): Promise<Organization>;
+  update(
+    id: string,
+    organization: Partial<Organization>,
+  ): Promise<Organization>;
   delete(id: string): Promise<void>;
   softDelete(id: string, deletedBy: string): Promise<void>;
   findAll(options?: {
@@ -18,4 +21,3 @@ export interface IOrganizationRepository {
   findChildren(parentId: string): Promise<Organization[]>;
   findByParent(parentId: string): Promise<Organization[]>;
 }
-

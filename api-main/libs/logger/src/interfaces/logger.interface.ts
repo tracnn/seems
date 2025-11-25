@@ -33,4 +33,3 @@ export interface ILogger {
    */
   setContext(context: string): void;
 }
-

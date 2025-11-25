@@ -35,7 +35,10 @@ export class OrganizationRepository implements IOrganizationRepository {
     return await this.repository.save(newOrganization);
   }
 
-  async update(id: string, organization: Partial<Organization>): Promise<Organization> {
+  async update(
+    id: string,
+    organization: Partial<Organization>,
+  ): Promise<Organization> {
     await this.repository.update({ id }, organization);
     const updated = await this.findById(id);
     if (!updated) {
@@ -114,4 +117,3 @@ export class OrganizationRepository implements IOrganizationRepository {
     return await this.findChildren(parentId);
   }
 }
-

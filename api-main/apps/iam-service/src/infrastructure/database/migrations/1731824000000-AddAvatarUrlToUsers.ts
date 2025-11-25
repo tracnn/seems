@@ -38,4 +38,3 @@ export class AddAvatarUrlToUsers1731824000000 implements MigrationInterface {
     }
   }
 }
-

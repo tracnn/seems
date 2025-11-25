@@ -10,7 +10,9 @@ import { BaseException } from '@app/shared-exceptions';
  */
 @Injectable()
 @CommandHandler(ActivateAccountCommand)
-export class ActivateAccountHandler implements ICommandHandler<ActivateAccountCommand> {
+export class ActivateAccountHandler
+  implements ICommandHandler<ActivateAccountCommand>
+{
   private readonly logger = new Logger(ActivateAccountHandler.name);
 
   constructor(
@@ -43,4 +45,3 @@ export class ActivateAccountHandler implements ICommandHandler<ActivateAccountCo
     return activatedUser;
   }
 }
-

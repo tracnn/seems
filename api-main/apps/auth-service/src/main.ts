@@ -17,7 +17,7 @@ async function bootstrap() {
       },
     },
   );
-  
+
   const logger = app.get(WinstonLoggerService);
   logger.setContext(LogServiceName.AUTH_SERVICE);
   app.useLogger(logger);

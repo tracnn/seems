@@ -46,27 +46,30 @@ async function bootstrap() {
   // Swagger Configuration
   const enableSwagger = process.env.ENABLE_SWAGGER === 'true';
   if (enableSwagger) {
-    const swaggerTitle = process.env.SWAGGER_TITLE || 'App Microservice SEEMS Hub API';
-    const swaggerDesc = process.env.SWAGGER_DESC || 'The App Microservice SEEMS Hub API documentation';
+    const swaggerTitle =
+      process.env.SWAGGER_TITLE || 'App Microservice SEEMS Hub API';
+    const swaggerDesc =
+      process.env.SWAGGER_DESC ||
+      'The App Microservice SEEMS Hub API documentation';
     const swaggerVersion = process.env.SWAGGER_VERSION || '1.0.0';
     const swaggerPrefix = process.env.SWAGGER_PREFIX || 'api/v1/docs';
-    
+
     const config = new DocumentBuilder()
       .setTitle(swaggerTitle)
       .setDescription(swaggerDesc)
       .setVersion(swaggerVersion)
       .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
       .build();
-    
+
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup(swaggerPrefix, app, document);
-    
+
     logger.log(`Swagger documentation available at: /${swaggerPrefix}`);
   }
 
   const port = process.env.API_MAIN_PORT ?? 4000;
-  const host =  process.env.API_MAIN_HOST ?? '0.0.0.0';
-  
+  const host = process.env.API_MAIN_HOST ?? '0.0.0.0';
+
   await app.listen(port, host);
 
   logger.log(`🚀 API Gateway is running on: ${await app.getUrl()}`);

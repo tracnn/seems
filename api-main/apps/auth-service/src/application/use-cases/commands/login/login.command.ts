@@ -6,4 +6,3 @@ export class LoginCommand {
     public readonly userAgent?: string,
   ) {}
 }
-

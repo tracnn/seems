@@ -40,4 +40,3 @@ import { OrganizationsController } from './controllers/organizations.controller'
   exports: [IamClientService],
 })
 export class IamModule {}
-

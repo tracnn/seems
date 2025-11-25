@@ -1,4 +1,11 @@
-import { IsOptional, IsString, IsNumber, Min, IsBoolean, IsUUID } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsNumber,
+  Min,
+  IsBoolean,
+  IsUUID,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -17,7 +24,11 @@ export class UserFilterDto {
   @Min(1)
   limit?: number = 10;
 
-  @ApiProperty({ example: 'john', required: false, description: 'Search by username, email, or name' })
+  @ApiProperty({
+    example: 'john',
+    required: false,
+    description: 'Search by username, email, or name',
+  })
   @IsOptional()
   @IsString()
   search?: string;
@@ -28,4 +39,3 @@ export class UserFilterDto {
   @IsBoolean()
   isActive?: boolean;
 }
-

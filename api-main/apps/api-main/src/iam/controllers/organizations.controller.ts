@@ -11,7 +11,13 @@ import {
   Request,
   Logger,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, IsBoolean } from 'class-validator';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { IamClientService } from '../clients/iam-client.service';
@@ -27,32 +33,56 @@ class CreateOrganizationDto {
   @IsNotEmpty()
   code: string;
 
-  @ApiProperty({ example: 'hospital', description: 'Organization type', required: false })
+  @ApiProperty({
+    example: 'hospital',
+    description: 'Organization type',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   type?: string;
 
-  @ApiProperty({ example: 'parent-org-uuid', description: 'Parent organization ID', required: false })
+  @ApiProperty({
+    example: 'parent-org-uuid',
+    description: 'Parent organization ID',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   parentId?: string;
 
-  @ApiProperty({ example: '123 Main Street, City', description: 'Address', required: false })
+  @ApiProperty({
+    example: '123 Main Street, City',
+    description: 'Address',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   address?: string;
 
-  @ApiProperty({ example: '+84123456789', description: 'Phone number', required: false })
+  @ApiProperty({
+    example: '+84123456789',
+    description: 'Phone number',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   phone?: string;
 
-  @ApiProperty({ example: 'contact@hospital.com', description: 'Email', required: false })
+  @ApiProperty({
+    example: 'contact@hospital.com',
+    description: 'Email',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   email?: string;
 
-  @ApiProperty({ example: 'https://hospital.com', description: 'Website', required: false })
+  @ApiProperty({
+    example: 'https://hospital.com',
+    description: 'Website',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   website?: string;
@@ -120,12 +150,18 @@ export class OrganizationsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new organization' })
-  @ApiResponse({ status: 201, description: 'Organization created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Organization created successfully',
+  })
   @ApiResponse({ status: 400, description: 'Bad request - validation failed' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async createOrganization(@Body() dto: CreateOrganizationDto, @Request() req: any) {
+  async createOrganization(
+    @Body() dto: CreateOrganizationDto,
+    @Request() req: any,
+  ) {
     this.logger.log(`HTTP → Creating organization: ${dto.name}`);
-    
+
     const currentUser = req.user;
     return await this.iamClient.createOrganization({
       ...dto,
@@ -163,7 +199,10 @@ export class OrganizationsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update organization' })
-  @ApiResponse({ status: 200, description: 'Organization updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Organization updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Organization not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async updateOrganization(
@@ -172,7 +211,7 @@ export class OrganizationsController {
     @Request() req: any,
   ) {
     this.logger.log(`HTTP → Updating organization: ${id}`);
-    
+
     const currentUser = req.user;
     return await this.iamClient.updateOrganization(id, {
       ...dto,
@@ -184,13 +223,19 @@ export class OrganizationsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete organization (soft delete)' })
-  @ApiResponse({ status: 200, description: 'Organization deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Organization deleted successfully',
+  })
   @ApiResponse({ status: 404, description: 'Organization not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async deleteOrganization(@Param('id') id: string, @Request() req: any) {
     this.logger.log(`HTTP → Deleting organization: ${id}`);
-    
+
     const currentUser = req.user;
-    return await this.iamClient.deleteOrganization(id, currentUser?.id || 'api-gateway');
+    return await this.iamClient.deleteOrganization(
+      id,
+      currentUser?.id || 'api-gateway',
+    );
   }
 }

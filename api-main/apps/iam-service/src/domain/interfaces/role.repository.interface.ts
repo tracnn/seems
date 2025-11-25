@@ -16,4 +16,3 @@ export interface IRoleRepository {
     isActive?: boolean;
   }): Promise<{ data: Role[]; total: number }>;
 }
-

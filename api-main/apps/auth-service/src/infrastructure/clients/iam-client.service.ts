@@ -39,13 +39,13 @@ export class IamClientService implements OnModuleInit {
   }): Promise<any> {
     try {
       this.logger.log(`📤 Sending create user request: ${data.username}`);
-      
+
       const result = await firstValueFrom(
         this.iamClient.send('iam.user.create', data).pipe(
           timeout(5000), // 5s timeout
         ),
       );
-      
+
       this.logger.log(`✅ User created successfully: ${result.id}`);
       return result;
     } catch (error) {
@@ -61,13 +61,13 @@ export class IamClientService implements OnModuleInit {
   async getUserById(userId: string): Promise<any> {
     try {
       this.logger.log(`📤 Fetching user by ID: ${userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.findById', { userId }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.findById', { userId })
+          .pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ User fetched: ${result.username}`);
       return result;
     } catch (error) {
@@ -80,16 +80,20 @@ export class IamClientService implements OnModuleInit {
    * Update user in IAM Service via TCP
    * Pattern: iam.user.update
    */
-  async updateUser(userId: string, updates: any, updatedBy?: string): Promise<any> {
+  async updateUser(
+    userId: string,
+    updates: any,
+    updatedBy?: string,
+  ): Promise<any> {
     try {
       this.logger.log(`📤 Updating user: ${userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.update', { userId, updates, updatedBy }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.update', { userId, updates, updatedBy })
+          .pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ User updated successfully: ${result.id}`);
       return result;
     } catch (error) {
@@ -105,13 +109,13 @@ export class IamClientService implements OnModuleInit {
   async getUserPermissions(userId: string): Promise<string[]> {
     try {
       this.logger.log(`📤 Fetching permissions for user: ${userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.getPermissions', { userId }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.getPermissions', { userId })
+          .pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ Fetched ${result.length} permissions`);
       return result;
     } catch (error) {
@@ -126,20 +130,23 @@ export class IamClientService implements OnModuleInit {
    */
   async getUserByUsernameOrEmail(usernameOrEmail: string): Promise<any> {
     try {
-      this.logger.log(`📤 Fetching user by username or email: ${usernameOrEmail}`);
+      this.logger.log(
+        `📤 Fetching user by username or email: ${usernameOrEmail}`,
+      );
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.findByUsernameOrEmail', { usernameOrEmail }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.findByUsernameOrEmail', { usernameOrEmail })
+          .pipe(timeout(5000)),
       );
       this.logger.log(`✅ User fetched: ${result.username}`);
       return result;
     } catch (error) {
-      this.logger.error(`❌ Failed to get user by username or email: ${error.message}`);
-      throw BaseException.fromErrorCode(
-        'AUTH_SERVICE.0001',
-        { usernameOrEmail },
+      this.logger.error(
+        `❌ Failed to get user by username or email: ${error.message}`,
       );
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0001', {
+        usernameOrEmail,
+      });
     }
   }
 
@@ -150,16 +157,16 @@ export class IamClientService implements OnModuleInit {
   async getUserByUsername(username: string): Promise<any> {
     try {
       this.logger.log(`📤 Fetching user by username: ${username}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.list', { 
-          search: username,
-          limit: 1,
-        }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.list', {
+            search: username,
+            limit: 1,
+          })
+          .pipe(timeout(5000)),
       );
-      
+
       if (result?.data && result.data.length > 0) {
         const user = result.data.find((u: any) => u.username === username);
         if (user) {
@@ -167,7 +174,7 @@ export class IamClientService implements OnModuleInit {
           return user;
         }
       }
-      
+
       return null;
     } catch (error) {
       this.logger.error(`❌ Failed to get user by username: ${error.message}`);
@@ -182,16 +189,16 @@ export class IamClientService implements OnModuleInit {
   async getUserByEmail(email: string): Promise<any> {
     try {
       this.logger.log(`📤 Fetching user by email: ${email}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.list', { 
-          search: email,
-          limit: 1,
-        }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.list', {
+            search: email,
+            limit: 1,
+          })
+          .pipe(timeout(5000)),
       );
-      
+
       if (result?.data && result.data.length > 0) {
         const user = result.data.find((u: any) => u.email === email);
         if (user) {
@@ -199,7 +206,7 @@ export class IamClientService implements OnModuleInit {
           return user;
         }
       }
-      
+
       return null;
     } catch (error) {
       this.logger.error(`❌ Failed to get user by email: ${error.message}`);
@@ -214,16 +221,16 @@ export class IamClientService implements OnModuleInit {
   async updateLastLogin(userId: string): Promise<any> {
     try {
       this.logger.log(`📤 Updating last login for user: ${userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.update', { 
-          userId, 
-          updates: { lastLoginAt: new Date() },
-        }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.update', {
+            userId,
+            updates: { lastLoginAt: new Date() },
+          })
+          .pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ Last login updated successfully`);
       return result;
     } catch (error) {
@@ -239,22 +246,23 @@ export class IamClientService implements OnModuleInit {
   async updateEmailVerified(userId: string, isVerified: boolean): Promise<any> {
     try {
       this.logger.log(`📤 Updating email verified status for user: ${userId}`);
-      
+
       const result = await firstValueFrom(
-        this.iamClient.send('iam.user.update', { 
-          userId, 
-          updates: { isEmailVerified: isVerified },
-        }).pipe(
-          timeout(5000),
-        ),
+        this.iamClient
+          .send('iam.user.update', {
+            userId,
+            updates: { isEmailVerified: isVerified },
+          })
+          .pipe(timeout(5000)),
       );
-      
+
       this.logger.log(`✅ Email verified status updated successfully`);
       return result;
     } catch (error) {
-      this.logger.error(`❌ Failed to update email verified status: ${error.message}`);
+      this.logger.error(
+        `❌ Failed to update email verified status: ${error.message}`,
+      );
       throw new Error(`IAM Service error: ${error.message}`);
     }
   }
 }
-

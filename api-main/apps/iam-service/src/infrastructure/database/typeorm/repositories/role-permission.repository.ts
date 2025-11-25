@@ -32,13 +32,18 @@ export class RolePermissionRepository implements IRolePermissionRepository {
     });
   }
 
-  async findByRoleAndPermission(roleId: string, permissionId: string): Promise<RolePermission | null> {
+  async findByRoleAndPermission(
+    roleId: string,
+    permissionId: string,
+  ): Promise<RolePermission | null> {
     return await this.repository.findOne({
       where: { roleId, permissionId, deletedAt: IsNull() },
     });
   }
 
-  async assignPermission(rolePermission: Partial<RolePermission>): Promise<RolePermission> {
+  async assignPermission(
+    rolePermission: Partial<RolePermission>,
+  ): Promise<RolePermission> {
     const newRolePermission = this.repository.create(rolePermission);
     return await this.repository.save(newRolePermission);
   }
@@ -47,7 +52,10 @@ export class RolePermissionRepository implements IRolePermissionRepository {
     await this.repository.delete({ id });
   }
 
-  async removeByRoleAndPermission(roleId: string, permissionId: string): Promise<void> {
+  async removeByRoleAndPermission(
+    roleId: string,
+    permissionId: string,
+  ): Promise<void> {
     await this.repository.delete({ roleId, permissionId });
   }
 
@@ -55,9 +63,10 @@ export class RolePermissionRepository implements IRolePermissionRepository {
     await this.repository.delete({ roleId });
   }
 
-  async bulkAssignPermissions(rolePermissions: Partial<RolePermission>[]): Promise<RolePermission[]> {
-    const entities = rolePermissions.map(rp => this.repository.create(rp));
+  async bulkAssignPermissions(
+    rolePermissions: Partial<RolePermission>[],
+  ): Promise<RolePermission[]> {
+    const entities = rolePermissions.map((rp) => this.repository.create(rp));
     return await this.repository.save(entities);
   }
 }
-
