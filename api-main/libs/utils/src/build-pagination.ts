@@ -9,7 +9,7 @@ export function buildPagination(
     page: Number(page),
     limit: Number(limit),
     totalPages: Number(pageCount),
-    hasNextPage: Number(page) < Number(pageCount),
-    hasPreviousPage: Number(page) > 1,
+    hasNext: Number(page) < Number(pageCount),
+    hasPrev: Number(page) > 1,
   };
 }

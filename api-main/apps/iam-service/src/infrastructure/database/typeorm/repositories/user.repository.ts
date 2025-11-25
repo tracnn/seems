@@ -129,7 +129,7 @@ export class UserRepository implements IUserRepository {
       .orderBy('user.createdAt', 'DESC')
       .getManyAndCount();
 
-    return { results: data, pagination: buildPagination(page, limit, total) };
+    return { data, pagination: buildPagination(page, limit, total) };
   }
 
   async activateUser(id: string): Promise<User> {
