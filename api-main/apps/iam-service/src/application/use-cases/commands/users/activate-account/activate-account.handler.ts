@@ -3,7 +3,6 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ActivateAccountCommand } from './activate-account.command';
 import type { IUserRepository } from '../../../../../domain/interfaces/user.repository.interface';
 import { BaseException } from '@app/shared-exceptions';
-import { ErrorCode } from '@app/shared-constants';
 
 /**
  * Activate Account Handler
@@ -27,7 +26,7 @@ export class ActivateAccountHandler implements ICommandHandler<ActivateAccountCo
     // 1. Kiểm tra user tồn tại
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw BaseException.fromErrorCode(ErrorCode.IAM_SERVICE_0001, { userId });
+      throw BaseException.fromErrorCode('IAM_SERVICE.0001', { userId });
     }
 
     // 2. Kiểm tra user đã verify email chưa

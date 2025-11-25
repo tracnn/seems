@@ -5,7 +5,6 @@ import type { IUserRepository } from '../../../../../domain/interfaces/user.repo
 import { User } from '../../../../../domain/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { BaseException } from '@app/shared-exceptions';
-import { ErrorCode } from '@app/shared-constants';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
@@ -30,7 +29,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
     if (existingUser) {
       throw BaseException.fromErrorCode(
-        ErrorCode.IAM_SERVICE_0002,
+        'IAM_SERVICE.0002',
         { username: command.username, email: command.email },
       );
     }

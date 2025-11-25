@@ -1,7 +1,7 @@
 import { Injectable, Logger, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { ErrorCode, ServiceName } from '@app/shared-constants';
+import { ServiceName } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 /**
@@ -137,7 +137,7 @@ export class IamClientService implements OnModuleInit {
     } catch (error) {
       this.logger.error(`❌ Failed to get user by username or email: ${error.message}`);
       throw BaseException.fromErrorCode(
-        ErrorCode.AUTH_SERVICE_0001,
+        'AUTH_SERVICE.0001',
         { usernameOrEmail },
       );
     }

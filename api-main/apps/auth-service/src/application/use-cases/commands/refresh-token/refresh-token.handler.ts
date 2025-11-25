@@ -6,7 +6,6 @@ import { RefreshTokenRepository } from '../../../../infrastructure/database/type
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthResponseDto } from '@app/shared-dto';
-import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
@@ -29,17 +28,17 @@ export class RefreshTokenHandler
       await this.refreshTokenRepository.findByToken(refreshToken);
 
     if (!storedToken) {
-      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0008);
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0008');
     }
 
     // Kiểm tra token đã bị revoke chưa
     if (storedToken.isRevoked) {
-      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0009);
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0009');
     }
 
     // Kiểm tra token đã hết hạn chưa
     if (new Date() > storedToken.expiresAt) {
-      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0010);
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0010');
     }
 
     // Verify JWT token
@@ -51,7 +50,7 @@ export class RefreshTokenHandler
       // Lấy thông tin user từ IAM Service
       const user = await this.iamClient.getUserById(payload.sub);
       if (!user || !user.isActive) {
-        throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0002);
+        throw BaseException.fromErrorCode('AUTH_SERVICE.0002');
       }
 
       // Thu hồi refresh token cũ
@@ -103,7 +102,7 @@ export class RefreshTokenHandler
         throw error;
       }
       
-      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0006);
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0006');
     }
   }
 }

@@ -17,10 +17,10 @@ interface ErrorsConfig {
 }
 
 /**
- * IAM Service Error Loader
- * Load errors từ iam-service/config/errors.json
+ * API Main Error Loader
+ * Load errors từ api-main/config/errors.json
  */
-export class IamServiceErrorLoader implements ErrorLoader {
+export class ApiMainErrorLoader implements ErrorLoader {
   private errors: Record<string, ErrorMessage>;
   private defaultLanguage: string = 'en';
 
@@ -42,3 +42,4 @@ export class IamServiceErrorLoader implements ErrorLoader {
     return error?.statusCode || 500;
   }
 }
+

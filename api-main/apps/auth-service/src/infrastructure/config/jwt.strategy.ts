@@ -3,7 +3,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { IamClientService } from '../clients/iam-client.service';
-import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
@@ -23,11 +22,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.iamClient.getUserById(payload.sub);
     
     if (!user) {
-      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0002);
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0002');
     }
 
     if (!user.isActive) {
-      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0013);
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0013');
     }
 
     return {

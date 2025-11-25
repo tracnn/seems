@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
@@ -22,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload.sub) {
       this.logger.error('Invalid token payload - missing user ID', { payload });
       throw BaseException.fromErrorCode(
-        ErrorCode.AUTH_SERVICE_0006,
+        'AUTH_SERVICE.0006',
         { reason: 'Invalid token payload - missing user ID' },
       );
     }

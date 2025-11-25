@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UtilsModule } from '@app/utils';
@@ -11,6 +11,8 @@ import { IamModule } from './iam/iam.module';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { BaseException } from '@app/shared-exceptions';
+import { ApiMainErrorLoader } from './config/error-loader';
 
 @Module({
   imports: [
@@ -48,7 +50,12 @@ import { APP_GUARD } from '@nestjs/core';
   ],
   exports: [CqrsModule],
 })
-export class AppModule implements NestModule {
+export class AppModule implements NestModule, OnModuleInit {
+  onModuleInit() {
+    // Setup error loader cho api-main
+    BaseException.setErrorLoader(new ApiMainErrorLoader());
+  }
+
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HttpLoggerMiddleware).forRoutes('*');
   }

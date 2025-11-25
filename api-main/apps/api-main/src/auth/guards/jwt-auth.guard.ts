@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 /**
@@ -52,19 +51,19 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       }
       
       // Xác định loại lỗi cụ thể
-      let errorCode = ErrorCode.AUTH_SERVICE_0006; // Default: Invalid token
+      let errorCode = 'AUTH_SERVICE.0006'; // Default: Invalid token
       
       // Kiểm tra loại lỗi từ passport
       if (info) {
         if (info.name === 'TokenExpiredError') {
           this.logger.error('Token expired', { info });
-          errorCode = ErrorCode.AUTH_SERVICE_0007;
+          errorCode = 'AUTH_SERVICE.0007';
         } else if (info.name === 'JsonWebTokenError') {
           this.logger.error('Invalid token', { info });
-          errorCode = ErrorCode.AUTH_SERVICE_0006;
+          errorCode = 'AUTH_SERVICE.0006';
         } else if (info.message === 'No auth token') {
           this.logger.error('No authentication token', { info });
-          errorCode = ErrorCode.AUTH_SERVICE_0006;
+          errorCode = 'AUTH_SERVICE.0006';
         }
       }
 

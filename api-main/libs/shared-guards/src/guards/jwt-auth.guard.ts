@@ -4,7 +4,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 /**
@@ -61,7 +60,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       
       // Nếu không, tạo BaseException mới
       throw BaseException.fromErrorCode(
-        ErrorCode.AUTH_SERVICE_0006,
+        'AUTH_SERVICE.0006',
         { info },
       );
     }

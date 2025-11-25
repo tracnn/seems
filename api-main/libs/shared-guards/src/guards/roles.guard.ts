@@ -4,7 +4,6 @@ import {
   ExecutionContext
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 /**
@@ -57,7 +56,7 @@ export class RolesGuard implements CanActivate {
 
     // Kiểm tra user có tồn tại và có roles không
     if (!user || !user.roles || user.roles.length === 0) {
-      throw BaseException.fromErrorCode(ErrorCode.IAM_SERVICE_0600);
+      throw BaseException.fromErrorCode('IAM_SERVICE.0600');
     }
 
     // Kiểm tra user có ít nhất một trong các roles yêu cầu
@@ -67,7 +66,7 @@ export class RolesGuard implements CanActivate {
 
     if (!hasRole) {
       throw BaseException.fromErrorCode(
-        ErrorCode.IAM_SERVICE_0600,
+        'IAM_SERVICE.0600',
         { requiredRoles },
       );
     }

@@ -2,7 +2,6 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetUserQuery } from './get-user.query';
 import { Injectable } from '@nestjs/common';
 import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
-import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
@@ -15,7 +14,7 @@ export class GetUserHandler implements IQueryHandler<GetUserQuery> {
 
     const user = await this.iamClient.getUserById(userId);
     if (!user) {
-      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0002, { userId });
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0002', { userId });
     }
 
     // Không trả về password
