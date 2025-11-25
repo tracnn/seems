@@ -1,7 +1,8 @@
-import { Injectable, Logger, Inject, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, Inject, OnModuleInit, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { ServiceName } from '@app/shared-constants';
+import { ERROR_DESCRIPTIONS, ErrorCode, ServiceName } from '@app/shared-constants';
+import { BaseException } from '@app/shared-exceptions';
 
 /**
  * IAM Service Client - TCP Communication
@@ -116,6 +117,30 @@ export class IamClientService implements OnModuleInit {
     } catch (error) {
       this.logger.error(`❌ Failed to get user permissions: ${error.message}`);
       return [];
+    }
+  }
+
+  /**
+   * Get user by username or email from IAM Service via TCP
+   * Pattern: iam.user.findByUsernameOrEmail
+   */
+  async getUserByUsernameOrEmail(usernameOrEmail: string): Promise<any> {
+    try {
+      this.logger.log(`📤 Fetching user by username or email: ${usernameOrEmail}`);
+      const result = await firstValueFrom(
+        this.iamClient.send('iam.user.findByUsernameOrEmail', { usernameOrEmail }).pipe(
+          timeout(5000),
+        ),
+      );
+      this.logger.log(`✅ User fetched: ${result.username}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to get user by username or email: ${error.message}`);
+      throw new BaseException(
+        ErrorCode.AUTH_SERVICE_0001,
+        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0001] || 'The provided username or password is incorrect',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 

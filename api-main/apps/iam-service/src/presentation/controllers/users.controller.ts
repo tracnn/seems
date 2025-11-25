@@ -22,6 +22,7 @@ import { GetUserByIdQuery } from '../../application/use-cases/queries/users/get-
 import { GetUsersQuery } from '../../application/use-cases/queries/users/get-users/get-users.query';
 import { GetUserPermissionsQuery } from '../../application/use-cases/queries/users/get-user-permissions/get-user-permissions.query';
 import { GetUsersDto } from '../../application/dtos/user/get-users.dto';
+import { FindByUsernameOrEmailQuery } from '../../application/use-cases/queries/users/find-by-username-or-email/find-by-username-or-email.query';
 
 /**
  * IAM Users Controller - TCP Microservice
@@ -64,6 +65,24 @@ export class UsersController {
         statusCode: error.status || 400,
         errorCode: error.errorCode || null,
         errorDescription: error.errorDescription || error.message || 'Failed to create user',
+        ...(error.metadata && { metadata: error.metadata }),
+      });
+    }
+  }
+
+  @MessagePattern('iam.user.findByUsernameOrEmail')
+  async findByUsernameOrEmail(@Payload() data: { usernameOrEmail: string }) {
+    try {
+      this.logger.log(`Finding user by username or email: ${data.usernameOrEmail}`);
+      const query = new FindByUsernameOrEmailQuery(data.usernameOrEmail);
+      const user = await this.queryBus.execute(query);
+      return user;
+    } catch (error) {
+      this.logger.error(`Failed to find user by username or email: ${error.message}`);
+      throw new RpcException({
+        statusCode: error.status || 404,
+        errorCode: error.errorCode || null,
+        errorDescription: error.errorDescription || error.message || 'User not found',
         ...(error.metadata && { metadata: error.metadata }),
       });
     }

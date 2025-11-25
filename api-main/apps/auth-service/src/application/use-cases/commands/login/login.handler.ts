@@ -25,10 +25,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     const { usernameOrEmail, password, ipAddress, userAgent } = command;
 
     // Tìm user bằng username hoặc email từ IAM Service
-    let user = await this.iamClient.getUserByUsername(usernameOrEmail);
-    if (!user) {
-      user = await this.iamClient.getUserByEmail(usernameOrEmail);
-    }
+    const user = await this.iamClient.getUserByUsernameOrEmail(usernameOrEmail);
 
     if (!user) {
       this.logger.error('User not found', { usernameOrEmail });

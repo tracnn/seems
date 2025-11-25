@@ -28,7 +28,7 @@ export class AuthController {
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Đăng nhập thành công',
-      data: result,
+      ...result,
     };
   }
 
@@ -40,7 +40,7 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       message: 'Lấy thông tin người dùng thành công',
-      data: user,
+      ...user,
     };
   }
 
@@ -58,7 +58,7 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       message: 'Làm mới token thành công',
-      data: result,
+      ...result,
     };
   }
 

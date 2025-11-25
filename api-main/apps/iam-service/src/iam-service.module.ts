@@ -46,6 +46,7 @@ import { GetPermissionsHandler } from './application/use-cases/queries/permissio
 import { GetPermissionByIdHandler } from './application/use-cases/queries/permissions/get-permission-by-id/get-permission-by-id.handler';
 import { GetOrganizationsHandler } from './application/use-cases/queries/organizations/get-organizations/get-organizations.handler';
 import { GetOrganizationByIdHandler } from './application/use-cases/queries/organizations/get-organization-by-id/get-organization-by-id.handler';
+import { FindByUsernameOrEmailHandler } from './application/use-cases/queries/users/find-by-username-or-email/find-by-username-or-email.handler';
 
 // Presentation
 import { UsersController } from './presentation/controllers/users.controller';
@@ -93,6 +94,7 @@ const QueryHandlers = [
   GetPermissionByIdHandler,
   GetOrganizationsHandler,
   GetOrganizationByIdHandler,
+  FindByUsernameOrEmailHandler,
 ];
 
 @Module({

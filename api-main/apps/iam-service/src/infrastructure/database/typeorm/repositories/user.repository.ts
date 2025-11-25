@@ -40,11 +40,11 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  async findByUsernameOrEmail(username: string, email: string): Promise<User | null> {
+  async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
     return await this.repository
       .createQueryBuilder('user')
       .where('user.deletedAt IS NULL')
-      .andWhere('(user.username = :username OR user.email = :email)', { username, email })
+      .andWhere('(user.username = :usernameOrEmail OR user.email = :usernameOrEmail)', { usernameOrEmail })
       .getOne();
   }
 
