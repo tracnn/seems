@@ -14,3 +14,5 @@
 // Export error code constants
 export * from './auth-service.error-codes';
 export * from './api-main.error-codes';
+export * from './iam-service.error-codes';
+export * from './iam-service.error-codes';

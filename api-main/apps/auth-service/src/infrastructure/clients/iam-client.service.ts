@@ -2,7 +2,8 @@ import { Injectable, Logger, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 import { ServiceName } from '@app/shared-constants';
-import { BaseException } from '@app/shared-exceptions';
+import { ErrorService } from '@app/shared-exceptions';
+import { AuthServiceErrorCodes } from '@app/shared-constants';
 
 /**
  * IAM Service Client - TCP Communication
@@ -14,6 +15,7 @@ export class IamClientService implements OnModuleInit {
 
   constructor(
     @Inject(ServiceName.IAM_SERVICE) private readonly iamClient: ClientProxy,
+    private readonly errorService: ErrorService,
   ) {}
 
   async onModuleInit() {
@@ -144,7 +146,7 @@ export class IamClientService implements OnModuleInit {
       this.logger.error(
         `❌ Failed to get user by username or email: ${error.message}`,
       );
-      throw BaseException.fromErrorCode('AUTH_SERVICE.0001', {
+      this.errorService.throw(AuthServiceErrorCodes.INVALID_CREDENTIALS, {
         usernameOrEmail,
       });
     }

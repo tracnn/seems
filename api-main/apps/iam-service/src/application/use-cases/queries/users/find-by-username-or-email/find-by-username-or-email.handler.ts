@@ -16,7 +16,6 @@ export class FindByUsernameOrEmailHandler
   async execute(query: FindByUsernameOrEmailQuery): Promise<User> {
     const user = await this.userRepository.findByUsernameOrEmail(
       query.usernameOrEmail,
-      query.usernameOrEmail,
     );
 
     if (!user) {
