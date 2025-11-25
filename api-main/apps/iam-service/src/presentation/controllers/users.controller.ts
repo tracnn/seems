@@ -37,10 +37,6 @@ export class UsersController {
     private readonly queryBus: QueryBus,
   ) {}
 
-  /**
-   * Create new user
-   * Pattern: iam.user.create
-   */
   @MessagePattern('iam.user.create')
   async createUser(@Payload() data: CreateUserDto & { createdBy?: string }) {
     try {

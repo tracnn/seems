@@ -1,11 +1,10 @@
 import { 
   Injectable, 
   CanActivate, 
-  ExecutionContext,
-  HttpStatus
+  ExecutionContext
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 /**
@@ -58,11 +57,7 @@ export class RolesGuard implements CanActivate {
 
     // Kiểm tra user có tồn tại và có roles không
     if (!user || !user.roles || user.roles.length === 0) {
-      throw new BaseException(
-        ErrorCode.IAM_SERVICE_0600,
-        ERROR_DESCRIPTIONS[ErrorCode.IAM_SERVICE_0600] || 'The user does not have sufficient permissions to perform this action',
-        HttpStatus.FORBIDDEN,
-      );
+      throw BaseException.fromErrorCode(ErrorCode.IAM_SERVICE_0600);
     }
 
     // Kiểm tra user có ít nhất một trong các roles yêu cầu
@@ -71,10 +66,8 @@ export class RolesGuard implements CanActivate {
     );
 
     if (!hasRole) {
-      throw new BaseException(
+      throw BaseException.fromErrorCode(
         ErrorCode.IAM_SERVICE_0600,
-        ERROR_DESCRIPTIONS[ErrorCode.IAM_SERVICE_0600] || 'The user does not have sufficient permissions to perform this action',
-        HttpStatus.FORBIDDEN,
         { requiredRoles },
       );
     }

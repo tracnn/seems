@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Injectable, Logger, HttpStatus, Inject } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ActivateAccountCommand } from './activate-account.command';
 import type { IUserRepository } from '../../../../../domain/interfaces/user.repository.interface';
 import { BaseException } from '@app/shared-exceptions';
-import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { ErrorCode } from '@app/shared-constants';
 
 /**
  * Activate Account Handler
@@ -27,12 +27,7 @@ export class ActivateAccountHandler implements ICommandHandler<ActivateAccountCo
     // 1. Kiểm tra user tồn tại
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new BaseException(
-        ErrorCode.IAM_SERVICE_0001,
-        ERROR_DESCRIPTIONS[ErrorCode.IAM_SERVICE_0001] || 'The requested user does not exist in the IAM system',
-        HttpStatus.NOT_FOUND,
-        { userId },
-      );
+      throw BaseException.fromErrorCode(ErrorCode.IAM_SERVICE_0001, { userId });
     }
 
     // 2. Kiểm tra user đã verify email chưa

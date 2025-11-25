@@ -1,13 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LoginCommand } from './login.command';
-import { Injectable, Logger, HttpStatus } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
 import { RefreshTokenRepository } from '../../../../infrastructure/database/typeorm/repositories/refresh-token.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { AuthResponseDto } from '@app/shared-dto';
-import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+// ErrorCode giờ là string constant, không cần import từ shared-constants nữa
 import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
@@ -29,31 +29,19 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
 
     if (!user) {
       this.logger.error('User not found', { usernameOrEmail });
-      throw new BaseException(
-        ErrorCode.AUTH_SERVICE_0001,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0001] || 'The provided username or password is incorrect',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0001');
     }
 
     // Kiểm tra password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new BaseException(
-        ErrorCode.AUTH_SERVICE_0001,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0001] || 'The provided username or password is incorrect',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0001');
     }
 
     // Kiểm tra user active
     if (!user.isActive) {
       this.logger.error('User inactive', { userId: user.id });
-      throw new BaseException(
-        ErrorCode.AUTH_SERVICE_0013,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0013] || 'The user account has been deactivated',
-        HttpStatus.FORBIDDEN,
-      );
+      throw BaseException.fromErrorCode('AUTH_SERVICE.0013');
     }
 
     // Tạo access token

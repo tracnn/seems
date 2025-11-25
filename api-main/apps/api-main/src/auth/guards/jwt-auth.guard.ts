@@ -1,12 +1,11 @@
 import { 
   Injectable, 
   ExecutionContext,
-  HttpStatus,
   Logger
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 /**
@@ -54,32 +53,26 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       
       // Xác định loại lỗi cụ thể
       let errorCode = ErrorCode.AUTH_SERVICE_0006; // Default: Invalid token
-      let errorDescription = ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0006] || 'The provided token is invalid or malformed';
       
       // Kiểm tra loại lỗi từ passport
       if (info) {
         if (info.name === 'TokenExpiredError') {
           this.logger.error('Token expired', { info });
           errorCode = ErrorCode.AUTH_SERVICE_0007;
-          errorDescription = ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0007] || 'The provided token has expired';
         } else if (info.name === 'JsonWebTokenError') {
           this.logger.error('Invalid token', { info });
           errorCode = ErrorCode.AUTH_SERVICE_0006;
-          errorDescription = ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0006] || 'The provided token is invalid or malformed';
         } else if (info.message === 'No auth token') {
           this.logger.error('No authentication token', { info });
           errorCode = ErrorCode.AUTH_SERVICE_0006;
-          errorDescription = ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0006] || 'The provided token is invalid or malformed';
         }
       }
 
-      this.logger.error('JWT authentication error', { errorCode, errorDescription, info });
+      this.logger.error('JWT authentication error', { errorCode, info });
       
-      // Tạo BaseException với errorCode và errorDescription
-      throw new BaseException(
+      // Tạo BaseException với errorCode
+      throw BaseException.fromErrorCode(
         errorCode,
-        errorDescription,
-        HttpStatus.UNAUTHORIZED,
         { info: info?.message || info },
       );
     }

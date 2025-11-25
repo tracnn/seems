@@ -1,9 +1,11 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, OnModuleInit } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { APP_FILTER } from '@nestjs/core';
+import { BaseException } from '@app/shared-exceptions';
+import { IamServiceErrorLoader } from './config/error-loader';
 
 // Infrastructure
 import { DatabaseModule } from './infrastructure/database/database.module';
@@ -129,7 +131,12 @@ const QueryHandlers = [
     },
   ],
 })
-export class IamServiceModule implements NestModule {
+export class IamServiceModule implements NestModule, OnModuleInit {
+  onModuleInit() {
+    // Setup error loader cho iam-service
+    BaseException.setErrorLoader(new IamServiceErrorLoader());
+  }
+
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HttpLoggerMiddleware).forRoutes('*');
   }

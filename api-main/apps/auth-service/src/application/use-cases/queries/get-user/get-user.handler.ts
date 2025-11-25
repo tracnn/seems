@@ -1,8 +1,8 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetUserQuery } from './get-user.query';
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
-import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
@@ -15,12 +15,7 @@ export class GetUserHandler implements IQueryHandler<GetUserQuery> {
 
     const user = await this.iamClient.getUserById(userId);
     if (!user) {
-      throw new BaseException(
-        ErrorCode.AUTH_SERVICE_0002,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0002] || 'The requested user does not exist in the system',
-        HttpStatus.NOT_FOUND,
-        { userId },
-      );
+      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0002, { userId });
     }
 
     // Không trả về password

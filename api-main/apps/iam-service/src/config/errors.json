@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "languages": ["en", "vi"],
+  "defaultLanguage": "en",
+  "errors": {
+    "IAM_SERVICE.0001": {
+      "en": "The requested user does not exist in the IAM system",
+      "vi": "Người dùng không tồn tại trong hệ thống IAM",
+      "statusCode": 404,
+      "category": "user"
+    },
+    "IAM_SERVICE.0002": {
+      "en": "A user with the same identifier already exists",
+      "vi": "Người dùng với định danh này đã tồn tại",
+      "statusCode": 409,
+      "category": "user"
+    },
+    "IAM_SERVICE.0003": {
+      "en": "The provided user data is invalid",
+      "vi": "Dữ liệu người dùng không hợp lệ",
+      "statusCode": 400,
+      "category": "user"
+    },
+    "IAM_SERVICE.0100": {
+      "en": "The requested role does not exist",
+      "vi": "Vai trò không tồn tại",
+      "statusCode": 404,
+      "category": "role"
+    },
+    "IAM_SERVICE.0200": {
+      "en": "The requested permission does not exist",
+      "vi": "Quyền không tồn tại",
+      "statusCode": 404,
+      "category": "permission"
+    },
+    "IAM_SERVICE.0300": {
+      "en": "The requested organization does not exist",
+      "vi": "Tổ chức không tồn tại",
+      "statusCode": 404,
+      "category": "organization"
+    },
+    "IAM_SERVICE.0600": {
+      "en": "The user does not have sufficient permissions to perform this action",
+      "vi": "Người dùng không có đủ quyền để thực hiện hành động này",
+      "statusCode": 403,
+      "category": "authorization"
+    }
+  }
+}
+

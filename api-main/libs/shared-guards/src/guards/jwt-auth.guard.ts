@@ -1,11 +1,10 @@
 import { 
   Injectable, 
-  ExecutionContext,
-  HttpStatus
+  ExecutionContext
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 /**
@@ -61,10 +60,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       }
       
       // Nếu không, tạo BaseException mới
-      throw new BaseException(
+      throw BaseException.fromErrorCode(
         ErrorCode.AUTH_SERVICE_0006,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0006] || 'The provided token is invalid or malformed',
-        HttpStatus.UNAUTHORIZED,
         { info },
       );
     }

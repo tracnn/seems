@@ -1,8 +1,8 @@
-import { Injectable, HttpStatus, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
@@ -21,10 +21,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     if (!payload.sub) {
       this.logger.error('Invalid token payload - missing user ID', { payload });
-      throw new BaseException(
+      throw BaseException.fromErrorCode(
         ErrorCode.AUTH_SERVICE_0006,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0006] || 'The provided token is invalid or malformed',
-        HttpStatus.UNAUTHORIZED,
         { reason: 'Invalid token payload - missing user ID' },
       );
     }

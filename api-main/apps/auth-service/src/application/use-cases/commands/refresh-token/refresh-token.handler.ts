@@ -1,12 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RefreshTokenCommand } from './refresh-token.command';
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IamClientService } from '../../../../infrastructure/clients/iam-client.service';
 import { RefreshTokenRepository } from '../../../../infrastructure/database/typeorm/repositories/refresh-token.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthResponseDto } from '@app/shared-dto';
-import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
+import { ErrorCode } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 @Injectable()
@@ -29,29 +29,17 @@ export class RefreshTokenHandler
       await this.refreshTokenRepository.findByToken(refreshToken);
 
     if (!storedToken) {
-      throw new BaseException(
-        ErrorCode.AUTH_SERVICE_0008,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0008] || 'The requested refresh token does not exist',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0008);
     }
 
     // Kiểm tra token đã bị revoke chưa
     if (storedToken.isRevoked) {
-      throw new BaseException(
-        ErrorCode.AUTH_SERVICE_0009,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0009] || 'The refresh token has been revoked',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0009);
     }
 
     // Kiểm tra token đã hết hạn chưa
     if (new Date() > storedToken.expiresAt) {
-      throw new BaseException(
-        ErrorCode.AUTH_SERVICE_0010,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0010] || 'The refresh token has expired',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0010);
     }
 
     // Verify JWT token
@@ -63,11 +51,7 @@ export class RefreshTokenHandler
       // Lấy thông tin user từ IAM Service
       const user = await this.iamClient.getUserById(payload.sub);
       if (!user || !user.isActive) {
-        throw new BaseException(
-          ErrorCode.AUTH_SERVICE_0002,
-          ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0002] || 'The requested user does not exist in the system',
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0002);
       }
 
       // Thu hồi refresh token cũ
@@ -119,11 +103,7 @@ export class RefreshTokenHandler
         throw error;
       }
       
-      throw new BaseException(
-        ErrorCode.AUTH_SERVICE_0006,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0006] || 'The provided token is invalid or malformed',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw BaseException.fromErrorCode(ErrorCode.AUTH_SERVICE_0006);
     }
   }
 }

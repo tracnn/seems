@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject, BadRequestException, Logger, HttpStatus } from '@nestjs/common';
+import { Inject, BadRequestException, Logger } from '@nestjs/common';
 import { CreateUserCommand } from './create-user.command';
 import type { IUserRepository } from '../../../../../domain/interfaces/user.repository.interface';
 import { User } from '../../../../../domain/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { BaseException } from '@app/shared-exceptions';
-import { ERROR_DESCRIPTIONS, ErrorCode } from '@app/shared-constants';
+import { ErrorCode } from '@app/shared-constants';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
@@ -20,16 +20,17 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     this.logger.log(`Creating user: ${command.username}`);
 
     // Check if username or email already exists
-    const existingUser = await this.userRepository.findByUsernameOrEmail(
+    let existingUser = await this.userRepository.findByUsername(
       command.username,
-      command.email,
     );
+    
+    if (!existingUser) {
+      existingUser = await this.userRepository.findByEmail(command.email);
+    }
 
     if (existingUser) {
-      throw new BaseException(
+      throw BaseException.fromErrorCode(
         ErrorCode.IAM_SERVICE_0002,
-        ERROR_DESCRIPTIONS[ErrorCode.IAM_SERVICE_0002] || 'Username or email already exists',
-        HttpStatus.BAD_REQUEST,
         { username: command.username, email: command.email },
       );
     }

@@ -1,7 +1,7 @@
-import { Injectable, Logger, Inject, OnModuleInit, HttpStatus } from '@nestjs/common';
+import { Injectable, Logger, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { ERROR_DESCRIPTIONS, ErrorCode, ServiceName } from '@app/shared-constants';
+import { ErrorCode, ServiceName } from '@app/shared-constants';
 import { BaseException } from '@app/shared-exceptions';
 
 /**
@@ -136,10 +136,9 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get user by username or email: ${error.message}`);
-      throw new BaseException(
+      throw BaseException.fromErrorCode(
         ErrorCode.AUTH_SERVICE_0001,
-        ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0001] || 'The provided username or password is incorrect',
-        HttpStatus.UNAUTHORIZED,
+        { usernameOrEmail },
       );
     }
   }

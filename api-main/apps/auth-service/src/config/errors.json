@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "languages": ["en", "vi"],
+  "defaultLanguage": "en",
+  "errors": {
+    "AUTH_SERVICE.0001": {
+      "en": "The provided username or password is incorrect",
+      "vi": "Tên đăng nhập hoặc mật khẩu không chính xác",
+      "statusCode": 401,
+      "category": "authentication"
+    },
+    "AUTH_SERVICE.0002": {
+      "en": "The requested user does not exist in the system",
+      "vi": "Người dùng không tồn tại trong hệ thống",
+      "statusCode": 404,
+      "category": "user"
+    },
+    "AUTH_SERVICE.0006": {
+      "en": "The provided token is invalid or malformed",
+      "vi": "Token không hợp lệ hoặc bị lỗi định dạng",
+      "statusCode": 401,
+      "category": "authentication"
+    },
+    "AUTH_SERVICE.0007": {
+      "en": "The provided token has expired",
+      "vi": "Token đã hết hạn",
+      "statusCode": 401,
+      "category": "authentication"
+    },
+    "AUTH_SERVICE.0008": {
+      "en": "The requested refresh token does not exist",
+      "vi": "Refresh token không tồn tại",
+      "statusCode": 404,
+      "category": "authentication"
+    },
+    "AUTH_SERVICE.0009": {
+      "en": "The refresh token has been revoked",
+      "vi": "Refresh token đã bị thu hồi",
+      "statusCode": 401,
+      "category": "authentication"
+    },
+    "AUTH_SERVICE.0010": {
+      "en": "The refresh token has expired",
+      "vi": "Refresh token đã hết hạn",
+      "statusCode": 401,
+      "category": "authentication"
+    },
+    "AUTH_SERVICE.0013": {
+      "en": "The user account has been deactivated",
+      "vi": "Tài khoản người dùng đã bị vô hiệu hóa",
+      "statusCode": 403,
+      "category": "user"
+    }
+  }
+}
+

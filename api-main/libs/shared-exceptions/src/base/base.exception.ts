@@ -1,41 +1,44 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import {
-  ErrorCode,
-  ERROR_DESCRIPTIONS,
-  getErrorMessage,
-  getErrorStatusCode,
-} from '@app/shared-constants';
+
+/**
+ * Error Loader Interface
+ * Mỗi service tự implement loader riêng
+ */
+export interface ErrorLoader {
+  getMessage(errorCode: string, language?: string): string;
+  getStatusCode(errorCode: string): number;
+}
 
 /**
  * Base Exception Class
  * 
  * Framework exception class để các service sử dụng trực tiếp.
- * Các service tự quyết định errorCode và errorDescription dựa trên logic nghiệp vụ.
+ * Mỗi service định nghĩa errors.json riêng và inject ErrorLoader.
  * 
  * @example
  * ```typescript
- * // Trong use case handler
- * import { BaseException } from '@app/shared-exceptions';
- * import { ErrorCode, ERROR_DESCRIPTIONS } from '@app/shared-constants';
- * import { HttpStatus } from '@nestjs/common';
+ * // Setup ErrorLoader trong service
+ * BaseException.setErrorLoader(new ServiceErrorLoader());
  * 
- * if (!user) {
- *   throw new BaseException(
- *     ErrorCode.IAM_SERVICE_0001,                    // errorCode
- *     ERROR_DESCRIPTIONS[ErrorCode.IAM_SERVICE_0001], // errorDescription
- *     HttpStatus.NOT_FOUND,                           // statusCode
- *     { userId: command.userId }                     // metadata (optional)
- *   );
- * }
+ * // Sử dụng
+ * throw BaseException.fromErrorCode('AUTH_SERVICE.0001', { userId: '123' });
  * ```
  */
 export class BaseException extends HttpException {
-  public readonly errorCode: ErrorCode;
+  private static errorLoader: ErrorLoader | null = null;
+
+  /**
+   * Set custom error loader cho service
+   */
+  static setErrorLoader(loader: ErrorLoader): void {
+    BaseException.errorLoader = loader;
+  }
+  public readonly errorCode: string;
   public readonly errorDescription: string;
   public readonly metadata?: Record<string, any>;
 
   constructor(
-    errorCode: ErrorCode,
+    errorCode: string,
     errorDescription: string,
     statusCode: HttpStatus,
     metadata?: Record<string, any>,
@@ -82,47 +85,26 @@ export class BaseException extends HttpException {
   }
 
   /**
-   * Create BaseException with automatic message loading from errors.json
-   * 
-   * This is a convenience method that automatically loads error message
-   * and status code from errors.json file (if available).
-   * 
-   * @example
-   * ```typescript
-   * // Auto-load from JSON (recommended)
-   * throw BaseException.fromErrorCode(
-   *   ErrorCode.AUTH_SERVICE_0001,
-   *   { userId: command.userId }
-   * );
-   * 
-   * // Traditional way (still works)
-   * throw new BaseException(
-   *   ErrorCode.AUTH_SERVICE_0001,
-   *   ERROR_DESCRIPTIONS[ErrorCode.AUTH_SERVICE_0001],
-   *   HttpStatus.UNAUTHORIZED,
-   *   { userId: command.userId }
-   * );
-   * ```
+   * Create BaseException with automatic message loading
+   * Sử dụng ErrorLoader đã được set cho service
    */
   static fromErrorCode(
-    errorCode: ErrorCode,
+    errorCode: string,
     metadata?: Record<string, any>,
     language: string = 'en',
   ): BaseException {
-    // Try to get message from JSON first, fallback to ERROR_DESCRIPTIONS
-    let errorDescription: string;
-    let statusCode: HttpStatus;
-
-    try {
-      // Try to get from JSON
-      errorDescription = getErrorMessage(errorCode, language);
-      statusCode = getErrorStatusCode(errorCode) as HttpStatus;
-    } catch (error) {
-      // Fallback to ERROR_DESCRIPTIONS
-      errorDescription =
-        ERROR_DESCRIPTIONS[errorCode] || `Error ${errorCode}`;
-      statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    if (!BaseException.errorLoader) {
+      // Fallback nếu chưa set loader
+      return new BaseException(
+        errorCode,
+        `Error ${errorCode}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        metadata,
+      );
     }
+
+    const errorDescription = BaseException.errorLoader.getMessage(errorCode, language);
+    const statusCode = BaseException.errorLoader.getStatusCode(errorCode) as HttpStatus;
 
     return new BaseException(errorCode, errorDescription, statusCode, metadata);
   }
