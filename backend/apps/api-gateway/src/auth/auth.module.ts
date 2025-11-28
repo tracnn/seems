@@ -44,7 +44,7 @@ import { ErrorService } from '@app/shared-exceptions';
   providers: [
     {
       provide: ErrorService,
-      useFactory: () => new ErrorService('api-main'),
+      useFactory: () => new ErrorService('api-gateway'),
     },
     JwtStrategy,
     JwtAuthGuard,

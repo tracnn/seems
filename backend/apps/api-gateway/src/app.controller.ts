@@ -5,8 +5,8 @@ import { ServiceName } from '@app/shared-constants';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { WinstonLoggerService } from '@app/logger';
 
-@ApiTags('API Main')
-@Controller('api/v1/main')
+@ApiTags('API Gateway')
+@Controller('api/v1/gateway')
 export class AppController {
   constructor(
     private readonly appService: AppService,
@@ -33,7 +33,7 @@ export class AppController {
     const healthData = {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      service: ServiceName.API_MAIN,
+      service: ServiceName.API_GATEWAY,
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || 'development',
       version: process.env.API_VERSION || '1',

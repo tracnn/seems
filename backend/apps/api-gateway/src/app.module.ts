@@ -19,7 +19,7 @@ import { ErrorService } from '@app/shared-exceptions';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    LoggerModule.forRoot(LogServiceName.API_MAIN),
+    LoggerModule.forRoot(LogServiceName.API_GATEWAY),
     AuthModule,
     IamModule, // IAM Module includes IAM_SERVICE TCP client
     ClientsModule.register([
@@ -37,7 +37,7 @@ import { ErrorService } from '@app/shared-exceptions';
   providers: [
     {
       provide: ErrorService,
-      useFactory: () => new ErrorService(ErrorSystem.API_MAIN),
+      useFactory: () => new ErrorService(ErrorSystem.API_GATEWAY),
     },
     AppService,
   ],

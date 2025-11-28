@@ -67,8 +67,8 @@ async function bootstrap() {
     logger.log(`Swagger documentation available at: /${swaggerPrefix}`);
   }
 
-  const port = process.env.API_MAIN_PORT ?? 4000;
-  const host = process.env.API_MAIN_HOST ?? '0.0.0.0';
+  const port = process.env.API_GATEWAY_PORT ?? 4000;
+  const host = process.env.API_GATEWAY_HOST ?? '0.0.0.0';
 
   await app.listen(port, host);
 

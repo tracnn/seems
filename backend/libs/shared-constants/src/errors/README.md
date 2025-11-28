@@ -9,7 +9,7 @@ Mỗi service có 1 file errors.json riêng:
 ```
 libs/shared-constants/src/errors/
 ├── auth-service.errors.json      # Errors cho AUTH_SERVICE
-├── api-main.errors.json           # Errors cho API_MAIN
+├── api-gateway.errors.json       # Errors cho API_GATEWAY
 ├── iam-service.errors.json        # Errors cho IAM_SERVICE
 └── catalog-service.errors.json    # Errors cho CATALOG_SERVICE
 ```
@@ -38,13 +38,13 @@ Mỗi file có format:
 
 Format: `{SERVICE_NAME}.{ERROR_NUMBER}`
 
-- `SERVICE_NAME`: Tên service (AUTH_SERVICE, IAM_SERVICE, API_MAIN, etc.)
+- `SERVICE_NAME`: Tên service (AUTH_SERVICE, IAM_SERVICE, API_GATEWAY, etc.)
 - `ERROR_NUMBER`: 4 chữ số (0001, 0002, ...)
 
 Ví dụ:
 - `AUTH_SERVICE.0001` - Invalid username or password
 - `IAM_SERVICE.0001` - User not found
-- `API_MAIN.0001` - Validation failed
+- `API_GATEWAY.0001` - Validation failed
 
 ## Sử dụng trong Service
 
