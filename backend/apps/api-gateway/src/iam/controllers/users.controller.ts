@@ -39,6 +39,13 @@ export class UsersController {
 
   constructor(private readonly iamClient: IamClientService) {}
 
+  @Get('health')
+  @ApiOperation({ summary: 'Health check endpoint' })
+  @ApiResponse({ status: 200, description: 'Service health status' })
+  async healthCheck() {
+    return await this.iamClient.healthCheck();
+  }
+
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   async register(@Body() registerDto: RegisterDto) {

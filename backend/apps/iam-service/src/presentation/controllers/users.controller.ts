@@ -23,6 +23,7 @@ import { GetUsersQuery } from '../../application/use-cases/queries/users/get-use
 import { GetUserPermissionsQuery } from '../../application/use-cases/queries/users/get-user-permissions/get-user-permissions.query';
 import { GetUsersDto } from '../../application/dtos/user/get-users.dto';
 import { FindByUsernameOrEmailQuery } from '../../application/use-cases/queries/users/find-by-username-or-email/find-by-username-or-email.query';
+import { ServiceName } from '@app/shared-constants';
 
 /**
  * IAM Users Controller - TCP Microservice
@@ -422,5 +423,15 @@ export class UsersController {
         ...(error.metadata && { metadata: error.metadata }),
       });
     }
+  }
+
+  @MessagePattern({ cmd: 'health' })
+  async healthCheck() {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      service: ServiceName.IAM_SERVICE,
+      uptime: process.uptime(),
+    };
   }
 }

@@ -563,4 +563,16 @@ export class IamClientService implements OnModuleInit {
       throw error;
     }
   }
+
+  async healthCheck(): Promise<any> {
+    try {
+      const result = await firstValueFrom(
+        this.iamClient.send({ cmd: 'health' }, {}).pipe(timeout(5000)),
+      );
+      return result;
+    } catch (error) {
+      this.logger.error(`❌ Failed to check health: ${error.message}`);
+      throw error;
+    }
+  }
 }
