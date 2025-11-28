@@ -11,3 +11,10 @@ export enum LogServiceName {
   CATALOG_SERVICE = 'catalog-service',
   IAM_SERVICE = 'iam-service',
 }
+
+export enum ErrorSystem {
+  API_MAIN = 'api-main',
+  AUTH_SERVICE = 'auth-service',
+  CATALOG_SERVICE = 'catalog-service',
+  IAM_SERVICE = 'iam-service',
+}

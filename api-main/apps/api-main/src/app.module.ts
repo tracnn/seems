@@ -1,20 +1,14 @@
-import {
-  Module,
-  NestModule,
-  MiddlewareConsumer,
-} from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UtilsModule } from '@app/utils';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
-import { LogServiceName, ServiceName } from '@app/shared-constants';
+import { ErrorSystem, LogServiceName, ServiceName } from '@app/shared-constants';
 import { AuthModule } from './auth/auth.module';
 import { IamModule } from './iam/iam.module';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ErrorService } from '@app/shared-exceptions';
 
 @Module({
@@ -43,7 +37,7 @@ import { ErrorService } from '@app/shared-exceptions';
   providers: [
     {
       provide: ErrorService,
-      useFactory: () => new ErrorService('api-main'),
+      useFactory: () => new ErrorService(ErrorSystem.API_MAIN),
     },
     AppService,
   ],

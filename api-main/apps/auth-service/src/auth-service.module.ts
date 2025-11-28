@@ -26,7 +26,7 @@ import { GetUserHandler } from './application/use-cases/queries/get-user/get-use
 // Presentation
 import { AuthController } from './presentation/controllers/auth.controller';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
-import { LogServiceName } from '@app/shared-constants';
+import { ErrorSystem, LogServiceName } from '@app/shared-constants';
 import { ServiceName } from '@app/shared-constants';
 
 // Infrastructure Clients
@@ -59,7 +59,7 @@ const QueryHandlers = [GetUserHandler];
           transport: Transport.TCP,
           options: {
             host: configService.get<string>('IAM_SERVICE_HOST') || 'localhost',
-            port: Number(configService.get<string>('IAM_SERVICE_PORT') || 3003),
+            port: Number(configService.get<string>('IAM_SERVICE_PORT') || 4003),
           },
         }),
         inject: [ConfigService],
@@ -70,7 +70,7 @@ const QueryHandlers = [GetUserHandler];
   providers: [
     {
       provide: ErrorService,
-      useFactory: () => new ErrorService('auth-service'),
+      useFactory: () => new ErrorService(ErrorSystem.AUTH_SERVICE),
     },
     ...CommandHandlers,
     ...QueryHandlers,

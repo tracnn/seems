@@ -14,7 +14,7 @@ async function bootstrap() {
       transport: Transport.TCP,
       options: {
         host: process.env.IAM_SERVICE_HOST ?? '0.0.0.0',
-        port: Number(process.env.IAM_SERVICE_PORT ?? 3003),
+        port: Number(process.env.IAM_SERVICE_PORT ?? 4003),
       },
     },
   );
@@ -41,7 +41,7 @@ async function bootstrap() {
   app.useGlobalFilters(new RpcExceptionFilter());
 
   const host = process.env.IAM_SERVICE_HOST ?? '0.0.0.0';
-  const port = process.env.IAM_SERVICE_PORT ?? 3003;
+  const port = process.env.IAM_SERVICE_PORT ?? 4003;
 
   logger.log('🚀 Starting IAM Service (Pure Microservice)...');
   logger.log(`📡 Transport: TCP`);

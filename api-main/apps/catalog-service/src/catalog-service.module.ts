@@ -4,7 +4,8 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CatalogServiceController } from './catalog-service.controller';
 import { CatalogServiceService } from './catalog-service.service';
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
-import { LogServiceName } from '@app/shared-constants';
+import { ErrorSystem, LogServiceName } from '@app/shared-constants';
+import { ErrorService } from '@app/shared-exceptions';
 
 // Command Handlers (sẽ được thêm sau khi có use cases)
 const CommandHandlers: any[] = [];
@@ -23,7 +24,15 @@ const QueryHandlers: any[] = [];
     // DatabaseModule sẽ được thêm sau khi có entities
   ],
   controllers: [CatalogServiceController],
-  providers: [CatalogServiceService, ...CommandHandlers, ...QueryHandlers],
+  providers: [
+    {
+      provide: ErrorService,
+      useFactory: () => new ErrorService(ErrorSystem.CATALOG_SERVICE),
+    },
+    CatalogServiceService,
+    ...CommandHandlers,
+    ...QueryHandlers,
+  ],
 })
 export class CatalogServiceModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

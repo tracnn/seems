@@ -62,7 +62,7 @@ import { HttpExceptionFilter } from './presentation/filters/http-exception.filte
 
 // Shared
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
-import { LogServiceName } from '@app/shared-constants';
+import { ErrorSystem, LogServiceName } from '@app/shared-constants';
 
 const CommandHandlers = [
   // User Commands
@@ -127,7 +127,7 @@ const QueryHandlers = [
   providers: [
     {
       provide: ErrorService,
-      useFactory: () => new ErrorService('iam-service'),
+      useFactory: () => new ErrorService(ErrorSystem.IAM_SERVICE),
     },
     ...CommandHandlers,
     ...QueryHandlers,
