@@ -22,6 +22,10 @@ export type {
   CreateUserRequest,
   UpdateUserRequest,
   ChangePasswordRequest,
+  IamUser,
+  IamUsersResponse,
+  IamUserDetail,
+  UpdateIamUserRequest,
   
   // Auth types
   LoginRequest,

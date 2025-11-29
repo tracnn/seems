@@ -7,7 +7,12 @@ import type {
   QueryParams,
   ApiResponse,
   PaginatedResponse,
+  IamUser,
+  IamUsersResponse,
+  IamUserDetail,
+  UpdateIamUserRequest,
 } from '../types'
+import type { FetchParams, FetchResult } from '@/components/ui/server-select'
 
 export const userService = {
   /**
@@ -138,5 +143,71 @@ export const userService = {
    */
   verifyEmail: async (token: string): Promise<void> => {
     await apiClient.post('/users/verify-email', { token })
+  },
+
+  /**
+   * Lấy danh sách người dùng từ IAM API với phân trang
+   * Sử dụng endpoint /api/v1/iam/users
+   */
+  getIamUsers: async (params?: { page?: number; limit?: number }): Promise<IamUsersResponse> => {
+    const response = await apiClient.get<IamUsersResponse>('/api/v1/iam/users', {
+      params: {
+        page: params?.page || 1,
+        limit: params?.limit || 10,
+      },
+    })
+    return response.data
+  },
+
+  /**
+   * Fetcher function cho ServerSelect component
+   * Chuyển đổi từ FetchParams sang format API và trả về FetchResult
+   */
+  fetchIamUsersForSelect: async (params: FetchParams): Promise<FetchResult> => {
+    const response = await apiClient.get<IamUsersResponse>('/api/v1/iam/users', {
+      params: {
+        page: params.page || 1,
+        limit: params.limit || 10,
+      },
+    })
+
+    // Chuyển đổi pagination format từ API sang format của ServerSelect
+    return {
+      data: response.data.data,
+      pagination: {
+        total: response.data.pagination.total,
+        page: response.data.pagination.page,
+        limit: response.data.pagination.limit,
+        pageCount: response.data.pagination.totalPages,
+        hasNext: response.data.pagination.hasNext,
+        hasPrev: response.data.pagination.hasPrev,
+      },
+    }
+  },
+
+  /**
+   * Lấy thông tin chi tiết người dùng từ IAM API theo ID
+   * Sử dụng endpoint /api/v1/iam/users/{id}
+   */
+  getIamUserById: async (id: string): Promise<IamUserDetail> => {
+    const response = await apiClient.get<IamUserDetail>(
+      `/api/v1/iam/users/${id}`
+    )
+    return response.data
+  },
+
+  /**
+   * Cập nhật thông tin người dùng từ IAM API
+   * Sử dụng endpoint /api/v1/iam/users/{id}
+   */
+  updateIamUser: async (
+    id: string,
+    userData: UpdateIamUserRequest
+  ): Promise<IamUserDetail> => {
+    const response = await apiClient.put<IamUserDetail>(
+      `/api/v1/iam/users/${id}`,
+      userData
+    )
+    return response.data
   },
 }

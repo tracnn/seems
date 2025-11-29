@@ -13,6 +13,8 @@ import {
   IconTool,
   IconUserCog,
   IconUserOff,
+  IconUsers,
+  IconList,
 } from '@tabler/icons-react'
 import { Command } from 'lucide-react'
 import { type SidebarData } from '../types'
@@ -98,6 +100,22 @@ export const sidebarData: SidebarData = {
               title: 'Maintenance Error',
               url: '/503',
               icon: IconBarrierBlock,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Quản lý danh mục',
+      items: [
+        {
+          title: 'Quản lý danh mục',
+          icon: IconList,
+          items: [
+            {
+              title: 'Quản lý người dùng',
+              url: '/users-management',
+              icon: IconUsers,
             },
           ],
         },

@@ -22,6 +22,44 @@ export interface User extends BaseEntity {
   lastLoginAt?: string
 }
 
+// IAM User Types (for IAM API endpoint)
+export interface IamUser extends BaseEntity {
+  username: string
+  email: string
+  firstName?: string
+  lastName?: string
+  phone?: string | null
+  avatarUrl?: string | null
+  isActive: boolean
+  isEmailVerified: boolean
+  lastLoginAt?: string | null
+}
+
+// IAM User Detail (with additional fields from GET by ID)
+export interface IamUserDetail extends IamUser {
+  password?: string
+  version?: number
+}
+
+export interface UpdateIamUserRequest {
+  firstName?: string
+  lastName?: string
+  phone?: string | null
+  isActive?: boolean
+}
+
+export interface IamUsersResponse {
+  data: IamUser[]
+  pagination: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+}
+
 export interface CreateUserRequest {
   accountNo: string
   email: string
