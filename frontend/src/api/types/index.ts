@@ -41,6 +41,15 @@ export interface IamUserDetail extends IamUser {
   version?: number
 }
 
+export interface CreateIamUserRequest {
+  username: string
+  email: string
+  password: string
+  firstName?: string
+  lastName?: string
+  phone?: string | null
+}
+
 export interface UpdateIamUserRequest {
   firstName?: string
   lastName?: string

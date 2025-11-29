@@ -3,6 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 import { ServiceName } from '@app/shared-constants';
 import { GetUsersDto } from '../dtos/get-users.dto';
+import { convertRpcError } from '@app/shared-exceptions';
 
 /**
  * IAM Service Client for API Gateway
@@ -48,7 +49,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to create user: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -65,7 +66,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get user: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -82,7 +83,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get users: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -104,7 +105,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to update user: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -122,7 +123,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to delete user: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -146,7 +147,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to assign roles: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -163,7 +164,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get user permissions: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -185,7 +186,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to create role: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -198,7 +199,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get roles: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -213,7 +214,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get role: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -231,7 +232,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get permissions: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -249,7 +250,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get permission: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -267,7 +268,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get organizations: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -282,7 +283,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to get organization: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -303,7 +304,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to update role: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -319,7 +320,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to delete role: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -345,7 +346,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to assign permissions: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -366,7 +367,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to remove permissions: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -381,7 +382,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to create permission: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -397,7 +398,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to update permission: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -416,7 +417,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to delete permission: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -433,7 +434,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to create organization: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -449,7 +450,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to update organization: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -468,7 +469,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to delete organization: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -490,7 +491,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to assign organizations: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -511,7 +512,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to remove organizations: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -537,7 +538,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to register user: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -560,7 +561,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to activate account: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 
@@ -572,7 +573,7 @@ export class IamClientService implements OnModuleInit {
       return result;
     } catch (error) {
       this.logger.error(`❌ Failed to check health: ${error.message}`);
-      throw error;
+      throw convertRpcError(error);
     }
   }
 }

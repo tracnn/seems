@@ -9,6 +9,7 @@ import type {
   PaginatedResponse,
   IamUsersResponse,
   IamUserDetail,
+  CreateIamUserRequest,
   UpdateIamUserRequest,
 } from '../types'
 import type { FetchParams, FetchResult } from '@/components/ui/server-select'
@@ -191,6 +192,20 @@ export const userService = {
   getIamUserById: async (id: string): Promise<IamUserDetail> => {
     const response = await apiClient.get<IamUserDetail>(
       `/api/v1/iam/users/${id}`
+    )
+    return response.data
+  },
+
+  /**
+   * Tạo người dùng mới từ IAM API
+   * Sử dụng endpoint /api/v1/iam/users
+   */
+  createIamUser: async (
+    userData: CreateIamUserRequest
+  ): Promise<IamUserDetail> => {
+    const response = await apiClient.post<IamUserDetail>(
+      '/api/v1/iam/users',
+      userData
     )
     return response.data
   },

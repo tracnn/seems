@@ -28,31 +28,43 @@ import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { userService } from '@/api/services'
-import type { IamUserDetail, UpdateIamUserRequest } from '@/api/types'
+import type { IamUserDetail, CreateIamUserRequest, UpdateIamUserRequest } from '@/api/types'
 
-const userFormSchema = z.object({
+const baseUserFormSchema = {
   username: z.string().min(1, 'Tên đăng nhập là bắt buộc'),
   email: z.string().email('Email không hợp lệ'),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   phone: z.string().optional().nullable(),
+}
+
+const userFormSchema = z.object({
+  ...baseUserFormSchema,
   isActive: z.boolean(),
 })
 
+const createUserFormSchema = z.object({
+  ...baseUserFormSchema,
+  password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự'),
+})
+
 type UserFormValues = z.infer<typeof userFormSchema>
+type CreateUserFormValues = z.infer<typeof createUserFormSchema>
+type FormValues = UserFormValues & { password?: string }
 
 interface UserDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   userId: string | null
-  mode: 'view' | 'edit'
+  mode: 'view' | 'edit' | 'create'
 }
 
 export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps) {
   const queryClient = useQueryClient()
-  const [isEditing, setIsEditing] = useState(mode === 'edit')
+  const isCreateMode = mode === 'create'
+  const [isEditing, setIsEditing] = useState(mode === 'edit' || mode === 'create')
 
-  // Fetch user data
+  // Fetch user data (only for view/edit modes)
   const {
     data: user,
     isLoading,
@@ -60,7 +72,24 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
   } = useQuery({
     queryKey: ['iam-user', userId],
     queryFn: () => userService.getIamUserById(userId!),
-    enabled: !!userId && open,
+    enabled: !!userId && open && !isCreateMode,
+  })
+
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: (data: CreateIamUserRequest) => userService.createIamUser(data),
+    onSuccess: () => {
+      toast.success('Tạo người dùng thành công')
+      queryClient.invalidateQueries({ queryKey: ['iam-users'] })
+      onOpenChange(false)
+      form.reset()
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.errorDescription || 
+                          error?.response?.data?.message || 
+                          'Tạo người dùng thất bại'
+      toast.error(errorMessage)
+    },
   })
 
   // Update mutation
@@ -79,21 +108,30 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
     },
   })
 
-  const form = useForm<UserFormValues>({
-    resolver: zodResolver(userFormSchema),
-    defaultValues: {
-      username: '',
-      email: '',
-      firstName: '',
-      lastName: '',
-      phone: '',
-      isActive: true,
-    },
+  const form = useForm<FormValues>({
+    resolver: zodResolver(isCreateMode ? createUserFormSchema : userFormSchema),
+    defaultValues: isCreateMode
+      ? {
+          username: '',
+          email: '',
+          password: '',
+          firstName: '',
+          lastName: '',
+          phone: '',
+        }
+      : {
+          username: '',
+          email: '',
+          firstName: '',
+          lastName: '',
+          phone: '',
+          isActive: true,
+        },
   })
 
-  // Update form when user data loads
+  // Update form when user data loads (only for view/edit modes)
   useEffect(() => {
-    if (user) {
+    if (user && !isCreateMode) {
       form.reset({
         username: user.username,
         email: user.email,
@@ -103,29 +141,55 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
         isActive: user.isActive,
       })
     }
-  }, [user, form])
+  }, [user, form, isCreateMode])
+
+  // Reset form when dialog opens in create mode
+  useEffect(() => {
+    if (open && isCreateMode) {
+      form.reset({
+        username: '',
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+      })
+    }
+  }, [open, isCreateMode, form])
 
   // Reset editing mode when dialog opens/closes
   useEffect(() => {
     if (open) {
-      setIsEditing(mode === 'edit')
+      setIsEditing(mode === 'edit' || mode === 'create')
     } else {
       setIsEditing(false)
     }
   }, [open, mode])
 
-  const onSubmit = (data: UserFormValues) => {
-    const updateData: UpdateIamUserRequest = {
-      firstName: data.firstName || undefined,
-      lastName: data.lastName || undefined,
-      phone: data.phone || null,
-      isActive: data.isActive,
+  const onSubmit = (data: FormValues) => {
+    if (isCreateMode) {
+      const createData: CreateIamUserRequest = {
+        username: data.username,
+        email: data.email,
+        password: data.password!,
+        firstName: data.firstName || undefined,
+        lastName: data.lastName || undefined,
+        phone: data.phone || null,
+      }
+      createMutation.mutate(createData)
+    } else {
+      const updateData: UpdateIamUserRequest = {
+        firstName: data.firstName || undefined,
+        lastName: data.lastName || undefined,
+        phone: data.phone || null,
+        isActive: data.isActive ?? true,
+      }
+      updateMutation.mutate(updateData)
     }
-    updateMutation.mutate(updateData)
   }
 
   const handleCancel = () => {
-    if (user) {
+    if (user && !isCreateMode) {
       form.reset({
         username: user.username,
         email: user.email,
@@ -134,9 +198,18 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
         phone: user.phone || '',
         isActive: user.isActive,
       })
+    } else if (isCreateMode) {
+      form.reset({
+        username: '',
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+      })
     }
     setIsEditing(false)
-    if (mode === 'view') {
+    if (mode === 'view' || mode === 'create') {
       onOpenChange(false)
     }
   }
@@ -146,31 +219,37 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
       <SheetContent side="right" className="w-full sm:max-w-2xl flex flex-col p-0">
         <SheetHeader className="px-6 pt-6 pb-4 border-b">
           <SheetTitle>
-            {isEditing ? 'Chỉnh sửa người dùng' : 'Chi tiết người dùng'}
+            {isCreateMode
+              ? 'Tạo người dùng mới'
+              : isEditing
+              ? 'Chỉnh sửa người dùng'
+              : 'Chi tiết người dùng'}
           </SheetTitle>
           <SheetDescription>
-            {isEditing
+            {isCreateMode
+              ? 'Thêm người dùng mới vào hệ thống'
+              : isEditing
               ? 'Cập nhật thông tin người dùng trong hệ thống'
               : 'Xem thông tin chi tiết của người dùng'}
           </SheetDescription>
         </SheetHeader>
 
         <ScrollArea className="flex-1 px-6">
-          {isLoading ? (
+          {isLoading && !isCreateMode ? (
           <div className="space-y-4">
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
           </div>
-        ) : error ? (
+        ) : error && !isCreateMode ? (
           <div className="text-center py-8 text-destructive">
             Không thể tải thông tin người dùng
           </div>
-        ) : user ? (
+        ) : (user || isCreateMode) ? (
           <Form {...form}>
             <form id="user-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-6">
-              {/* Read-only fields */}
+              {/* Username and Email fields */}
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -179,7 +258,12 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
                     <FormItem>
                       <FormLabel>Tên đăng nhập</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled readOnly />
+                        <Input
+                          {...field}
+                          disabled={!isCreateMode && !isEditing}
+                          readOnly={!isCreateMode && !isEditing}
+                          placeholder="Nhập tên đăng nhập"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -193,13 +277,40 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled readOnly />
+                        <Input
+                          {...field}
+                          type="email"
+                          disabled={!isCreateMode && !isEditing}
+                          readOnly={!isCreateMode && !isEditing}
+                          placeholder="Nhập email"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+
+              {/* Password field (only for create mode) */}
+              {isCreateMode && (
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mật khẩu</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="password"
+                          placeholder="Nhập mật khẩu (tối thiểu 8 ký tự)"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               {/* Editable fields */}
               <div className="grid gap-4 md:grid-cols-2">
@@ -259,29 +370,33 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">Trạng thái</FormLabel>
-                      <FormDescription>
-                        Kích hoạt hoặc vô hiệu hóa tài khoản người dùng
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={!isEditing}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {/* Status field (only for edit mode, not create mode) */}
+              {!isCreateMode && (
+                <FormField
+                  control={form.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">Trạng thái</FormLabel>
+                        <FormDescription>
+                          Kích hoạt hoặc vô hiệu hóa tài khoản người dùng
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={!isEditing}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
 
-              {/* Read-only info section */}
+              {/* Read-only info section (only for view/edit modes) */}
+              {!isCreateMode && user && (
               <div className="grid gap-4 md:grid-cols-2 pt-4 border-t">
                 <div className="space-y-2">
                   <div className="text-sm font-medium">ID</div>
@@ -326,12 +441,13 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
                   </div>
                 </div>
               </div>
+              )}
             </form>
           </Form>
         ) : null}
         </ScrollArea>
 
-        {user && (
+        {(user || isCreateMode) && (
           <SheetFooter className="px-6 py-4 border-t bg-muted/50">
             {isEditing ? (
               <>
@@ -339,7 +455,7 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
                   type="button"
                   variant="outline"
                   onClick={handleCancel}
-                  disabled={updateMutation.isPending}
+                  disabled={isCreateMode ? createMutation.isPending : updateMutation.isPending}
                   className="w-full sm:w-auto"
                 >
                   Hủy
@@ -347,10 +463,16 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
                 <Button
                   type="submit"
                   form="user-form"
-                  disabled={updateMutation.isPending}
+                  disabled={isCreateMode ? createMutation.isPending : updateMutation.isPending}
                   className="w-full sm:w-auto"
                 >
-                  {updateMutation.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+                  {isCreateMode
+                    ? createMutation.isPending
+                      ? 'Đang tạo...'
+                      : 'Tạo người dùng'
+                    : updateMutation.isPending
+                    ? 'Đang lưu...'
+                    : 'Lưu thay đổi'}
                 </Button>
               </>
             ) : (

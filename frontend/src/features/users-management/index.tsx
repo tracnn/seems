@@ -21,7 +21,7 @@ import {
   createTextColumn,
   createCustomColumn,
 } from '@/utils/data-table-utils'
-import { IconEye, IconEdit } from '@tabler/icons-react'
+import { IconEye, IconEdit, IconPlus } from '@tabler/icons-react'
 import { UserDialog } from './components/user-dialog'
 
 // Query function for DataTable
@@ -205,7 +205,7 @@ const createColumns = (
 export default function UsersManagement() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [dialogMode, setDialogMode] = useState<'view' | 'edit'>('view')
+  const [dialogMode, setDialogMode] = useState<'view' | 'edit' | 'create'>('view')
 
   const dataTable = useDataTable<IamUser>({
     queryKey: ['iam-users'],
@@ -224,6 +224,12 @@ export default function UsersManagement() {
   const handleEditUser = (userId: string) => {
     setSelectedUserId(userId)
     setDialogMode('edit')
+    setDialogOpen(true)
+  }
+
+  const handleCreateUser = () => {
+    setSelectedUserId(null)
+    setDialogMode('create')
     setDialogOpen(true)
   }
 
@@ -254,10 +260,18 @@ export default function UsersManagement() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Danh sách người dùng</CardTitle>
-            <CardDescription>
-              Quản lý và xem thông tin tất cả người dùng trong hệ thống
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Danh sách người dùng</CardTitle>
+                <CardDescription>
+                  Quản lý và xem thông tin tất cả người dùng trong hệ thống
+                </CardDescription>
+              </div>
+              <Button onClick={handleCreateUser}>
+                <IconPlus className="h-4 w-4 mr-2" />
+                Tạo mới
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <DataTable
