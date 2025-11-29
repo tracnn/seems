@@ -38,6 +38,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "helmet": "^8.1.0",
+    "meilisearch": "^0.40.0",
     "nest-winston": "^1.10.2",
     "oracledb": "^6.10.0",
     "passport": "^0.7.0",
@@ -103,6 +104,7 @@
       "^@app/shared-dto(|/.*)$": "<rootDir>/libs/shared-dto/src/$1",
       "^@app/shared-exceptions(|/.*)$": "<rootDir>/libs/shared-exceptions/src/$1",
       "^@app/shared-guards(|/.*)$": "<rootDir>/libs/shared-guards/src/$1",
+      "^@app/shared-meilisearch(|/.*)$": "<rootDir>/libs/shared-meilisearch/src/$1",
       "^@app/shared-rmq(|/.*)$": "<rootDir>/libs/shared-rmq/src/$1",
       "^@app/shared-types(|/.*)$": "<rootDir>/libs/shared-types/src/$1",
       "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1"

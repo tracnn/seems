@@ -3,7 +3,7 @@ import {
   NestModule,
   MiddlewareConsumer,
 } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -63,6 +63,7 @@ import { HttpExceptionFilter } from './presentation/filters/http-exception.filte
 // Shared
 import { LoggerModule, HttpLoggerMiddleware } from '@app/logger';
 import { ErrorSystem, LogServiceName } from '@app/shared-constants';
+import { MeilisearchModule } from '@app/shared-meilisearch';
 
 const CommandHandlers = [
   // User Commands
@@ -108,6 +109,16 @@ const QueryHandlers = [
       isGlobal: true,
       envFilePath: '.env',
       load: [databaseConfig],
+    }),
+    MeilisearchModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        host: configService.get<string>('MEILISEARCH_HOST') || 'http://localhost:7700',
+        apiKey: configService.get<string>('MEILISEARCH_MASTER_KEY'),
+        timeout: Number(configService.get<string>('MEILISEARCH_TIMEOUT')) || 5000,
+        maxRetries: Number(configService.get<string>('MEILISEARCH_MAX_RETRIES')) || 3,
+      }),
+      inject: [ConfigService],
     }),
     LoggerModule.forRoot(LogServiceName.IAM_SERVICE),
     CqrsModule,

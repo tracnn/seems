@@ -64,6 +64,12 @@
       "@app/shared-guards/*": [
         "libs/shared-guards/src/*"
       ],
+      "@app/shared-meilisearch": [
+        "libs/shared-meilisearch/src"
+      ],
+      "@app/shared-meilisearch/*": [
+        "libs/shared-meilisearch/src/*"
+      ],
       "@app/shared-rmq": [
         "libs/shared-rmq/src"
       ],

@@ -109,6 +109,15 @@
         "tsConfigPath": "libs/shared-guards/tsconfig.lib.json"
       }
     },
+    "shared-meilisearch": {
+      "type": "library",
+      "root": "libs/shared-meilisearch",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared-meilisearch/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared-meilisearch/tsconfig.lib.json"
+      }
+    },
     "shared-rmq": {
       "type": "library",
       "root": "libs/shared-rmq",
