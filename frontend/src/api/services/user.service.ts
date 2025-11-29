@@ -7,7 +7,6 @@ import type {
   QueryParams,
   ApiResponse,
   PaginatedResponse,
-  IamUser,
   IamUsersResponse,
   IamUserDetail,
   UpdateIamUserRequest,
