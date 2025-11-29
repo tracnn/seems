@@ -113,7 +113,7 @@ const QueryHandlers = [
     MeilisearchModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        host: configService.get<string>('MEILISEARCH_HOST') || 'http://localhost:7700',
+        host: configService.get<string>('MEILISEARCH_HOST') || 'http://localhost:7701',
         apiKey: configService.get<string>('MEILISEARCH_MASTER_KEY'),
         timeout: Number(configService.get<string>('MEILISEARCH_TIMEOUT')) || 5000,
         maxRetries: Number(configService.get<string>('MEILISEARCH_MAX_RETRIES')) || 3,
