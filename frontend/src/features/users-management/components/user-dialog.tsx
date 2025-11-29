@@ -28,7 +28,7 @@ import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { userService } from '@/api/services'
-import type { IamUserDetail, CreateIamUserRequest, UpdateIamUserRequest } from '@/api/types'
+import type { CreateIamUserRequest, UpdateIamUserRequest } from '@/api/types'
 
 const baseUserFormSchema = {
   username: z.string().min(1, 'Tên đăng nhập là bắt buộc'),
@@ -48,9 +48,9 @@ const createUserFormSchema = z.object({
   password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự'),
 })
 
-type UserFormValues = z.infer<typeof userFormSchema>
-type CreateUserFormValues = z.infer<typeof createUserFormSchema>
-type FormValues = UserFormValues & { password?: string }
+type FormValues = z.infer<typeof userFormSchema> & {
+  password?: string
+}
 
 interface UserDialogProps {
   open: boolean
@@ -108,8 +108,9 @@ export function UserDialog({ open, onOpenChange, userId, mode }: UserDialogProps
     },
   })
 
+  const formSchema = isCreateMode ? createUserFormSchema : userFormSchema
   const form = useForm<FormValues>({
-    resolver: zodResolver(isCreateMode ? createUserFormSchema : userFormSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: isCreateMode
       ? {
           username: '',
